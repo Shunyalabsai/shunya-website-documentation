@@ -17,18 +17,17 @@
           <a href="/web_doc/index.html">Docs</a><span class="sep">/</span><span>Speech-to-Text</span><span class="sep">/</span><span>Overview</span>
         </div>
         <h1>Speech-to-Text <span class="accent-italic">(ASR)</span></h1>
-        <p class="lead">Zero STT is Shunya's speech recognition family. One API surface for batch and streaming, a choice of four models tuned for different domains, and an intelligence layer that adds diarization, emotion, intent, and more on top of the transcript.</p>
+        <p class="lead">Zero STT is Shunya's speech recognition family. One API surface for batch and streaming, a choice of four models tuned for different domains, diarization and word timestamps on the transcript, and a Speech Intelligence endpoint that adds intent, summary, and sentiment analysis over the text.</p>
 
         <h2>How it fits together</h2>
         <div class="mermaid">graph LR
   A[Audio<br/>file or stream] --> B[Zero STT]
   B --> C[Transcript<br/>text + segments]
-  C --> D[Optional: intelligence layer]
-  D --> E1[Diarization]
-  D --> E2[Emotion]
-  D --> E3[Intent, Sentiment]
-  D --> E4[Summary, Redaction]
-  D --> E5[Translation]
+  C --> D[Speech Intelligence<br/>POST /v1/speechintelligence]
+  D --> E1[Intent]
+  D --> E2[Summary]
+  D --> E3[Sentiment]
+  B --> F[Diarization<br/>diarize + num_speakers]
   style B fill:#6366f1,stroke:#4338ca,color:#fff,stroke-width:2px
   style D fill:#a855f7,stroke:#7e22ce,color:#fff,stroke-width:2px</div>
 
@@ -37,17 +36,17 @@
           <table>
             <thead><tr><th>Mode</th><th>Endpoint</th><th>Use for</th></tr></thead>
             <tbody>
-              <tr><td>Batch</td><td><code>POST https://asr.shunyalabs.ai/v1/audio/transcriptions</code></td><td>Uploaded files, post-processing, async jobs.</td></tr>
-              <tr><td>Streaming</td><td><code>wss://asr.shunyalabs.ai/ws</code></td><td>Live transcription, voice agents, IVR.</td></tr>
-              <tr><td>Health</td><td><code>GET https://asr.shunyalabs.ai/health</code></td><td>Liveness checks. No auth.</td></tr>
-              <tr><td>Languages</td><td><code>GET https://asr.shunyalabs.ai/languages</code></td><td>Returns supported language names, ISO codes, and scripts.</td></tr>
-              <tr><td>Speakers</td><td><code>/v1/speakers/*</code></td><td>Register, list, identify, delete voice profiles for speaker identification.</td></tr>
+              <tr><td>Auth</td><td><code>POST /auth/token</code></td><td>Exchange your API key for a short-lived access token. All ASR endpoints authenticate with this token.</td></tr>
+              <tr><td>Batch</td><td><code>POST https://asrv2prod.shunyalabs.ai/v1/audio/transcriptions</code></td><td>Uploaded files, post-processing, async jobs.</td></tr>
+              <tr><td>Streaming</td><td><code>wss://asrv2prod.shunyalabs.ai/v1/realtime</code></td><td>Live transcription, voice agents, IVR. Also at <code>WS /ws</code>.</td></tr>
+              <tr><td>Speech Intelligence</td><td><code>POST /v1/speechintelligence</code></td><td>NLP over text: intent, summary, sentiment, key terms.</td></tr>
+              <tr><td>Speakers</td><td><code>POST /v1/speakers/register</code> · <code>DELETE /v1/speakers/delete</code></td><td>Enrol and remove named voiceprints.</td></tr>
             </tbody>
           </table>
         </div>
 
         <h2 id="batch-vs-streaming">Batch vs Streaming</h2>
-        <p>Same models, same intelligence layer, different transports. Pick batch when you have a complete audio file in hand. Pick streaming when audio is arriving live and you want partial transcripts as the speaker is still talking.</p>
+        <p>Same models, same authentication, different transports. Pick batch when you have a complete audio file in hand. Pick streaming when audio is arriving live and you want partial transcripts as the speaker is still talking.</p>
 
         <div class="bs-compare">
           <!-- BATCH -->
@@ -63,15 +62,15 @@
                 </div>
               </div>
 
-              <p class="bs-summary">Accepts <code>multipart/form-data</code>. Required fields: <code>file</code> (or <code>url</code>) and <code>model</code>.</p>
+              <p class="bs-summary">Accepts <code>multipart/form-data</code>. Send one of <code>file</code>, <code>audio_base64</code>, or <code>url</code> (max 50 MB); everything else is optional.</p>
 
               <div class="bs-section">
                 <span class="bs-section-label">Models available</span>
                 <ul class="bs-best">
-                  <li><a class="hf-model-link" href="https://huggingface.co/spaces/shunyalabs/Zero-STT-Shunya-Labs" target="_blank" rel="noopener" title="View on Hugging Face"><code>zero-indic</code></a>, General Indian languages (Hindi, Tamil, Telugu, Kannada, Marathi, Bengali, etc.)</li>
-                  <li><a class="hf-model-link" href="https://huggingface.co/spaces/shunyalabs/Zero_STT_Med_Shunya_Labs" target="_blank" rel="noopener" title="View on Hugging Face"><code>zero-med</code></a>, Medical/clinical audio, auto-applies medical terminology correction via MedGemma</li>
-                  <li><a class="hf-model-link" href="https://huggingface.co/shunyalabs/zero-stt-hinglish" target="_blank" rel="noopener" title="View on Hugging Face"><code>zero-codeswitch</code></a>, Code-switched speech (Hinglish, Tanglish, etc.), auto-restores English words to Latin script via Gemini</li>
-                  <li><a class="hf-model-link" href="https://huggingface.co/shunyalabs/pingala-v1-universal" target="_blank" rel="noopener" title="View on Hugging Face"><code>zero-universal</code></a>, 99-language Whisper model, English, European, Asian, and African languages</li>
+                  <li><a class="hf-model-link" href="https://huggingface.co/spaces/shunyalabs/Zero-STT-Shunya-Labs" target="_blank" rel="noopener" title="View on Hugging Face"><code>zero-indic</code></a>, Native handling of Hindi, Tamil, Telugu, Kannada, Marathi, Bengali, and more</li>
+                  <li><a class="hf-model-link" href="https://huggingface.co/shunyalabs/pingala-v1-universal" target="_blank" rel="noopener" title="View on Hugging Face"><code>zero-universal</code></a>, Strongest on English and international content</li>
+                  <li><a class="hf-model-link" href="https://huggingface.co/spaces/shunyalabs/Zero_STT_Med_Shunya_Labs" target="_blank" rel="noopener" title="View on Hugging Face"><code>zero-med</code></a>, Medical/clinical audio, auto-applies medical terminology correction</li>
+                  <li><a class="hf-model-link" href="https://huggingface.co/shunyalabs/zero-stt-hinglish" target="_blank" rel="noopener" title="View on Hugging Face"><code>zero-codeswitch</code></a>, Code-switched speech (Hinglish, Tanglish, etc.), restores English words to Latin script</li>
                 </ul>
               </div>
 
@@ -79,20 +78,20 @@
                 <span class="bs-section-label">Properties</span>
                 <dl class="bs-props">
                   <dt>Endpoint</dt><dd>POST <code>/v1/audio/transcriptions</code></dd>
-                  <dt>Host</dt><dd><code>asr.shunyalabs.ai</code></dd>
+                  <dt>Host</dt><dd><code>asrv2prod.shunyalabs.ai</code></dd>
                   <dt>Content type</dt><dd><code>multipart/form-data</code></dd>
-                  <dt>Auth</dt><dd>Bearer <code>&lt;API_KEY&gt;</code></dd>
-                  <dt>Required</dt><dd><code>file</code> (or <code>url</code>) and <code>model</code></dd>
-                  <dt>Default response</dt><dd><code>verbose_json</code></dd>
+                  <dt>Auth</dt><dd>Bearer <code>&lt;ACCESS_TOKEN&gt;</code> from <code>/auth/token</code></dd>
+                  <dt>Required</dt><dd>one of <code>file</code> / <code>audio_base64</code> / <code>url</code></dd>
+                  <dt>Default response</dt><dd><code>json</code> (<code>{ "text": "…" }</code>)</dd>
                 </dl>
               </div>
 
               <div class="bs-section">
                 <span class="bs-section-label">Flow</span>
                 <div class="bs-flow">
-                  <span class="bs-step"><span class="bs-step-num">1</span>Upload file or url</span>
+                  <span class="bs-step"><span class="bs-step-num">1</span>Mint token at /auth/token</span>
                   <span class="bs-arrow">→</span>
-                  <span class="bs-step"><span class="bs-step-num">2</span>Server transcribes</span>
+                  <span class="bs-step"><span class="bs-step-num">2</span>Upload file / audio_base64 / url</span>
                   <span class="bs-arrow">→</span>
                   <span class="bs-step"><span class="bs-step-num">3</span>Single JSON response</span>
                 </div>
@@ -113,41 +112,39 @@
                 </div>
               </div>
 
-              <p class="bs-summary">Real-time streaming transcription over WebSocket. Supports binary mode (raw PCM/ulaw/alaw bytes) and JSON mode (base64-encoded audio frames).</p>
+              <p class="bs-summary">Real-time speech-to-text over WebSocket (English + 22 Indic languages). Send raw binary PCM frames and receive <code>partial</code> + <code>final</code> results as the speaker talks.</p>
 
               <div class="bs-section">
-                <span class="bs-section-label">Audio formats (dtype)</span>
+                <span class="bs-section-label">Audio format</span>
                 <ul class="bs-best">
-                  <li><code>ulaw</code>: G.711 mu-law (8-bit), Telephony (8 kHz)</li>
-                  <li><code>alaw</code>: G.711 A-law (8-bit), Telephony (8 kHz)</li>
-                  <li><code>int16</code>: 16-bit signed PCM, General recording</li>
-                  <li><code>float32</code>: 32-bit IEEE float, Pre-processed audio</li>
+                  <li>16-bit signed PCM, little-endian, mono</li>
+                  <li>At your declared <code>sample_rate</code> — <code>16000</code> default, <code>8000</code> supported</li>
+                  <li>20–320 ms per frame, paced at roughly realtime</li>
+                  <li>No headers — raw PCM, not WAV/MP3</li>
                 </ul>
               </div>
 
               <div class="bs-section">
                 <span class="bs-section-label">Properties</span>
                 <dl class="bs-props">
-                  <dt>Endpoint</dt><dd><code>wss://asr.shunyalabs.ai/ws</code></dd>
-                  <dt>Init message</dt><dd>JSON config (first frame)</dd>
-                  <dt>Sample rate</dt><dd><code>16000</code> Hz (default)</dd>
-                  <dt>Chunk size</dt><dd><code>2.0</code> s (default)</dd>
-                  <dt>Silence threshold</dt><dd><code>0.8</code> s (default)</dd>
+                  <dt>Endpoint</dt><dd><code>wss://asrv2prod.shunyalabs.ai/v1/realtime</code></dd>
+                  <dt>Alias</dt><dd><code>WS /ws</code> (same behaviour)</dd>
+                  <dt>Init message</dt><dd>JSON config: token, language (required), sample_rate, diarize, num_speakers</dd>
+                  <dt>Auth</dt><dd>token field in first message · <code>?token=</code> · Bearer header</dd>
+                  <dt>End signal</dt><dd>text message <code>end</code></dd>
                 </dl>
               </div>
 
               <div class="bs-section">
                 <span class="bs-section-label">Connection flow</span>
                 <div class="bs-flow">
-                  <span class="bs-step"><span class="bs-step-num">1</span>Connect to /ws</span>
+                  <span class="bs-step"><span class="bs-step-num">1</span>Connect to /v1/realtime</span>
                   <span class="bs-arrow">→</span>
                   <span class="bs-step"><span class="bs-step-num">2</span>Send JSON init</span>
                   <span class="bs-arrow">→</span>
-                  <span class="bs-step"><span class="bs-step-num">3</span>Stream audio frames</span>
+                  <span class="bs-step"><span class="bs-step-num">3</span>Stream PCM frames</span>
                   <span class="bs-arrow">→</span>
-                  <span class="bs-step"><span class="bs-step-num">4</span>Send "END"</span>
-                  <span class="bs-arrow">→</span>
-                  <span class="bs-step"><span class="bs-step-num">5</span>Receive events until done</span>
+                  <span class="bs-step"><span class="bs-step-num">4</span>Send "end"</span>
                 </div>
               </div>
 
@@ -155,12 +152,8 @@
                 <span class="bs-section-label">Server → client events</span>
                 <div class="bs-events">
                   <span class="bs-step">ready</span>
-                  <span class="bs-step">speech_start</span>
                   <span class="bs-step">partial</span>
-                  <span class="bs-step">speech_end</span>
-                  <span class="bs-step">final_segment</span>
-                  <span class="bs-step">end_of_transcript</span>
-                  <span class="bs-step">done</span>
+                  <span class="bs-step">final</span>
                   <span class="bs-step">error</span>
                 </div>
               </div>
@@ -168,47 +161,57 @@
           </div>
         </div>
 
-        <p class="bs-source">Source: Shunyalabs ASR Gateway API Reference (31 March), "Base Call" and "WebSocket Streaming API" sections, reproduced verbatim.</p>
-
         <h2>Pick a model</h2>
         <p>Every request takes a <code>model</code> field. There are four to choose from:</p>
 
         <div class="grid grid-2">
           <div class="card model-pick-card">
             <div class="card-title"><a class="hf-model-link" href="https://huggingface.co/spaces/shunyalabs/Zero-STT-Shunya-Labs" target="_blank" rel="noopener" title="View on Hugging Face"><code>zero-indic</code></a></div>
-            <p class="card-desc">Hindi, Tamil, Telugu, Kannada, Marathi, Bengali and 50+ Indian languages. The default for Indic content.</p>
+            <p class="card-desc">Native handling of Hindi, Tamil, Telugu, Kannada, Marathi, Bengali, and more. The default for Indian-language content.</p>
             <a href="/web_doc/asr/models.html#zero-indic" class="card-cta">View model <span class="card-cta-arrow">→</span></a>
           </div>
           <div class="card model-pick-card">
             <div class="card-title"><a class="hf-model-link" href="https://huggingface.co/shunyalabs/pingala-v1-universal" target="_blank" rel="noopener" title="View on Hugging Face"><code>zero-universal</code></a></div>
-            <p class="card-desc">204-language Whisper-class model. English, European, Asian, African. Auto-detects language when you don't know it.</p>
+            <p class="card-desc">Strongest on English and international content. Use when the input could be anything — set <code>language_code=auto</code>.</p>
             <a href="/web_doc/asr/models.html#zero-universal" class="card-cta">View model <span class="card-cta-arrow">→</span></a>
           </div>
           <div class="card model-pick-card">
             <div class="card-title"><a class="hf-model-link" href="https://huggingface.co/spaces/shunyalabs/Zero_STT_Med_Shunya_Labs" target="_blank" rel="noopener" title="View on Hugging Face"><code>zero-med</code></a></div>
-            <p class="card-desc">Clinical / medical speech with drug, procedure, and diagnosis vocabulary. HIPAA-cleared. Auto-applies medical terminology correction.</p>
+            <p class="card-desc">Clinical / medical speech with drug, procedure, and diagnosis vocabulary. Auto-applies medical terminology correction.</p>
             <a href="/web_doc/asr/models.html#zero-med" class="card-cta">View model <span class="card-cta-arrow">→</span></a>
           </div>
           <div class="card model-pick-card">
             <div class="card-title"><a class="hf-model-link" href="https://huggingface.co/shunyalabs/zero-stt-hinglish" target="_blank" rel="noopener" title="View on Hugging Face"><code>zero-codeswitch</code></a></div>
-            <p class="card-desc">Native handling of mixed Hindi-English (Hinglish), Tamil-English (Tanglish) and similar blends. Gemini-backed code-switch restoration.</p>
+            <p class="card-desc">Native handling of mixed Hindi-English (Hinglish), Tamil-English (Tanglish) and similar blends. Restores English words to Latin script.</p>
             <a href="/web_doc/asr/models.html#zero-codeswitch" class="card-cta">View model <span class="card-cta-arrow">→</span></a>
           </div>
         </div>
 
         <h2>Your first request</h2>
-        <p>Minimum viable: file, model, bearer token.</p>
-<pre><code>curl -X POST https://asr.shunyalabs.ai/v1/audio/transcriptions \
-  -H "Authorization: Bearer $SHUNYALABS_API_KEY" \
-  -F "file=@meeting.wav" \
-  -F "model=zero-indic"</code></pre>
+        <p>Minimum viable: mint a token, then transcribe a file.</p>
+<pre><code># 1. Exchange your API key for a short-lived access token
+curl --location --request POST 'https://asrv2prod.shunyalabs.ai/auth/token' \
+  --header 'accept: application/json' \
+  --header 'Authorization: Bearer &lt;API_KEY&gt;'
+
+# 2. Transcribe with the access token
+curl --location 'https://asrv2prod.shunyalabs.ai/v1/audio/transcriptions' \
+  --header 'accept: application/json' \
+  --header 'Authorization: Bearer &lt;ACCESS_TOKEN&gt;' \
+  --form 'file=@"meeting.wav"' \
+  --form 'model=zero-indic'</code></pre>
 
         <p>Or pass a URL instead of uploading a file:</p>
-<pre><code>curl -X POST https://asr.shunyalabs.ai/v1/audio/transcriptions \
-  -H "Authorization: Bearer $SHUNYALABS_API_KEY" \
-  -F "url=https://example.com/call.wav" \
-  -F "model=zero-indic"</code></pre>
+<pre><code>curl --location 'https://asrv2prod.shunyalabs.ai/v1/audio/transcriptions' \
+  --header 'accept: application/json' \
+  --header 'Authorization: Bearer &lt;ACCESS_TOKEN&gt;' \
+  --form 'url=https://example.com/call.wav' \
+  --form 'model=zero-indic'</code></pre>
 
+        <div class="callout callout-info">
+          <div class="callout-title">Token lifetime</div>
+          The access token lasts ~15 minutes. Cache and reuse it for both batch and streaming; re-mint at <code>/auth/token</code> on expiry or a <code>401</code>. <a href="/web_doc/asr/api-reference.html#post-auth-token">Authentication →</a>
+        </div>
 
         <div class="pager">
           <a class="pager-link" href="/web_doc/get-started/faqs.html">

@@ -91,19 +91,6 @@
           <li>Enterprise customers can use SCIM / SSO for key lifecycle automation.</li>
         </ul>
 
-        <h2>Redaction &amp; masking features</h2>
-        <p>Two built-in redaction primitives reduce the blast radius of any transcript leak:</p>
-        <div class="grid grid-2">
-          <div class="card">
-            <div class="card-title"><code>enable_profanity_hashing</code></div>
-            <p class="card-desc">Gemini-based profanity detection. Masks offensive language with <code>****</code>. Works across languages.</p>
-          </div>
-          <div class="card">
-            <div class="card-title"><code>hash_keywords</code></div>
-            <p class="card-desc">Deterministic regex-based masking. Pass a JSON list, <code>["account number","card number","OTP","aadhaar"]</code>: and matches are replaced with <code>****</code> in-place.</p>
-          </div>
-        </div>
-
         <h2>Subprocessors</h2>
         <p>Shunya uses a minimal set of subprocessors for hosting, payments, and observability. The full list is part of the DPA (Data Processing Agreement) supplied to Enterprise customers. Any change to subprocessors is notified in advance.</p>
 

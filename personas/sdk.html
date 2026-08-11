@@ -122,7 +122,7 @@ asyncio.run(main())</code></pre>
         <ul>
           <li><code>background_audio="cafe"</code> + <code>background_volume=0.1</code>: preset ambient mix.</li>
           <li><code>reference_wav</code> + <code>reference_text</code>: voice cloning from a 1-6 second sample.</li>
-          <li><code>word_timestamps=True</code>: per-word timing for captions and alignment (batch only).</li>
+          <li><code>response_format=verbose_json</code> on batch STT: segment and word-level timing for captions and alignment.</li>
         </ul>
 
         <h2>Step 5: Error handling</h2>

@@ -109,7 +109,7 @@ if __name__ == "__main__":
 
         <!-- STT -->
         <h2>STT - <code>ShunyalabsSTTService</code></h2>
-        <p>Real-time streaming speech-to-text over a persistent WebSocket connection. Supports 23 Indian and international languages with optional automatic language detection.</p>
+        <p>Real-time streaming speech-to-text over a persistent WebSocket connection. The language is set in the init message — there is no auto-detect on streaming.</p>
 
         <h3>Parameters</h3>
         <div class="table-wrap">
@@ -119,8 +119,8 @@ if __name__ == "__main__":
             </thead>
             <tbody>
               <tr><td><code>api_key</code></td><td><code>str</code></td><td><code>None</code></td><td>API key. Falls back to <code>SHUNYALABS_API_KEY</code> env var.</td></tr>
-              <tr><td><code>language</code></td><td><code>str</code></td><td><code>"auto"</code></td><td>Language code (e.g. <code>"en"</code>, <code>"hi"</code>) or <code>"auto"</code> for detection.</td></tr>
-              <tr><td><code>url</code></td><td><code>str</code></td><td><code>wss://asr.shunyalabs.ai/ws</code></td><td>WebSocket endpoint URL.</td></tr>
+              <tr><td><code>language</code></td><td><code>str</code></td><td><code>None</code></td><td>Required. Language code (e.g. <code>"en"</code>, <code>"hi"</code>). No auto-detect on streaming.</td></tr>
+              <tr><td><code>url</code></td><td><code>str</code></td><td><code>wss://asrv2prod.shunyalabs.ai/v1/realtime</code></td><td>WebSocket endpoint URL.</td></tr>
               <tr><td><code>sample_rate</code></td><td><code>int</code></td><td><code>16000</code></td><td>Expected audio sample rate in Hz. Must match transport input.</td></tr>
             </tbody>
           </table>
@@ -133,9 +133,8 @@ if __name__ == "__main__":
               <tr><th>Shunyalabs event</th><th>Pipecat frame</th></tr>
             </thead>
             <tbody>
-              <tr><td><code>PARTIAL</code></td><td><code>InterimTranscriptionFrame</code> - emitted continuously as speech is recognised</td></tr>
-              <tr><td><code>FINAL_SEGMENT</code></td><td><code>TranscriptionFrame</code> - emitted at speech segment boundary</td></tr>
-              <tr><td><code>FINAL</code></td><td><code>TranscriptionFrame</code> - emitted when full utterance is finalised</td></tr>
+              <tr><td><code>partial</code></td><td><code>InterimTranscriptionFrame</code> - emitted continuously as speech is recognised</td></tr>
+              <tr><td><code>final</code></td><td><code>TranscriptionFrame</code> - emitted when the segment is finalised</td></tr>
             </tbody>
           </table>
         </div>
@@ -145,7 +144,7 @@ if __name__ == "__main__":
           <pre><code>from pipecat_shunyalabs import ShunyalabsSTTService
 
 stt = ShunyalabsSTTService(
-    language="hi",       # Hindi; use "auto" for detection
+    language="hi",       # required — no auto-detect on streaming
     sample_rate=16000,
 )</code></pre>
         </div>
@@ -311,7 +310,7 @@ tts = ShunyalabsTTSService(voice="Varun", language="en", style="&lt;News&gt;")</
             <thead><tr><th>Symptom</th><th>Resolution</th></tr></thead>
             <tbody>
               <tr><td><code>AuthenticationError</code> on startup</td><td>Verify <code>SHUNYALABS_API_KEY</code> is set and valid.</td></tr>
-              <tr><td>WebSocket connection refused</td><td>Ensure outbound WSS (port 443) is open to <code>asr.shunyalabs.ai</code> and <code>tts.shunyalabs.ai</code>.</td></tr>
+              <tr><td>WebSocket connection refused</td><td>Ensure outbound WSS (port 443) is open to <code>asrv2prod.shunyalabs.ai</code> and <code>tts.shunyalabs.ai</code>.</td></tr>
               <tr><td>No transcription output</td><td>Check <code>sample_rate</code> matches your transport input. Verify audio source is active.</td></tr>
               <tr><td>TTS audio silent or missing</td><td>Ensure <code>output_format=pcm</code> matches transport output. Verify <code>TTSStartedFrame</code> is received.</td></tr>
               <tr><td>High latency on first TTS chunk</td><td>Deploy closer to the Shunyalabs gateway region (<code>asia-south1</code>).</td></tr>

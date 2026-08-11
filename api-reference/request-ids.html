@@ -16,7 +16,9 @@
           <a href="/web_doc/index.html">Docs</a><span class="sep">/</span><a href="/web_doc/api-reference/index.html">API Reference</a><span class="sep">/</span><span>Request IDs</span>
         </div>
         <h1>Request <span class="accent-italic">IDs</span></h1>
-        <p class="lead">Every response includes <code>request_id</code> (and an <code>X-Request-Id</code> header). Log it, Shunya support uses it to trace issues. On WebSocket, the <code>session_id</code> in the <code>ready</code> event is the equivalent.</p>
+        <p class="lead">Log the <code>request_id</code> from every response — Shunya support uses it to trace issues.</p>
+        <p>For batch transcription with <code>response_format=verbose_json</code>, the response includes a <code>request_id</code> field. Include it when you contact support; it identifies your request in our logs.</p>
+        <p>For a streaming session (<code>WS /v1/realtime</code>), there is no session ID in the <code>ready</code> event. Instead, quote the <strong>UTC time</strong>, <strong>language</strong>, and <strong>approximate call duration</strong> when you contact support.</p>
       </div>
       <aside class="toc" aria-label="On this page"></aside>
     </main>

@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>ASR configuration | Shunya Labs Docs</title>
-  <meta name="description" content="Every ASR parameter explained with defaults, examples, and when to change them.">
+  <meta name="description" content="Every parameter you can pass to POST /v1/audio/transcriptions: audio source, model, language, diarization, and response format.">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@1,500;1,600;1,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/web_doc/assets/css/main.css?v=37">
   <script src="/web_doc/assets/js/theme.js"></script>
@@ -17,214 +17,110 @@
           <a href="/web_doc/index.html">Docs</a><span class="sep">/</span><span>Speech-to-Text</span><span class="sep">/</span><span>Configuration</span>
         </div>
         <h1>ASR <span class="accent-italic">configuration</span></h1>
-        <p class="lead">Every parameter you can pass to <code>POST /v1/audio/transcriptions</code>, in one place. Two are required (<code>file</code> or <code>url</code>, and <code>model</code>); the rest have safe defaults.</p>
+        <p class="lead">Every parameter you can pass to <code>POST /v1/audio/transcriptions</code>, in one place. Only the audio source is required; everything else has a documented default. Authenticate with the access token from <code>POST /auth/token</code> — never your raw API key.</p>
 
-        <h2 id="required">Required</h2>
+        <h2 id="audio-source">Audio source</h2>
+        <p>Send exactly one of these three fields. The file size limit is <strong>50 MB</strong>.</p>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+            <thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
             <tbody>
-              <tr><td><code>file</code></td><td>file upload</td><td>Audio file (WAV, MP3, M4A, OGG, FLAC, WebM). One of <code>file</code> or <code>url</code> required.</td></tr>
-              <tr><td><code>url</code></td><td>string</td><td>Public audio URL. Can't be combined with <code>file</code>.</td></tr>
-              <tr><td><code>model</code></td><td>string</td><td>One of <a class="hf-model-link" href="https://huggingface.co/spaces/shunyalabs/Zero-STT-Shunya-Labs" target="_blank" rel="noopener" title="View on Hugging Face"><code>zero-indic</code></a>, <a class="hf-model-link" href="https://huggingface.co/shunyalabs/pingala-v1-universal" target="_blank" rel="noopener" title="View on Hugging Face"><code>zero-universal</code></a>, <a class="hf-model-link" href="https://huggingface.co/spaces/shunyalabs/Zero_STT_Med_Shunya_Labs" target="_blank" rel="noopener" title="View on Hugging Face"><code>zero-med</code></a>, <a class="hf-model-link" href="https://huggingface.co/shunyalabs/zero-stt-hinglish" target="_blank" rel="noopener" title="View on Hugging Face"><code>zero-codeswitch</code></a>.</td></tr>
+              <tr><td><code>file</code></td><td>file</td><td>one of <code>file</code>/<code>audio_base64</code>/<code>url</code></td><td>Audio file (wav, mp3, flac, ogg/opus). Max 50 MB.</td></tr>
+              <tr><td><code>audio_base64</code></td><td>string</td><td>—</td><td>Base64 audio instead of a file upload.</td></tr>
+              <tr><td><code>url</code></td><td>string</td><td>—</td><td>URL to fetch the audio from.</td></tr>
             </tbody>
           </table>
         </div>
 
-        <h2 id="language-output">Language &amp; output</h2>
+        <h2 id="model">Model</h2>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Parameter</th><th>Type, default</th><th>Description</th></tr></thead>
+            <thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
             <tbody>
               <tr>
-                <td><code>language_code</code></td>
-                <td>string, <code>"auto"</code></td>
-                <td>Language hint. ISO 639-1 (<code>hi</code>, <code>ta</code>, <code>kn</code>, <code>bn</code>, <code>mr</code>, <code>te</code>, <code>gu</code>, <code>pa</code>, <code>ml</code>, <code>or</code>, <code>ur</code>, <code>en</code>) or full name (<code>Hindi</code>, <code>Tamil</code>). Use <code>auto</code> to detect.</td>
-              </tr>
-              <tr>
-                <td><code>response_format</code></td>
-                <td>string, <code>"verbose_json"</code></td>
-                <td><code>verbose_json</code> for full response (segments, NLP, timing, language). <code>json</code> for minimal <code>{"text": "..."}</code>: OpenAI-compatible.</td>
-              </tr>
-              <tr>
-                <td><code>output_script</code></td>
-                <td>string, <code>"auto"</code></td>
-                <td>Transliterate to a different script without changing language. <code>Devanagari</code>, <code>Bengali</code>, <code>Telugu</code>, <code>Tamil</code>, <code>Kannada</code>, <code>Latin</code>, <code>ITRANS</code>. Powered by <a href="https://aksharamukha.appspot.com/" target="_blank" rel="noopener">aksharamukha</a>, no LLM, no latency cost.</td>
-              </tr>
-              <tr>
-                <td><code>output_language</code></td>
-                <td>string, none</td>
-                <td>Translate the transcript via Gemini. Result lives in <code>nlp_analysis.translation</code>. Accepts ISO codes or full names. For script change only, use <code>output_script</code>.</td>
+                <td><code>model</code></td>
+                <td>string</td>
+                <td>no</td>
+                <td>ASR model — e.g. <a class="hf-model-link" href="https://huggingface.co/spaces/shunyalabs/Zero-STT-Shunya-Labs" target="_blank" rel="noopener" title="View on Hugging Face"><code>zero-indic</code></a>, <a class="hf-model-link" href="https://huggingface.co/shunyalabs/pingala-v1-universal" target="_blank" rel="noopener" title="View on Hugging Face"><code>zero-universal</code></a>, <a class="hf-model-link" href="https://huggingface.co/spaces/shunyalabs/Zero_STT_Med_Shunya_Labs" target="_blank" rel="noopener" title="View on Hugging Face"><code>zero-med</code></a>, <a class="hf-model-link" href="https://huggingface.co/shunyalabs/zero-stt-hinglish" target="_blank" rel="noopener" title="View on Hugging Face"><code>zero-codeswitch</code></a>. Defaults to the account model. <a href="/web_doc/asr/models.html">Model guide →</a></td>
               </tr>
             </tbody>
           </table>
         </div>
+
+        <h2 id="language">Language</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><code>language_code</code></td><td>string</td><td>no</td><td>Language (e.g. <code>en</code>, <code>hi</code>) or <code>auto</code> to detect. Default <code>auto</code>.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2 id="diarization">Diarization</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><code>diarize</code></td><td>boolean</td><td>no</td><td>Return per-speaker segments. Default <code>false</code>.</td></tr>
+              <tr><td><code>num_speakers</code></td><td>integer</td><td>no</td><td>Hint for the number of speakers (improves diarization).</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p><strong>Example: transcribe with per-speaker labels and a speaker count hint:</strong></p>
+<pre><code class="language-bash">curl --location 'https://asrv2prod.shunyalabs.ai/v1/audio/transcriptions' \
+  --header 'accept: application/json' \
+  --header 'Authorization: Bearer &lt;ACCESS_TOKEN&gt;' \
+  --form 'file=@"call.wav"' \
+  --form 'language_code=hi' \
+  --form 'diarize=true' \
+  --form 'num_speakers=2'</code></pre>
+        <p class="text-muted">With <code>response_format=verbose_json</code>, each <code>segment</code> carries a <code>speaker</code> label (<code>SPEAKER_00</code>, …), and the response includes <code>speakers</code> and <code>speaker_turns</code>.</p>
+
+        <h2 id="output">Output format</h2>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><code>response_format</code></td><td>string</td><td>no</td><td><code>json</code> (default) or <code>verbose_json</code>.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p><code>json</code> returns just the transcript:</p>
+<pre><code class="language-json">{ "text": "the transcribed text" }</code></pre>
+        <p><code>verbose_json</code> adds timing, segments, words, and — when <code>diarize=true</code> — speakers:</p>
+<pre><code class="language-json">{
+  "text": "the transcribed text",
+  "audio_duration": 8.0,
+  "inference_time_ms": 116.6,
+  "request_id": "c1a686efeedf",
+  "success": true,
+  "segments": [ { "start": 0.0, "end": 2.4, "text": "…", "speaker": "SPEAKER_00" } ],
+  "words":    [ { "word": "…", "start": 0.0, "end": 0.3 } ],
+  "speakers": [ "SPEAKER_00", "SPEAKER_01" ],
+  "speaker_turns": [ { "start": 0.0, "end": 2.4, "speaker": "SPEAKER_00" } ]
+}</code></pre>
 
         <div class="callout callout-info">
-          <div class="callout-title">Why setting <code>language_code</code> matters</div>
-          On clips &lt; 5 seconds, language detection is error-prone and the model can "translate" instead of transcribe. Locking the language avoids both.
+          <div class="callout-title">NLP: intent, summary, sentiment</div>
+          Transcript-level NLP (intent detection, summarization, sentiment analysis) is not a transcription flag — it runs on the separate <code>POST /v1/speechintelligence</code> endpoint with the text as input. <a href="/web_doc/intelligence/overview.html">Speech Intelligence →</a>
         </div>
 
-        <p><strong>Example: transcribe Hindi audio and romanise the script to Latin:</strong></p>
-<pre><code class="language-bash">curl -X POST https://asr.shunyalabs.ai/v1/audio/transcriptions \
-  -H "Authorization: Bearer $SHUNYALABS_API_KEY" \
-  -F "file=@hindi-call.wav" \
-  -F "model=zero-indic" \
-  -F "language_code=hi" \
-  -F "output_script=Latin"</code></pre>
-        <p class="text-muted">Returns: <code>"namaste mohammad ji ye ek zaruri call hai"</code> (Hindi pronunciation, written in Latin letters).</p>
+        <h2 id="realtime">Realtime streaming fields</h2>
+        <p>The realtime endpoint (<code>WS /v1/realtime</code>) takes a different init set: <code>token</code>, <strong>required <code>language</code></strong> (no auto-detect), <code>sample_rate</code> (default <code>16000</code>, <code>8000</code> supported), <code>diarize</code>, and <code>num_speakers</code>. <a href="/web_doc/asr/streaming.html">Streaming guide →</a></p>
 
-        <h2 id="audio-pre-processing">Audio pre-processing</h2>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Parameter</th><th>Type, default</th><th>Description</th></tr></thead>
-            <tbody>
-              <tr>
-                <td><code>use_vad_chunking</code></td>
-                <td>bool, <code>true</code></td>
-                <td>Split audio at natural speech pauses using Voice Activity Detection. Silence is stripped before the model sees it. Set <code>false</code> only for continuous dictation with no pauses.</td>
-              </tr>
-              <tr>
-                <td><code>chunk_size</code></td>
-                <td>int seconds, <code>30</code></td>
-                <td>Applies when <code>use_vad_chunking=false</code>. Range 1-60. Sets a fixed segment length.</td>
-              </tr>
-              <tr>
-                <td><code>enable_denoising</code></td>
-                <td>bool, <code>false</code></td>
-                <td>Runs noise reduction before transcription. Skipped automatically for files &gt; 5 MB to avoid latency. Use for call-centre and field recordings.</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <h2 id="segmentation-alignment">Segmentation &amp; alignment</h2>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Parameter</th><th>Type, default</th><th>Description</th></tr></thead>
-            <tbody>
-              <tr>
-                <td><code>word_timestamps</code></td>
-                <td>bool, <code>false</code></td>
-                <td>Adds per-word <code>start</code>, <code>end</code>, and <code>score</code> to every segment. Uses CTC forced alignment on an ONNX model, runs on GPU, no external call.</td>
-              </tr>
-              <tr>
-                <td><code>enable_diarization</code></td>
-                <td>bool, <code>false</code></td>
-                <td>Speaker-level segmentation. Every segment gets a <code>speaker: SPEAKER_XX</code> label; the top-level transcript is prefixed with speaker tags; <code>speakers</code> array lists all unique speakers detected. Segments are capped at 30 s each for quality.</td>
-              </tr>
-              <tr>
-                <td><code>enable_speaker_identification</code> + <code>project</code></td>
-                <td>bool, <code>false</code></td>
-                <td>Resolves anonymous <code>SPEAKER_XX</code> labels to registered names. Requires <code>enable_diarization=true</code> and pre-registered voice profiles. <code>project</code> scopes the speaker library, useful for per-customer isolation. <a href="/web_doc/asr/api-reference.html#speakers">Speaker registration API →</a></td>
-              </tr>
-              <tr>
-                <td><code>enable_emotion_diarization</code></td>
-                <td>bool, <code>false</code></td>
-                <td>Detects the dominant emotion in each segment and adds an <code>emotion</code> field. Works alongside standard diarization.</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <h2 id="intelligence-layer">Intelligence layer</h2>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Parameter</th><th>Type, default</th><th>Description</th></tr></thead>
-            <tbody>
-              <tr>
-                <td><code>enable_intent_detection</code> + <code>intent_choices</code></td>
-                <td>bool, <code>false</code></td>
-                <td>Classifies the overall transcript intent via Gemini. Optionally constrain to a list of allowed intents with <code>intent_choices</code> (JSON array). Result in <code>nlp_analysis.intent</code>: <code>label</code>, <code>confidence</code>, <code>reasoning</code>.</td>
-              </tr>
-              <tr>
-                <td><code>enable_summarization</code> + <code>summary_max_length</code></td>
-                <td>bool, <code>false</code></td>
-                <td>Generates a concise transcript summary via Gemini. <code>summary_max_length</code> is an approximate word count (default 150). Result in <code>nlp_analysis.summary</code>.</td>
-              </tr>
-              <tr>
-                <td><code>enable_sentiment_analysis</code></td>
-                <td>bool, <code>false</code></td>
-                <td>Returns <code>nlp_analysis.sentiment</code> with a <code>label</code> (positive/negative/neutral), a numeric <code>score</code>, and a short <code>explanation</code>.</td>
-              </tr>
-              <tr>
-                <td><code>enable_keyterm_normalization</code> + <code>keyterm_keywords</code></td>
-                <td>bool, <code>false</code></td>
-                <td>Normalises domain-specific terms the ASR model might render informally. Optionally focus on specific terms with <code>keyterm_keywords</code> (JSON array). Output preserves the original language. Result in <code>nlp_analysis.normalized_text</code>.</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <p><strong>Example: classify the call into one of four intents:</strong></p>
-<pre><code class="language-bash">curl -X POST https://asr.shunyalabs.ai/v1/audio/transcriptions \
-  -H "Authorization: Bearer $SHUNYALABS_API_KEY" \
-  -F "file=@call.wav" \
-  -F "model=zero-indic" \
-  -F "enable_intent_detection=true" \
-  -F 'intent_choices=["complaint","inquiry","service_request","compliment"]'</code></pre>
-
-        <h2 id="redaction">Redaction</h2>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Parameter</th><th>Type, default</th><th>Description</th></tr></thead>
-            <tbody>
-              <tr>
-                <td><code>enable_profanity_hashing</code></td>
-                <td>bool, <code>false</code></td>
-                <td>Replaces profane words with <code>****</code> in-place in both <code>segments[].text</code> and the top-level <code>text</code>. Uses Gemini for detection.</td>
-              </tr>
-              <tr>
-                <td><code>hash_keywords</code></td>
-                <td>JSON array, none</td>
-                <td>Masks a specific list of words/phrases using regex (case-insensitive, no LLM). Independent of profanity hashing. Use for account numbers, card numbers, OTP, and any custom sensitive terms.</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <p><strong>Example: mask account numbers, card numbers, and OTPs in the transcript:</strong></p>
-<pre><code class="language-bash">curl -X POST https://asr.shunyalabs.ai/v1/audio/transcriptions \
-  -H "Authorization: Bearer $SHUNYALABS_API_KEY" \
-  -F "file=@call.wav" \
-  -F "model=zero-indic" \
-  -F 'hash_keywords=["account number","card number","OTP"]'</code></pre>
-
-        <h2 id="legacy-compatibility">Legacy / compatibility</h2>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Parameter</th><th>Type, default</th><th>Description</th></tr></thead>
-            <tbody>
-              <tr>
-                <td><code>task</code></td>
-                <td>string, <code>"transcribe"</code></td>
-                <td>OpenAI-compatible field. Only <code>"transcribe"</code> is supported today.</td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <h2>Putting it all together</h2>
-<pre><code>curl -X POST https://asr.shunyalabs.ai/v1/audio/transcriptions \
-  -H "Authorization: Bearer $SHUNYALABS_API_KEY" \
-  -F "file=@call.wav" \
-  -F "model=zero-indic" \
-  -F "language_code=hi" \
-  -F "enable_diarization=true" \
-  -F "enable_speaker_identification=true" \
-  -F "project=support_team" \
-  -F "enable_emotion_diarization=true" \
-  -F "word_timestamps=true" \
-  -F "enable_intent_detection=true" \
-  -F 'intent_choices=["complaint","inquiry","service_request"]' \
-  -F "enable_summarization=true" \
-  -F "enable_sentiment_analysis=true" \
-  -F "enable_denoising=true"</code></pre>
-
-        <div class="callout callout-success">
-          <div class="callout-title">A sane default set</div>
-          For a contact-centre transcription with agent-assist, start with: <code>model=zero-indic</code>, <code>enable_diarization=true</code>, <code>enable_intent_detection=true</code>, <code>enable_sentiment_analysis=true</code>. Add <code>word_timestamps=true</code> if you need precise search.
-        </div>
+        <h2 id="putting-it-together">Putting it all together</h2>
+<pre><code>curl --location 'https://asrv2prod.shunyalabs.ai/v1/audio/transcriptions' \
+  --header 'accept: application/json' \
+  --header 'Authorization: Bearer &lt;ACCESS_TOKEN&gt;' \
+  --form 'file=@"call.wav"' \
+  --form 'model=zero-indic' \
+  --form 'language_code=hi' \
+  --form 'diarize=true' \
+  --form 'num_speakers=2' \
+  --form 'response_format=verbose_json'</code></pre>
+        <p class="text-muted"><code>&lt;ACCESS_TOKEN&gt;</code> is the short-lived token returned by <code>POST /auth/token</code>. Cache and reuse it until just before <code>expires_at</code>; re-mint on expiry or a <code>401</code>.</p>
 
         <div class="pager">
           <a class="pager-link" href="/web_doc/asr/overview.html">

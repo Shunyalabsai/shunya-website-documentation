@@ -34,40 +34,28 @@
       open: true,
       items: [
         { label: 'Overview', path: '/intelligence/overview.html' },
-        { label: 'How to enable', path: '/intelligence/overview.html#how-to-enable' },
+        { label: 'How to call it', path: '/intelligence/overview.html#how-to-call' },
         { label: 'Combine features', path: '/intelligence/overview.html#combining-features' },
       ],
     },
     {
-      id: 'speakers',
-      heading: 'Speakers & segments',
+      id: 'nlp',
+      heading: 'Speech Intelligence',
       open: true,
       items: [
-        { label: 'Diarization', path: '/intelligence/overview.html#diarization' },
-        { label: 'Speaker identification', path: '/intelligence/overview.html#speaker-identification' },
-        { label: 'Emotion diarization', path: '/intelligence/overview.html#emotion-diarization' },
-        { label: 'Word timestamps', path: '/intelligence/overview.html#word-timestamps' },
-      ],
-    },
-    {
-      id: 'nlp',
-      heading: 'NLP & understanding',
-      open: false,
-      items: [
         { label: 'Intent detection', path: '/intelligence/overview.html#intent-detection' },
-        { label: 'Sentiment analysis', path: '/intelligence/overview.html#sentiment-analysis' },
         { label: 'Summarization', path: '/intelligence/overview.html#summarization' },
-        { label: 'Keyterm normalization', path: '/intelligence/overview.html#keyterm-normalization' },
-        { label: 'Translation (output_language)', path: '/intelligence/overview.html#translation-output-language' },
+        { label: 'Sentiment analysis', path: '/intelligence/overview.html#sentiment-analysis' },
       ],
     },
     {
-      id: 'safety',
-      heading: 'Redaction & safety',
+      id: 'asr-side',
+      heading: 'On the ASR side',
       open: false,
       items: [
-        { label: 'Profanity hashing', path: '/intelligence/overview.html#profanity-hashing' },
-        { label: 'Custom keyword redaction', path: '/intelligence/overview.html#custom-keyword-redaction' },
+        { label: 'Diarization', path: '/asr/features.html#diarization' },
+        { label: 'Word timestamps', path: '/asr/features.html#word-timestamps' },
+        { label: 'Speaker enrolment', path: '/asr/features.html#speaker-enrolment' },
       ],
     },
     {
@@ -75,7 +63,7 @@
       heading: 'More',
       open: false,
       items: [
-        { label: 'Configuration reference', path: '/asr/configuration.html#intelligence-layer' },
+        { label: 'ASR configuration', path: '/asr/configuration.html' },
         { label: 'Full feature reference', path: '/asr/features.html' },
         { label: 'Speech-to-Text overview', path: '/asr/overview.html' },
       ],

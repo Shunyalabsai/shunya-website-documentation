@@ -16,12 +16,42 @@
           <a href="/web_doc/index.html">Docs</a><span class="sep">/</span><a href="/web_doc/api-reference/index.html">API Reference</a><span class="sep">/</span><span>Authentication</span>
         </div>
         <h1>API <span class="accent-italic">authentication</span></h1>
-        <p class="lead">All endpoints except <code>/health</code> require a bearer token in the <code>Authorization</code> header. The same API key works for ASR and TTS.</p>
+        <p class="lead">ASR authenticates with a short-lived <strong>access token</strong> minted from your API key; TTS authenticates with the API key directly.</p>
 
         <h2 class="product-chapter">Speech-to-Text <span class="accent-italic">(ASR)</span></h2>
-        <div class="code-group">
-          <div class="code-panel active"><pre><code class="language-http">Authorization: Bearer $SHUNYALABS_API_KEY</code></pre></div>
+        <p>You use your API key <strong>once</strong> to obtain a short-lived access token at <code>POST /auth/token</code>, then send that token on every ASR request. Do not send your API key to the transcription endpoints.</p>
+
+        <p><strong>1. Mint a token:</strong></p>
+<pre><code class="language-bash">curl --location --request POST 'https://asrv2prod.shunyalabs.ai/auth/token' \
+  --header 'accept: application/json' \
+  --header 'Authorization: Bearer &lt;API_KEY_GENERATED_IN_DASHBOARD&gt;'</code></pre>
+
+        <p><strong>Response</strong> <code>200 OK</code>:</p>
+<pre><code class="language-json">{ "token": "&lt;access_token&gt;", "expires_at": 1784745886, "expires_in": 900 }</code></pre>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><code>token</code></td><td>string</td><td>The access token to use on ASR requests.</td></tr>
+              <tr><td><code>expires_at</code></td><td>integer</td><td>Unix time when the token expires.</td></tr>
+              <tr><td><code>expires_in</code></td><td>integer</td><td>Seconds until expiry (typically 900 = 15 min).</td></tr>
+            </tbody>
+          </table>
         </div>
+
+        <p><strong>2. Use the token on every ASR request:</strong></p>
+<pre><code class="language-bash">curl --location 'https://asrv2prod.shunyalabs.ai/v1/audio/transcriptions' \
+  --header 'accept: application/json' \
+  --header 'Authorization: Bearer &lt;access_token&gt;' \
+  --form 'file=@"audio.wav"'</code></pre>
+
+        <div class="callout callout-info">
+          <div class="callout-title">Token usage</div>
+          The same access token authenticates batch (<code>POST /v1/audio/transcriptions</code>), realtime (<code>WS /v1/realtime</code>), Speech Intelligence (<code>POST /v1/speechintelligence</code>), and speaker enrolment. Cache and reuse it until shortly before <code>expires_at</code>; re-mint on expiry or a <code>401</code>. Mint errors: <code>400</code> (no key supplied), <code>401</code> (invalid key), <code>402</code> (insufficient balance), <code>429</code> (too many requests).
+        </div>
+
+        <p><a href="/web_doc/asr/api-reference.html#post-auth-token">Full ASR API reference →</a></p>
 
         <h2 class="product-chapter">Text-to-Speech <span class="accent-italic">(TTS)</span></h2>
         <p>Same API key works for both transports. Pick the tab for the protocol you're using.</p>

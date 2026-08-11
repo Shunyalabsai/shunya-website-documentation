@@ -42,7 +42,7 @@
         </div>
 
         <h2>2. Transcribe an audio file</h2>
-        <p>Send audio to <code>POST /v1/audio/transcriptions</code>. The response is a JSON object with the transcript and per-segment timestamps.</p>
+        <p>ASR authenticates with a short-lived <strong>access token</strong> — exchange your API key once at <code>POST /auth/token</code>, then send the token on every request. Never send your API key to the transcription endpoints.</p>
 
         <div class="code-group">
           <div class="code-tabs" role="tablist">
@@ -53,8 +53,16 @@
           </div>
           <div class="code-panel active">
             <div class="code-header"><span>shell</span><button class="copy-btn">Copy</button></div>
-            <pre><code class="language-bash">curl -X POST https://asr.shunyalabs.ai/v1/audio/transcriptions \
-  -H "Authorization: Bearer $SHUNYALABS_API_KEY" \
+            <pre><code class="language-bash"># 1. Mint an access token (POST /auth/token)
+curl --request POST 'https://asrv2prod.shunyalabs.ai/auth/token' \
+  --header 'accept: application/json' \
+  --header "Authorization: Bearer $SHUNYALABS_API_KEY"
+# → { "token": "&lt;access_token&gt;", "expires_at": ..., "expires_in": 900 }
+
+# 2. Transcribe with the token
+export ACCESS_TOKEN="&lt;access_token&gt;"
+curl -X POST https://asrv2prod.shunyalabs.ai/v1/audio/transcriptions \
+  -H "Authorization: Bearer $ACCESS_TOKEN" \
   -F "file=@meeting.wav" \
   -F "model=zero-indic"</code></pre>
           </div>
@@ -62,10 +70,17 @@
             <div class="code-header"><span>python</span><button class="copy-btn">Copy</button></div>
             <pre><code class="language-python">import os, requests
 
+# 1. Mint an access token (POST /auth/token)
+token = requests.post(
+    "https://asrv2prod.shunyalabs.ai/auth/token",
+    headers={"Authorization": f"Bearer {os.environ['SHUNYALABS_API_KEY']}"},
+).json()["token"]
+
+# 2. Transcribe with the token
 with open("meeting.wav", "rb") as f:
     r = requests.post(
-        "https://asr.shunyalabs.ai/v1/audio/transcriptions",
-        headers={"Authorization": f"Bearer {os.environ['SHUNYALABS_API_KEY']}"},
+        "https://asrv2prod.shunyalabs.ai/v1/audio/transcriptions",
+        headers={"Authorization": f"Bearer {token}"},
         files={"file": f},
         data={"model": "zero-indic"},
     )
@@ -76,13 +91,21 @@ print(r.json()["text"])</code></pre>
             <div class="code-header"><span>node</span><button class="copy-btn">Copy</button></div>
             <pre><code class="language-javascript">import fs from "node:fs";
 
+// 1. Mint an access token (POST /auth/token)
+const tokenResp = await fetch("https://asrv2prod.shunyalabs.ai/auth/token", {
+  method: "POST",
+  headers: { Authorization: `Bearer ${process.env.SHUNYALABS_API_KEY}` },
+});
+const { token } = await tokenResp.json();
+
+// 2. Transcribe with the token
 const form = new FormData();
 form.append("file", new Blob([fs.readFileSync("meeting.wav")]), "meeting.wav");
 form.append("model", "zero-indic");
 
-const r = await fetch("https://asr.shunyalabs.ai/v1/audio/transcriptions", {
+const r = await fetch("https://asrv2prod.shunyalabs.ai/v1/audio/transcriptions", {
   method: "POST",
-  headers: { Authorization: `Bearer ${process.env.SHUNYALABS_API_KEY}` },
+  headers: { Authorization: `Bearer ${token}` },
   body: form,
 });
 const data = await r.json();
@@ -90,11 +113,19 @@ console.log(data.text);</code></pre>
           </div>
           <div class="code-panel">
             <div class="code-header"><span>openai SDK</span><button class="copy-btn">Copy</button></div>
-            <pre><code class="language-python">from openai import OpenAI
+            <pre><code class="language-python">import os, requests
+from openai import OpenAI
 
+# 1. Mint an access token (POST /auth/token)
+token = requests.post(
+    "https://asrv2prod.shunyalabs.ai/auth/token",
+    headers={"Authorization": f"Bearer {os.environ['SHUNYALABS_API_KEY']}"},
+).json()["token"]
+
+# 2. Transcribe with the token
 client = OpenAI(
-    api_key=os.environ["SHUNYALABS_API_KEY"],
-    base_url="https://asr.shunyalabs.ai/v1",
+    api_key=token,
+    base_url="https://asrv2prod.shunyalabs.ai/v1",
 )
 r = client.audio.transcriptions.create(
     model="zero-indic",
@@ -105,16 +136,14 @@ print(r.text)</code></pre>
         </div>
 
         <h3>Response</h3>
+        <p>Default <code>response_format=json</code> returns just the transcript; use <code>response_format=verbose_json</code> for segments, words, and timing:</p>
 <pre><code class="language-json">{
-  "success": true,
-  "request_id": "b3f1a2c4-...",
   "text": "नमस्ते मोहम्मद जी, ये एक ज़रूरी कॉल है।",
-  "segments": [
-    { "start": 0.51, "end": 5.70, "text": "नमस्ते मोहम्मद जी..." }
-  ],
-  "detected_language": "Hindi",
   "audio_duration": 5.7,
-  "inference_time_ms": 812.3
+  "inference_time_ms": 812.3,
+  "request_id": "c1a686efeedf",
+  "success": true,
+  "segments": [ { "start": 0.51, "end": 5.70, "text": "नमस्ते मोहम्मद जी..." } ]
 }</code></pre>
 
         <h2>3. Generate speech</h2>

@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Intelligence | Shunya Labs Docs</title>
-  <meta name="description" content="Diarization, intent, sentiment, summarization, redaction, and more on top of Zero STT, enable with a flag, see examples for each feature.">
+  <meta name="description" content="Speech Intelligence: intent detection, summarization, and sentiment analysis over text via POST /v1/speechintelligence.">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@1,500;1,600;1,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/web_doc/assets/css/main.css?v=43">
   <script src="/web_doc/assets/js/theme.js"></script>
@@ -16,203 +16,63 @@
         <div class="breadcrumb">
           <a href="/web_doc/index.html">Docs</a><span class="sep">/</span><span>Intelligence</span>
         </div>
-        <h1>Intelligence <span class="accent-italic">Layer</span></h1>
-        <p class="lead">Optional capabilities on top of Zero STT. Turn each one on with a boolean flag on the same transcription request, results come back in the same JSON as your transcript. Mix and match freely.</p>
+        <h1>Speech <span class="accent-italic">Intelligence</span></h1>
+        <p class="lead">NLP analysis over text — intent, summary, sentiment, key terms, and more — via the <code>POST /v1/speechintelligence</code> endpoint. Feed it a transcript (or any text) and get the analysis back in one JSON response.</p>
 
         <div class="callout callout-info">
-          <div class="callout-title">Works with batch ASR today</div>
-          Add flags to <code>POST https://asr.shunyalabs.ai/v1/audio/transcriptions</code>. Every example below uses that endpoint unless noted.
+          <div class="callout-title">Endpoint &amp; auth</div>
+          <code>POST https://asrv2prod.shunyalabs.ai/v1/speechintelligence</code> · <code>application/json</code> · authenticated with the <strong>access token</strong> from <code>POST /auth/token</code> as <code>Authorization: Bearer &lt;ACCESS_TOKEN&gt;</code>. Errors: <code>400</code> (text required), <code>401</code>/<code>403</code> (auth), <code>503</code> (analysis unavailable).
         </div>
 
-        <h2 id="how-to-enable">How to enable</h2>
-        <p>Pick a feature below, copy the flag into your request, and open <strong>Show request &amp; response</strong> on the card for a ready-to-run example.</p>
+        <h2 id="how-to-call">How to call it</h2>
+        <p>Send the <code>text</code> to analyse plus the <code>enable_*</code> flags for the capabilities you want. All flags are optional and combine freely. The result lives in the <code>analysis</code> object of the response.</p>
         <ol>
-          <li>Send your audio file (or URL) with <code>model=zero-indic</code> (or another Zero STT model).</li>
-          <li>Add one or more <code>enable_*</code> fields, all are optional.</li>
-          <li>Read enriched fields on the response: <code>segments</code>, <code>speakers</code>, <code>nlp_analysis</code>, and more.</li>
+          <li>Get a transcript — from <a href="/web_doc/asr/api-reference.html#post-transcriptions">batch transcription</a> or <a href="/web_doc/asr/api-reference.html#websocket">realtime streaming</a>.</li>
+          <li>POST the <code>text</code> to <code>/v1/speechintelligence</code> with the flags you need.</li>
+          <li>Read <code>analysis.intent</code>, <code>analysis.summary</code>, and <code>analysis.sentiment</code> on the response.</li>
         </ol>
 
         <h2>Jump to a feature</h2>
         <ul class="intel-quick" role="list">
-          <li><a href="#diarization"><span class="intel-quick-num">01</span> Diarization</a></li>
-          <li><a href="#speaker-identification"><span class="intel-quick-num">02</span> Speaker ID</a></li>
-          <li><a href="#emotion-diarization"><span class="intel-quick-num">03</span> Emotion</a></li>
-          <li><a href="#intent-detection"><span class="intel-quick-num">04</span> Intent</a></li>
-          <li><a href="#sentiment-analysis"><span class="intel-quick-num">05</span> Sentiment</a></li>
-          <li><a href="#summarization"><span class="intel-quick-num">06</span> Summary</a></li>
-          <li><a href="#keyterm-normalization"><span class="intel-quick-num">07</span> Keyterms</a></li>
-          <li><a href="#translation-output-language"><span class="intel-quick-num">08</span> Translation</a></li>
-          <li><a href="#profanity-hashing"><span class="intel-quick-num">09</span> Profanity</a></li>
-          <li><a href="#custom-keyword-redaction"><span class="intel-quick-num">10</span> Redaction</a></li>
-          <li><a href="#word-timestamps"><span class="intel-quick-num">11</span> Word times</a></li>
+          <li><a href="#intent-detection"><span class="intel-quick-num">01</span> Intent detection</a></li>
+          <li><a href="#summarization"><span class="intel-quick-num">02</span> Summarization</a></li>
+          <li><a href="#sentiment-analysis"><span class="intel-quick-num">03</span> Sentiment analysis</a></li>
         </ul>
 
         <h2 class="product-chapter">All <span class="accent-italic">features</span></h2>
 
         <div class="intel-grid">
 
-          <article class="intel-card" id="diarization">
-            <header class="intel-card-header">
-              <div class="intel-card-top">
-                <span class="intel-card-num">01</span>
-                <h3 class="intel-card-title">Diarization</h3>
-                <code class="intel-flag intel-flag-enable">enable_diarization=true</code>
-              </div>
-              <p class="intel-card-desc">Who spoke when. Adds <code>speaker: SPEAKER_XX</code> on each segment and a top-level <code>speakers</code> array.</p>
-            </header>
-            <details class="intel-details">
-              <summary>Show request &amp; response</summary>
-              <div class="intel-example-body intel-example-split">
-                <div>
-                  <p class="intel-example-label">Request</p>
-<div class="intel-code-scroll"><pre><code class="language-bash">curl -X POST https://asr.shunyalabs.ai/v1/audio/transcriptions \
-  -H "Authorization: Bearer $SHUNYALABS_API_KEY" \
-  -F "file=@meeting.wav" \
-  -F "model=zero-indic" \
-  -F "enable_diarization=true"</code></pre></div>
-                </div>
-                <div>
-                  <p class="intel-example-label">Response (excerpt)</p>
-<div class="intel-code-scroll"><pre><code class="language-json">{
-  "text": "[SPEAKER_00] नमस्ते... [SPEAKER_01] मैं ठीक हूँ...",
-  "segments": [
-    { "start": 0.5, "end": 3.2, "text": "...", "speaker": "SPEAKER_00" },
-    { "start": 4.1, "end": 6.8, "text": "...", "speaker": "SPEAKER_01" }
-  ],
-  "speakers": ["SPEAKER_00", "SPEAKER_01"]
-}</code></pre></div>
-                </div>
-              </div>
-            </details>
-          </article>
-
-          <article class="intel-card" id="speaker-identification">
-            <header class="intel-card-header">
-              <div class="intel-card-top">
-                <span class="intel-card-num">02</span>
-                <h3 class="intel-card-title">Speaker identification</h3>
-                <code class="intel-flag intel-flag-enable">enable_speaker_identification=true</code>
-              </div>
-              <p class="intel-card-desc">Replace anonymous labels with registered names. Requires diarization and a voice profile per speaker.</p>
-            </header>
-            <details class="intel-details">
-              <summary>Show request &amp; response</summary>
-              <div class="intel-example-body">
-                <p class="intel-note">First register a speaker with a 5-15 s clean clip, then transcribe with <code>project</code> set to your voice library.</p>
-                <div>
-                  <p class="intel-example-label">Register, then transcribe</p>
-<div class="intel-code-scroll"><pre><code class="language-bash">curl -X POST https://asr.shunyalabs.ai/v1/speakers/register \
-  -H "Authorization: Bearer $SHUNYALABS_API_KEY" \
-  -F "name=Priya" -F "file=@priya_sample.wav" -F "project=support_team"
-
-curl -X POST https://asr.shunyalabs.ai/v1/audio/transcriptions \
-  -H "Authorization: Bearer $SHUNYALABS_API_KEY" \
-  -F "file=@call.wav" -F "model=zero-indic" \
-  -F "enable_diarization=true" \
-  -F "enable_speaker_identification=true" \
-  -F "project=support_team"</code></pre></div>
-                </div>
-              </div>
-            </details>
-          </article>
-
-          <article class="intel-card" id="emotion-diarization">
-            <header class="intel-card-header">
-              <div class="intel-card-top">
-                <span class="intel-card-num">03</span>
-                <h3 class="intel-card-title">Emotion diarization</h3>
-                <code class="intel-flag intel-flag-enable">enable_emotion_diarization=true</code>
-              </div>
-              <p class="intel-card-desc">Dominant emotion per segment, e.g. <code>angry</code>, <code>neutral</code>. Works with or without speaker diarization.</p>
-            </header>
-            <details class="intel-details">
-              <summary>Show request &amp; response</summary>
-              <div class="intel-example-body intel-example-split">
-                <div>
-                  <p class="intel-example-label">Request</p>
-<div class="intel-code-scroll"><pre><code class="language-bash">curl -X POST https://asr.shunyalabs.ai/v1/audio/transcriptions \
-  -H "Authorization: Bearer $SHUNYALABS_API_KEY" \
-  -F "file=@call.wav" -F "model=zero-indic" \
-  -F "enable_diarization=true" \
-  -F "enable_emotion_diarization=true"</code></pre></div>
-                </div>
-                <div>
-                  <p class="intel-example-label">Response (excerpt)</p>
-<div class="intel-code-scroll"><pre><code class="language-json">{
-  "segments": [
-    { "speaker": "SPEAKER_00", "emotion": "angry", "text": "..." },
-    { "speaker": "SPEAKER_01", "emotion": "neutral", "text": "..." }
-  ]
-}</code></pre></div>
-                </div>
-              </div>
-            </details>
-          </article>
-
           <article class="intel-card" id="intent-detection">
             <header class="intel-card-header">
               <div class="intel-card-top">
-                <span class="intel-card-num">04</span>
+                <span class="intel-card-num">01</span>
                 <h3 class="intel-card-title">Intent detection</h3>
                 <code class="intel-flag intel-flag-enable">enable_intent_detection=true</code>
               </div>
-              <p class="intel-card-desc">Classify the call into your taxonomy. Optional <code>intent_choices</code> JSON array constrains labels.</p>
+              <p class="intel-card-desc">Classifies the overall intent of the text.</p>
             </header>
             <details class="intel-details">
               <summary>Show request &amp; response</summary>
               <div class="intel-example-body intel-example-split">
                 <div>
                   <p class="intel-example-label">Request</p>
-<div class="intel-code-scroll"><pre><code class="language-bash">curl -X POST https://asr.shunyalabs.ai/v1/audio/transcriptions \
-  -H "Authorization: Bearer $SHUNYALABS_API_KEY" \
-  -F "file=@call.wav" -F "model=zero-indic" \
-  -F "enable_intent_detection=true" \
-  -F 'intent_choices=["complaint","inquiry","service_request"]'</code></pre></div>
+<div class="intel-code-scroll"><pre><code class="language-bash">curl --location 'https://asrv2prod.shunyalabs.ai/v1/speechintelligence' \
+  --header 'accept: application/json' \
+  --header 'Content-Type: application/json' \
+  --header 'Authorization: Bearer &lt;ACCESS_TOKEN&gt;' \
+  --data-raw '{
+    "text": "…",
+    "enable_intent_detection": true
+  }'</code></pre></div>
                 </div>
                 <div>
-                  <p class="intel-example-label">Response (excerpt)</p>
+                  <p class="intel-example-label">Response</p>
 <div class="intel-code-scroll"><pre><code class="language-json">{
-  "nlp_analysis": {
-    "intent": {
-      "label": "service_request",
-      "confidence": 0.92,
-      "reasoning": "Caller is requesting roadside assistance..."
-    }
-  }
-}</code></pre></div>
-                </div>
-              </div>
-            </details>
-          </article>
-
-          <article class="intel-card" id="sentiment-analysis">
-            <header class="intel-card-header">
-              <div class="intel-card-top">
-                <span class="intel-card-num">05</span>
-                <h3 class="intel-card-title">Sentiment analysis</h3>
-                <code class="intel-flag intel-flag-enable">enable_sentiment_analysis=true</code>
-              </div>
-              <p class="intel-card-desc">Overall sentiment of the transcript: label, score (−1 to 1), and a short explanation.</p>
-            </header>
-            <details class="intel-details">
-              <summary>Show request &amp; response</summary>
-              <div class="intel-example-body intel-example-split">
-                <div>
-                  <p class="intel-example-label">Request</p>
-<div class="intel-code-scroll"><pre><code class="language-bash">curl -X POST https://asr.shunyalabs.ai/v1/audio/transcriptions \
-  -H "Authorization: Bearer $SHUNYALABS_API_KEY" \
-  -F "file=@call.wav" -F "model=zero-indic" \
-  -F "enable_sentiment_analysis=true"</code></pre></div>
-                </div>
-                <div>
-                  <p class="intel-example-label">Response (excerpt)</p>
-<div class="intel-code-scroll"><pre><code class="language-json">{
-  "nlp_analysis": {
-    "sentiment": {
-      "label": "negative",
-      "score": -0.72,
-      "explanation": "Customer expresses frustration..."
-    }
+  "success": true,
+  "text": "…",
+  "analysis": {
+    "intent": "…"
   }
 }</code></pre></div>
                 </div>
@@ -223,28 +83,33 @@ curl -X POST https://asr.shunyalabs.ai/v1/audio/transcriptions \
           <article class="intel-card" id="summarization">
             <header class="intel-card-header">
               <div class="intel-card-top">
-                <span class="intel-card-num">06</span>
+                <span class="intel-card-num">02</span>
                 <h3 class="intel-card-title">Summarization</h3>
                 <code class="intel-flag intel-flag-enable">enable_summarization=true</code>
               </div>
-              <p class="intel-card-desc">Short summary of the full transcript. Use <code>summary_max_length</code> for an approximate word cap (default 150).</p>
+              <p class="intel-card-desc">A concise summary of the text.</p>
             </header>
             <details class="intel-details">
               <summary>Show request &amp; response</summary>
               <div class="intel-example-body intel-example-split">
                 <div>
                   <p class="intel-example-label">Request</p>
-<div class="intel-code-scroll"><pre><code class="language-bash">curl -X POST https://asr.shunyalabs.ai/v1/audio/transcriptions \
-  -H "Authorization: Bearer $SHUNYALABS_API_KEY" \
-  -F "file=@call.wav" -F "model=zero-indic" \
-  -F "enable_summarization=true" \
-  -F "summary_max_length=50"</code></pre></div>
+<div class="intel-code-scroll"><pre><code class="language-bash">curl --location 'https://asrv2prod.shunyalabs.ai/v1/speechintelligence' \
+  --header 'accept: application/json' \
+  --header 'Content-Type: application/json' \
+  --header 'Authorization: Bearer &lt;ACCESS_TOKEN&gt;' \
+  --data-raw '{
+    "text": "…",
+    "enable_summarization": true
+  }'</code></pre></div>
                 </div>
                 <div>
-                  <p class="intel-example-label">Response (excerpt)</p>
+                  <p class="intel-example-label">Response</p>
 <div class="intel-code-scroll"><pre><code class="language-json">{
-  "nlp_analysis": {
-    "summary": "Customer called about a vehicle breakdown. Agent confirmed the complaint was registered..."
+  "success": true,
+  "text": "…",
+  "analysis": {
+    "summary": "…"
   }
 }</code></pre></div>
                 </div>
@@ -252,142 +117,37 @@ curl -X POST https://asr.shunyalabs.ai/v1/audio/transcriptions \
             </details>
           </article>
 
-          <article class="intel-card" id="keyterm-normalization">
+          <article class="intel-card" id="sentiment-analysis">
             <header class="intel-card-header">
               <div class="intel-card-top">
-                <span class="intel-card-num">07</span>
-                <h3 class="intel-card-title">Keyterm normalization</h3>
-                <code class="intel-flag intel-flag-enable">enable_keyterm_normalization=true</code>
+                <span class="intel-card-num">03</span>
+                <h3 class="intel-card-title">Sentiment analysis</h3>
+                <code class="intel-flag intel-flag-enable">enable_sentiment_analysis=true</code>
               </div>
-              <p class="intel-card-desc">Fix domain terms the ASR may spell informally, e.g. <code>emi</code> → <code>EMI</code>. Optional <code>keyterm_keywords</code> glossary.</p>
-            </header>
-            <details class="intel-details">
-              <summary>Show request &amp; response</summary>
-              <div class="intel-example-body">
-                <div>
-                  <p class="intel-example-label">Request</p>
-<div class="intel-code-scroll"><pre><code class="language-bash">curl -X POST https://asr.shunyalabs.ai/v1/audio/transcriptions \
-  -H "Authorization: Bearer $SHUNYALABS_API_KEY" \
-  -F "file=@call.wav" -F "model=zero-indic" \
-  -F "enable_keyterm_normalization=true" \
-  -F 'keyterm_keywords=["EMI","NACH mandate","bounce charge"]'</code></pre></div>
-                </div>
-                <p class="intel-note">Normalized text is in <code>nlp_analysis.normalized_text</code>; the original transcript is unchanged.</p>
-              </div>
-            </details>
-          </article>
-
-          <article class="intel-card" id="translation-output-language">
-            <header class="intel-card-header">
-              <div class="intel-card-top">
-                <span class="intel-card-num">08</span>
-                <h3 class="intel-card-title">Translation (<code>output_language</code>)</h3>
-                <code class="intel-flag intel-flag-output">output_language=en</code>
-              </div>
-              <p class="intel-card-desc">Translate the full transcript after ASR. ISO code (<code>en</code>) or name (<code>English</code>).</p>
+              <p class="intel-card-desc">Overall sentiment of the text.</p>
             </header>
             <details class="intel-details">
               <summary>Show request &amp; response</summary>
               <div class="intel-example-body intel-example-split">
                 <div>
                   <p class="intel-example-label">Request</p>
-<div class="intel-code-scroll"><pre><code class="language-bash">curl -X POST https://asr.shunyalabs.ai/v1/audio/transcriptions \
-  -H "Authorization: Bearer $SHUNYALABS_API_KEY" \
-  -F "file=@call.wav" -F "model=zero-indic" \
-  -F "output_language=en"</code></pre></div>
+<div class="intel-code-scroll"><pre><code class="language-bash">curl --location 'https://asrv2prod.shunyalabs.ai/v1/speechintelligence' \
+  --header 'accept: application/json' \
+  --header 'Content-Type: application/json' \
+  --header 'Authorization: Bearer &lt;ACCESS_TOKEN&gt;' \
+  --data-raw '{
+    "text": "…",
+    "enable_sentiment_analysis": true
+  }'</code></pre></div>
                 </div>
                 <div>
-                  <p class="intel-example-label">Response (excerpt)</p>
+                  <p class="intel-example-label">Response</p>
 <div class="intel-code-scroll"><pre><code class="language-json">{
-  "nlp_analysis": {
-    "translation": "Hello, this is an urgent call."
+  "success": true,
+  "text": "…",
+  "analysis": {
+    "sentiment": "…"
   }
-}</code></pre></div>
-                </div>
-              </div>
-            </details>
-          </article>
-
-          <article class="intel-card" id="profanity-hashing">
-            <header class="intel-card-header">
-              <div class="intel-card-top">
-                <span class="intel-card-num">09</span>
-                <h3 class="intel-card-title">Profanity hashing</h3>
-                <code class="intel-flag intel-flag-enable">enable_profanity_hashing=true</code>
-              </div>
-              <p class="intel-card-desc">Mask profane words with <code>****</code> in the transcript and every segment.</p>
-            </header>
-            <details class="intel-details">
-              <summary>Show request &amp; response</summary>
-              <div class="intel-example-body">
-                <div>
-                  <p class="intel-example-label">Request</p>
-<div class="intel-code-scroll"><pre><code class="language-bash">curl -X POST https://asr.shunyalabs.ai/v1/audio/transcriptions \
-  -H "Authorization: Bearer $SHUNYALABS_API_KEY" \
-  -F "file=@call.wav" -F "model=zero-indic" \
-  -F "enable_profanity_hashing=true"</code></pre></div>
-                </div>
-              </div>
-            </details>
-          </article>
-
-          <article class="intel-card" id="custom-keyword-redaction">
-            <header class="intel-card-header">
-              <div class="intel-card-top">
-                <span class="intel-card-num">10</span>
-                <h3 class="intel-card-title">Custom keyword redaction</h3>
-                <code class="intel-flag intel-flag-redact">hash_keywords=[...]</code>
-              </div>
-              <p class="intel-card-desc">Regex masking for PII and sensitive phrases, fast, no LLM. Pass a JSON array to <code>hash_keywords</code>.</p>
-            </header>
-            <details class="intel-details">
-              <summary>Show request &amp; response</summary>
-              <div class="intel-example-body intel-example-split">
-                <div>
-                  <p class="intel-example-label">Request</p>
-<div class="intel-code-scroll"><pre><code class="language-bash">curl -X POST https://asr.shunyalabs.ai/v1/audio/transcriptions \
-  -H "Authorization: Bearer $SHUNYALABS_API_KEY" \
-  -F "file=@call.wav" -F "model=zero-indic" \
-  -F 'hash_keywords=["account number","card number","OTP","aadhaar"]'</code></pre></div>
-                </div>
-                <div>
-                  <p class="intel-example-label">Response (excerpt)</p>
-<div class="intel-code-scroll"><pre><code class="language-json">{
-  "text": "आपका **** 4321 है और आपका **** कल भेजा गया था"
-}</code></pre></div>
-                </div>
-              </div>
-            </details>
-          </article>
-
-          <article class="intel-card" id="word-timestamps">
-            <header class="intel-card-header">
-              <div class="intel-card-top">
-                <span class="intel-card-num">11</span>
-                <h3 class="intel-card-title">Word timestamps</h3>
-                <code class="intel-flag intel-flag-timing">word_timestamps=true</code>
-              </div>
-              <p class="intel-card-desc">Per-word start, end, and confidence on each segment. ONNX alignment, no extra API call.</p>
-            </header>
-            <details class="intel-details">
-              <summary>Show request &amp; response</summary>
-              <div class="intel-example-body intel-example-split">
-                <div>
-                  <p class="intel-example-label">Request</p>
-<div class="intel-code-scroll"><pre><code class="language-bash">curl -X POST https://asr.shunyalabs.ai/v1/audio/transcriptions \
-  -H "Authorization: Bearer $SHUNYALABS_API_KEY" \
-  -F "file=@call.wav" -F "model=zero-indic" \
-  -F "word_timestamps=true"</code></pre></div>
-                </div>
-                <div>
-                  <p class="intel-example-label">Response (excerpt)</p>
-<div class="intel-code-scroll"><pre><code class="language-json">{
-  "segments": [{
-    "text": "नमस्ते मोहम्मद जी",
-    "words": [
-      { "word": "नमस्ते", "start": 0.532, "end": 0.932, "score": 0.85 }
-    ]
-  }]
 }</code></pre></div>
                 </div>
               </div>
@@ -397,21 +157,32 @@ curl -X POST https://asr.shunyalabs.ai/v1/audio/transcriptions \
         </div>
 
         <h2 id="combining-features">Combine features</h2>
-        <p>Enable everything you need on one request. Typical contact-centre stack:</p>
-<div class="intel-code-scroll"><pre><code class="language-bash">curl -X POST https://asr.shunyalabs.ai/v1/audio/transcriptions \
-  -H "Authorization: Bearer $SHUNYALABS_API_KEY" \
-  -F "file=@call.wav" -F "model=zero-indic" -F "language_code=hi" \
-  -F "enable_diarization=true" \
-  -F "enable_speaker_identification=true" -F "project=support_team" \
-  -F "enable_emotion_diarization=true" -F "word_timestamps=true" \
-  -F "enable_intent_detection=true" \
-  -F 'intent_choices=["complaint","inquiry","service_request"]' \
-  -F "enable_summarization=true" -F "enable_sentiment_analysis=true" \
-  -F 'hash_keywords=["account number","card number","OTP"]'</code></pre></div>
+        <p>Enable everything you need in one request:</p>
+<div class="intel-code-scroll"><pre><code class="language-bash">curl --location 'https://asrv2prod.shunyalabs.ai/v1/speechintelligence' \
+  --header 'accept: application/json' \
+  --header 'Content-Type: application/json' \
+  --header 'Authorization: Bearer &lt;ACCESS_TOKEN&gt;' \
+  --data-raw '{
+    "text": "…",
+    "enable_intent_detection": true,
+    "enable_summarization": true,
+    "enable_sentiment_analysis": true
+  }'</code></pre></div>
 
-        <div class="callout callout-warn">
-          <div class="callout-title">Latency trade-off</div>
-          NLP features (intent, sentiment, summary, keyterms, translation, profanity) add a Gemini pass on top of ASR. Enable only what you will use in production.
+        <p>Returns all three analyses together:</p>
+<div class="intel-code-scroll"><pre><code class="language-json">{
+  "success": true,
+  "text": "…",
+  "analysis": {
+    "intent": "…",
+    "summary": "…",
+    "sentiment": "…"
+  }
+}</code></pre></div>
+
+        <div class="callout callout-info">
+          <div class="callout-title">Also on the ASR side</div>
+          Diarization (<code>diarize</code>, <code>num_speakers</code>), word timestamps, and speaker enrolment live on the transcription endpoints, not on Speech Intelligence. <a href="/web_doc/asr/features.html">ASR features →</a>
         </div>
 
         <div class="pager">

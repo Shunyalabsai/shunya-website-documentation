@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>ASR features | Shunya Labs Docs</title>
-  <meta name="description" content="Diarization, emotion, intent, sentiment, summarization, redaction, translation, every feature that sits on top of Zero STT.">
+  <meta name="description" content="Diarization, word timestamps, speaker enrolment, and Speech Intelligence (intent, summary, sentiment) on top of Zero STT.">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@1,500;1,600;1,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/web_doc/assets/css/main.css?v=37">
   <script src="/web_doc/assets/js/theme.js"></script>
@@ -17,246 +17,120 @@
           <a href="/web_doc/index.html">Docs</a><span class="sep">/</span><span>Speech-to-Text</span><span class="sep">/</span><span>Features</span>
         </div>
         <h1>ASR <span class="accent-italic">features</span></h1>
-        <p class="lead">The intelligence layer on top of Zero STT. Enable each with a boolean flag, none of them are required, and they combine freely. All of these return their results in the same JSON response as the transcript.</p>
+        <p class="lead">What you can do on top of a transcript: per-speaker diarization, word timestamps, named speaker enrolment, and Speech Intelligence — NLP analysis over the text via the separate <code>POST /v1/speechintelligence</code> endpoint.</p>
 
         <div class="callout callout-info">
-          <div class="callout-title">Easier to browse?</div>
-          Open the <a href="/web_doc/intelligence/overview.html">Intelligence overview</a> for a card-based UI with jump links and collapsible request/response examples for every feature.
+          <div class="callout-title">Auth reminder</div>
+          Every request below authenticates with the <strong>access token</strong> from <code>POST /auth/token</code> as <code>Authorization: Bearer &lt;ACCESS_TOKEN&gt;</code>. <a href="/web_doc/asr/api-reference.html#post-auth-token">Authentication →</a>
         </div>
 
         <h2 id="diarization">1. Diarization</h2>
-        <p>"Who spoke when." Adds <code>speaker: SPEAKER_XX</code> to every segment and a top-level <code>speakers</code> array. The full <code>text</code> field is prefixed with <code>[SPEAKER_XX]</code> tags per segment.</p>
+        <p>"Who spoke when." Set <code>diarize=true</code> on batch transcription or on the realtime stream to label every segment with a speaker. Provide <code>num_speakers</code> as a hint to improve the labelling when you know the count.</p>
 
-        <p><strong>Request:</strong></p>
-<pre><code class="language-bash">curl -X POST https://asr.shunyalabs.ai/v1/audio/transcriptions \
-  -H "Authorization: Bearer $SHUNYALABS_API_KEY" \
-  -F "file=@meeting.wav" \
-  -F "model=zero-indic" \
-  -F "enable_diarization=true"</code></pre>
+        <p><strong>Batch request:</strong></p>
+<pre><code class="language-bash">curl --location 'https://asrv2prod.shunyalabs.ai/v1/audio/transcriptions' \
+  --header 'accept: application/json' \
+  --header 'Authorization: Bearer &lt;ACCESS_TOKEN&gt;' \
+  --form 'file=@"meeting.wav"' \
+  --form 'language_code=hi' \
+  --form 'diarize=true' \
+  --form 'num_speakers=2' \
+  --form 'response_format=verbose_json'</code></pre>
 
         <p><strong>Response:</strong></p>
 <pre><code class="language-json">{
-  "text": "[SPEAKER_00] नमस्ते, आप कैसे हैं? [SPEAKER_01] मैं ठीक हूँ, धन्यवाद।",
-  "segments": [
-    { "start": 0.5, "end": 3.2, "text": "नमस्ते, आप कैसे हैं?", "speaker": "SPEAKER_00" },
-    { "start": 4.1, "end": 6.8, "text": "मैं ठीक हूँ, धन्यवाद।", "speaker": "SPEAKER_01" }
-  ],
-  "speakers": ["SPEAKER_00", "SPEAKER_01"]
+  "text": "the transcribed text",
+  "segments": [ { "start": 0.0, "end": 2.4, "text": "…", "speaker": "SPEAKER_00" } ],
+  "speakers": [ "SPEAKER_00", "SPEAKER_01" ],
+  "speaker_turns": [ { "start": 0.0, "end": 2.4, "speaker": "SPEAKER_00" } ]
 }</code></pre>
 
         <ul>
-          <li>Segments are capped at 30 seconds each to maintain transcription quality.</li>
-          <li>Works on any number of speakers, but best with 2-6 distinct voices.</li>
-          <li>Combine with <code>enable_speaker_identification</code> to get real names instead of anonymous labels.</li>
+          <li>Speaker labels are stable per request/connection: <code>SPEAKER_00</code>, <code>SPEAKER_01</code>, …</li>
+          <li>In streaming, <code>speaker</code> appears on each <code>final</code> event when <code>diarize</code> is set, and may be <code>null</code> on a very short segment (treat as unknown, not an error).</li>
+          <li>Realtime init: <code>{"token": "…", "language": "hi", "diarize": true, "num_speakers": 2}</code>. <a href="/web_doc/asr/streaming.html">Streaming guide →</a></li>
         </ul>
 
-        <h2 id="speaker-identification">2. Speaker identification</h2>
-        <p>Turns anonymous <code>SPEAKER_00</code> labels into registered names. Requires diarization on and at least one registered voice profile.</p>
-
-        <p><strong>Step 1: register a speaker</strong> (use a 5-15 second clip of the speaker alone, no background music):</p>
-<pre><code class="language-bash">curl -X POST https://asr.shunyalabs.ai/v1/speakers/register \
-  -H "Authorization: Bearer $SHUNYALABS_API_KEY" \
-  -F "name=Priya" \
-  -F "file=@priya_sample.wav" \
-  -F "project=support_team"</code></pre>
-
-        <p><strong>Step 2: transcribe with identification on:</strong></p>
-<pre><code class="language-bash">curl -X POST https://asr.shunyalabs.ai/v1/audio/transcriptions \
-  -H "Authorization: Bearer $SHUNYALABS_API_KEY" \
-  -F "file=@call.wav" \
-  -F "model=zero-indic" \
-  -F "enable_diarization=true" \
-  -F "enable_speaker_identification=true" \
-  -F "project=support_team"</code></pre>
-
-        <p>Unrecognised speakers stay as <code>SPEAKER_XX</code>. The <code>project</code> parameter isolates per-customer or per-team voice libraries.</p>
-
-        <h2 id="emotion-diarization">3. Emotion diarization</h2>
-        <p>Detects the dominant emotion in each segment's audio. Adds an <code>emotion</code> field. Works independently of speaker diarization but is commonly used together.</p>
+        <h2 id="word-timestamps">2. Word timestamps</h2>
+        <p>Word-level timing is included in the <code>verbose_json</code> response of batch transcription via the <code>words</code> array — no extra flag needed.</p>
 
         <p><strong>Request:</strong></p>
-<pre><code class="language-bash">curl -X POST https://asr.shunyalabs.ai/v1/audio/transcriptions \
-  -H "Authorization: Bearer $SHUNYALABS_API_KEY" \
-  -F "file=@call.wav" \
-  -F "model=zero-indic" \
-  -F "enable_diarization=true" \
-  -F "enable_emotion_diarization=true"</code></pre>
+<pre><code class="language-bash">curl --location 'https://asrv2prod.shunyalabs.ai/v1/audio/transcriptions' \
+  --header 'accept: application/json' \
+  --header 'Authorization: Bearer &lt;ACCESS_TOKEN&gt;' \
+  --form 'file=@"call.wav"' \
+  --form 'language_code=hi' \
+  --form 'response_format=verbose_json'</code></pre>
 
         <p><strong>Response:</strong></p>
 <pre><code class="language-json">{
-  "segments": [
-    { "start": 0.5, "end": 3.2, "text": "...", "speaker": "SPEAKER_00", "emotion": "angry" },
-    { "start": 4.1, "end": 6.8, "text": "...", "speaker": "SPEAKER_01", "emotion": "neutral" }
-  ]
+  "words": [ { "word": "…", "start": 0.0, "end": 0.3 } ]
 }</code></pre>
 
-        <h2 id="intent-detection">4. Intent detection</h2>
-        <p>Classifies the overall transcript intent using Gemini. Pass <code>intent_choices</code> to constrain to your taxonomy, or leave off for free-form detection.</p>
+        <h2 id="speech-intelligence">3. Speech Intelligence — <code>POST /v1/speechintelligence</code></h2>
+        <p>NLP analysis (intent, summary, sentiment, key terms, …) over text. Send the transcript (or any text) as JSON and get the analysis back. Request fields are <code>enable_intent_detection</code>, <code>enable_summarization</code>, and <code>enable_sentiment_analysis</code> — all optional, combine freely.</p>
 
         <p><strong>Request:</strong></p>
-<pre><code class="language-bash">curl -X POST https://asr.shunyalabs.ai/v1/audio/transcriptions \
-  -H "Authorization: Bearer $SHUNYALABS_API_KEY" \
-  -F "file=@call.wav" \
-  -F "model=zero-indic" \
-  -F "enable_intent_detection=true" \
-  -F 'intent_choices=["complaint","inquiry","service_request","compliment"]'</code></pre>
+<pre><code class="language-bash">curl --location 'https://asrv2prod.shunyalabs.ai/v1/speechintelligence' \
+  --header 'accept: application/json' \
+  --header 'Content-Type: application/json' \
+  --header 'Authorization: Bearer &lt;ACCESS_TOKEN&gt;' \
+  --data-raw '{
+    "text": "…",
+    "enable_intent_detection": true,
+    "enable_summarization": true,
+    "enable_sentiment_analysis": true
+  }'</code></pre>
 
         <p><strong>Response:</strong></p>
 <pre><code class="language-json">{
-  "nlp_analysis": {
-    "intent": {
-      "label": "service_request",
-      "confidence": 0.92,
-      "reasoning": "Caller is requesting roadside assistance for a broken-down vehicle"
-    }
+  "success": true,
+  "text": "…",
+  "analysis": {
+    "intent": "…",
+    "summary": "…",
+    "sentiment": "…"
   }
 }</code></pre>
 
-        <h2 id="sentiment-analysis">5. Sentiment analysis</h2>
-        <p>Overall sentiment of the transcript. Returns a label, a numeric score (-1 to 1), and an explanation.</p>
+        <ul>
+          <li><strong>Intent detection</strong> — <code>enable_intent_detection: true</code> → <code>analysis.intent</code>.</li>
+          <li><strong>Summarization</strong> — <code>enable_summarization: true</code> → <code>analysis.summary</code>.</li>
+          <li><strong>Sentiment analysis</strong> — <code>enable_sentiment_analysis: true</code> → <code>analysis.sentiment</code>.</li>
+          <li>Errors: <code>400</code> (text required), <code>401</code>/<code>403</code> (auth), <code>503</code> (analysis unavailable).</li>
+        </ul>
 
-        <p><strong>Request:</strong></p>
-<pre><code class="language-bash">curl -X POST https://asr.shunyalabs.ai/v1/audio/transcriptions \
-  -H "Authorization: Bearer $SHUNYALABS_API_KEY" \
-  -F "file=@call.wav" \
-  -F "model=zero-indic" \
-  -F "enable_sentiment_analysis=true"</code></pre>
+        <p><a href="/web_doc/intelligence/overview.html">Intelligence overview →</a></p>
 
-        <p><strong>Response:</strong></p>
-<pre><code class="language-json">{
-  "nlp_analysis": {
-    "sentiment": {
-      "label": "negative",
-      "score": -0.72,
-      "explanation": "Customer expresses frustration about the vehicle being stranded."
-    }
-  }
-}</code></pre>
+        <h2 id="speaker-enrolment">4. Speaker enrolment</h2>
+        <p>Enrol a named voiceprint so it is recognised in later calls.</p>
 
-        <h2 id="summarization">6. Summarization</h2>
-        <p>Concise summary of the transcript. <code>summary_max_length</code> sets an approximate word cap (default 150).</p>
-
-        <p><strong>Request:</strong></p>
-<pre><code class="language-bash">curl -X POST https://asr.shunyalabs.ai/v1/audio/transcriptions \
-  -H "Authorization: Bearer $SHUNYALABS_API_KEY" \
-  -F "file=@call.wav" \
-  -F "model=zero-indic" \
-  -F "enable_summarization=true" \
-  -F "summary_max_length=50"</code></pre>
+        <h3>Register a speaker — <code>POST /v1/speakers/register</code></h3>
+        <p>Send <code>name</code> and an audio <code>file</code> (multipart/form-data). <code>project</code> is optional and scopes the speaker library.</p>
+<pre><code class="language-bash">curl --location 'https://asrv2prod.shunyalabs.ai/v1/speakers/register' \
+  --header 'accept: application/json' \
+  --header 'Authorization: Bearer &lt;ACCESS_TOKEN&gt;' \
+  --form 'name=Priya' \
+  --form 'file=@"priya_sample.wav"' \
+  --form 'project=support_team'</code></pre>
 
         <p><strong>Response:</strong></p>
-<pre><code class="language-json">{
-  "nlp_analysis": {
-    "summary": "Customer called about a vehicle breakdown. Agent confirmed the complaint was registered and promised a technician within the hour."
-  }
-}</code></pre>
+<pre><code class="language-json">{ "success": true, "speaker": "Priya", "message": "…" }</code></pre>
 
-        <h2 id="keyterm-normalization">7. Keyterm normalization</h2>
-        <p>Cleans up domain-specific terms the ASR model might render informally, <code>emi</code> → <code>EMI</code>, <code>nach mandate</code> → <code>NACH mandate</code>. Preserves the original language. Optionally focus on a specific glossary with <code>keyterm_keywords</code>.</p>
-
-        <p><strong>Request:</strong></p>
-<pre><code class="language-bash">curl -X POST https://asr.shunyalabs.ai/v1/audio/transcriptions \
-  -H "Authorization: Bearer $SHUNYALABS_API_KEY" \
-  -F "file=@call.wav" \
-  -F "model=zero-indic" \
-  -F "enable_keyterm_normalization=true" \
-  -F 'keyterm_keywords=["EMI","NACH mandate","bounce charge"]'</code></pre>
-
-        <p>Normalised text returns in <code>nlp_analysis.normalized_text</code>, alongside the original transcript.</p>
-
-        <h2 id="translation-output-language">8. Translation (<code>output_language</code>)</h2>
-        <p>Translates the full transcript into a target language via Gemini. ISO 639-1 code (<code>en</code>, <code>hi</code>) or full name (<code>English</code>).</p>
-
-        <p><strong>Request:</strong></p>
-<pre><code class="language-bash">curl -X POST https://asr.shunyalabs.ai/v1/audio/transcriptions \
-  -H "Authorization: Bearer $SHUNYALABS_API_KEY" \
-  -F "file=@call.wav" \
-  -F "model=zero-indic" \
-  -F "output_language=en"</code></pre>
+        <h3>Delete a speaker — <code>DELETE /v1/speakers/delete</code></h3>
+        <p>Remove a named voiceprint. Send <code>name</code> (and optionally <code>project</code>) as form fields.</p>
+<pre><code class="language-bash">curl --location --request DELETE 'https://asrv2prod.shunyalabs.ai/v1/speakers/delete' \
+  --header 'accept: application/json' \
+  --header 'Authorization: Bearer &lt;ACCESS_TOKEN&gt;' \
+  --form 'name=Priya' \
+  --form 'project=support_team'</code></pre>
 
         <p><strong>Response:</strong></p>
-<pre><code class="language-json">{
-  "nlp_analysis": {
-    "translation": "Hello, this is an urgent call."
-  }
-}</code></pre>
+<pre><code class="language-json">{ "success": true }</code></pre>
 
-        <h2 id="profanity-hashing">9. Profanity hashing</h2>
-        <p>Masks profane words with <code>****</code> in-place in both the top-level text and segment text.</p>
-
-        <p><strong>Request:</strong></p>
-<pre><code class="language-bash">curl -X POST https://asr.shunyalabs.ai/v1/audio/transcriptions \
-  -H "Authorization: Bearer $SHUNYALABS_API_KEY" \
-  -F "file=@call.wav" \
-  -F "model=zero-indic" \
-  -F "enable_profanity_hashing=true"</code></pre>
-
-        <h2 id="custom-keyword-redaction">10. Custom keyword redaction (<code>hash_keywords</code>)</h2>
-        <p>Regex-based masking of specific terms or phrases. No LLM, fast, deterministic. Use for PII and domain-sensitive tokens.</p>
-
-        <p><strong>Request:</strong></p>
-<pre><code class="language-bash">curl -X POST https://asr.shunyalabs.ai/v1/audio/transcriptions \
-  -H "Authorization: Bearer $SHUNYALABS_API_KEY" \
-  -F "file=@call.wav" \
-  -F "model=zero-indic" \
-  -F 'hash_keywords=["account number","card number","OTP","aadhaar"]'</code></pre>
-
-        <p><strong>Response:</strong></p>
-<pre><code class="language-json">{
-  "text": "आपका **** 4321 है और आपका **** कल भेजा गया था",
-  "segments": [
-    { "start": 0.0, "end": 5.0, "text": "आपका **** 4321 है और आपका **** कल भेजा गया था" }
-  ]
-}</code></pre>
-
-        <h2 id="word-timestamps">11. Word timestamps</h2>
-        <p>Per-word timing with a confidence score. Adds a <code>words</code> array to every segment. Runs via ONNX CTC forced alignment on GPU, no external call, negligible latency overhead.</p>
-
-        <p><strong>Request:</strong></p>
-<pre><code class="language-bash">curl -X POST https://asr.shunyalabs.ai/v1/audio/transcriptions \
-  -H "Authorization: Bearer $SHUNYALABS_API_KEY" \
-  -F "file=@call.wav" \
-  -F "model=zero-indic" \
-  -F "word_timestamps=true"</code></pre>
-
-        <p><strong>Response:</strong></p>
-<pre><code class="language-json">{
-  "segments": [
-    {
-      "start": 0.51,
-      "end": 5.70,
-      "text": "नमस्ते मोहम्मद जी",
-      "words": [
-        { "word": "नमस्ते", "start": 0.532, "end": 0.932, "score": 0.85 },
-        { "word": "मोहम्मद", "start": 1.012, "end": 1.412, "score": 0.72 },
-        { "word": "जी", "start": 1.492, "end": 1.652, "score": 0.91 }
-      ]
-    }
-  ]
-}</code></pre>
-
-        <h2 id="combining-features">Combining features</h2>
-        <p>Every feature above can be enabled on the same request. Here's a full contact-centre configuration:</p>
-<pre><code>curl -X POST https://asr.shunyalabs.ai/v1/audio/transcriptions \
-  -H "Authorization: Bearer $SHUNYALABS_API_KEY" \
-  -F "file=@call.wav" \
-  -F "model=zero-indic" \
-  -F "language_code=hi" \
-  -F "enable_diarization=true" \
-  -F "enable_speaker_identification=true" \
-  -F "project=support_team" \
-  -F "enable_emotion_diarization=true" \
-  -F "word_timestamps=true" \
-  -F "enable_intent_detection=true" \
-  -F 'intent_choices=["complaint","inquiry","service_request"]' \
-  -F "enable_summarization=true" \
-  -F "enable_sentiment_analysis=true" \
-  -F 'hash_keywords=["account number","card number","OTP"]' \
-  -F "enable_denoising=true"</code></pre>
-
-        <div class="callout callout-warn">
-          <div class="callout-title">Latency trade-off</div>
-          Each intelligence feature adds a Gemini call on top of the ASR path. Enable only what you consume, don't pay for a summary you won't read.
+        <div class="callout callout-info">
+          <div class="callout-title">Full API reference</div>
+          All endpoints, fields, response shapes, and error codes are in the <a href="/web_doc/asr/api-reference.html">ASR API reference</a>.
         </div>
 
         <div class="pager">

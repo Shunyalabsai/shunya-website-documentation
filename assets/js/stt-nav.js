@@ -29,6 +29,14 @@
   const NAV = [
     { id: 'title', title: 'Speech-to-Text (ASR)' },
     {
+      id: 'auth',
+      heading: 'Authentication',
+      open: true,
+      items: [
+        { label: 'Access token (POST /auth/token)', path: '/asr/api-reference.html#post-auth-token' },
+      ],
+    },
+    {
       id: 'batch',
       heading: 'Batch',
       open: true,
@@ -45,16 +53,15 @@
       open: true,
       items: [
         { label: 'Streaming (WebSocket)', path: '/asr/streaming.html' },
-        { label: 'WebSocket /ws', path: '/asr/api-reference.html#websocket' },
+        { label: 'WebSocket /v1/realtime', path: '/asr/api-reference.html#websocket' },
       ],
     },
     {
       id: 'models',
-      heading: 'Models and languages',
+      heading: 'Models',
       open: true,
       items: [
         { label: 'Models', path: '/asr/models.html' },
-        { label: 'GET /languages', path: '/asr/api-reference.html#languages' },
       ],
     },
     {
@@ -62,19 +69,14 @@
       heading: 'Intelligence layer',
       open: false,
       items: [
-        { label: 'Overview & examples', path: '/intelligence/overview.html' },
-        { label: 'Diarization', path: '/intelligence/overview.html#diarization' },
-        { label: 'Speaker identification', path: '/intelligence/overview.html#speaker-identification' },
-        { label: 'Emotion diarization', path: '/intelligence/overview.html#emotion-diarization' },
+        { label: 'Speech Intelligence', path: '/intelligence/overview.html' },
         { label: 'Intent detection', path: '/intelligence/overview.html#intent-detection' },
-        { label: 'Sentiment analysis', path: '/intelligence/overview.html#sentiment-analysis' },
         { label: 'Summarization', path: '/intelligence/overview.html#summarization' },
-        { label: 'Keyterm normalization', path: '/intelligence/overview.html#keyterm-normalization' },
-        { label: 'Translation (output_language)', path: '/intelligence/overview.html#translation-output-language' },
-        { label: 'Profanity hashing', path: '/intelligence/overview.html#profanity-hashing' },
-        { label: 'Custom keyword redaction (hash_keywords)', path: '/intelligence/overview.html#custom-keyword-redaction' },
-        { label: 'Word timestamps', path: '/intelligence/overview.html#word-timestamps' },
+        { label: 'Sentiment analysis', path: '/intelligence/overview.html#sentiment-analysis' },
         { label: 'Combining features', path: '/intelligence/overview.html#combining-features' },
+        { label: 'Diarization (ASR)', path: '/asr/features.html#diarization' },
+        { label: 'Word timestamps (ASR)', path: '/asr/features.html#word-timestamps' },
+        { label: 'Speaker enrolment (ASR)', path: '/asr/features.html#speaker-enrolment' },
         { label: 'Full reference', path: '/asr/features.html' },
       ],
     },
@@ -83,13 +85,12 @@
       heading: 'Request parameters',
       open: false,
       items: [
-        { label: 'Required', path: '/asr/configuration.html#required' },
-        { label: 'Language & output', path: '/asr/configuration.html#language-output' },
-        { label: 'Audio pre-processing', path: '/asr/configuration.html#audio-pre-processing' },
-        { label: 'Segmentation & alignment', path: '/asr/configuration.html#segmentation-alignment' },
-        { label: 'Intelligence layer', path: '/asr/configuration.html#intelligence-layer' },
-        { label: 'Redaction', path: '/asr/configuration.html#redaction' },
-        { label: 'Legacy / compatibility', path: '/asr/configuration.html#legacy-compatibility' },
+        { label: 'Audio source', path: '/asr/configuration.html#audio-source' },
+        { label: 'Model', path: '/asr/configuration.html#model' },
+        { label: 'Language', path: '/asr/configuration.html#language' },
+        { label: 'Diarization', path: '/asr/configuration.html#diarization' },
+        { label: 'Output format', path: '/asr/configuration.html#output' },
+        { label: 'Realtime streaming fields', path: '/asr/configuration.html#realtime' },
       ],
     },
     {
@@ -99,8 +100,6 @@
       items: [
         { label: 'Speaker APIs', path: '/asr/api-reference.html#speakers' },
         { label: 'POST /v1/speakers/register', path: '/asr/api-reference.html#speakers-register' },
-        { label: 'GET /v1/speakers/list', path: '/asr/api-reference.html#speakers-list' },
-        { label: 'POST /v1/speakers/identify', path: '/asr/api-reference.html#speakers-identify' },
         { label: 'DELETE /v1/speakers/delete', path: '/asr/api-reference.html#speakers-delete' },
       ],
     },

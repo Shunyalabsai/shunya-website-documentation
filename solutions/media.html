@@ -26,12 +26,12 @@
             <tbody>
               <tr>
                 <td>Batch transcription with word timestamps</td>
-                <td><code>POST /v1/audio/transcriptions</code> with <code>word_timestamps=true</code></td>
+                <td><code>POST /v1/audio/transcriptions</code> with <code>response_format=verbose_json</code> (returns <code>segments</code> and <code>words</code> with timing)</td>
                 <td>ASR API guide</td>
               </tr>
               <tr>
                 <td>Speaker separation for interviews / panels</td>
-                <td><code>enable_diarization=true</code>; <code>enable_speaker_identification</code> with registered voices to get real names</td>
+                <td><code>diarize=true</code> (plus <code>num_speakers</code> as an optional hint); each segment carries a <code>speaker</code> in the verbose response</td>
                 <td>ASR API guide</td>
               </tr>
               <tr>
@@ -55,8 +55,8 @@
                 <td>ASR API guide</td>
               </tr>
               <tr>
-                <td>Content moderation</td>
-                <td><code>enable_profanity_hashing</code>, <code>hash_keywords</code> with banned-phrase list</td>
+                <td>Content analytics</td>
+                <td>Run transcripts through <code>POST /v1/speechintelligence</code> for intent, summary, and sentiment</td>
                 <td>ASR API guide</td>
               </tr>
             </tbody>

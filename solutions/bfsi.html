@@ -31,7 +31,7 @@
               </tr>
               <tr>
                 <td>Telephony I/O</td>
-                <td><code>ulaw</code> / <code>alaw</code> at 8 kHz on both ASR streaming and TTS, most Indian PSTN systems use mu-law</td>
+                <td><code>sample_rate: 8000</code> on ASR streaming for 8 kHz telephony audio; most Indian PSTN systems use mu-law encoding</td>
                 <td>ASR + TTS docs</td>
               </tr>
               <tr>
@@ -40,14 +40,14 @@
                 <td>TTS docs §6</td>
               </tr>
               <tr>
-                <td>Compliance keyword detection</td>
-                <td><code>enable_keyterm_normalization</code> with mandatory-disclosure phrases in <code>keyterm_keywords</code></td>
+                <td>Compliance monitoring</td>
+                <td>Run call transcripts through <code>POST /v1/speechintelligence</code> for intent, summary, and sentiment analysis</td>
                 <td>ASR API guide</td>
               </tr>
               <tr>
-                <td>PII / number redaction in stored transcripts</td>
-                <td><code>hash_keywords</code>: replaces matches with <code>****</code> in-place</td>
-                <td>ASR API guide</td>
+                <td>Data privacy</td>
+                <td>Raw audio is deleted on completion and transcripts are delivered over TLS — see the <a href="/web_doc/security/compliance.html">Security &amp; Compliance</a> page</td>
+                <td>Security policy</td>
               </tr>
               <tr>
                 <td>Data residency for regulated audio</td>

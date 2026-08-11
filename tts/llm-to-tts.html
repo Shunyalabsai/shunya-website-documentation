@@ -136,7 +136,7 @@ async def claude_to_tts(user_message: str):
         </div>
 
         <h2>Interruption handling</h2>
-        <p>In voice agents, users often talk over the bot. When your ASR detects <code>speech_start</code> from the user, cancel the in-flight TTS stream so the user gets the floor immediately.</p>
+        <p>In voice agents, users often talk over the bot. When your ASR emits a <code>partial</code> or <code>final</code> event from the user while the bot is speaking, cancel the in-flight TTS stream so the user gets the floor immediately.</p>
 
 <pre><code>import asyncio
 from shunyalabs.tts import TTSConfig
@@ -202,16 +202,17 @@ class VoiceAgent:
         self.interrupt = asyncio.Event()
 
     async def listen_loop(self):
-        async with websockets.connect("wss://asr.shunyalabs.ai/ws") as asr:
+        async with websockets.connect("wss://asrv2prod.shunyalabs.ai/v1/realtime") as asr:
             await asr.send(json.dumps({
-                "api_key": API_KEY, "model": "zero-indic", "language": "hi",
-                "sample_rate": 16000, "dtype": "int16",
+                "token": ACCESS_TOKEN, "language": "hi",
+                "sample_rate": 16000,
             }))
+            # stream raw 16-bit PCM frames here, then send "end"
             async for raw in asr:
                 msg = json.loads(raw)
-                if msg["type"] == "speech_start" and self.speaking:
+                if msg["type"] == "final" and self.speaking:
                     self.interrupt.set()        # user cut in
-                elif msg["type"] == "final_segment":
+                elif msg["type"] == "final":
                     await self.respond(msg["text"])
 
     async def respond(self, user_text):

@@ -54,22 +54,22 @@
           <dd>Detects when someone is speaking vs silent.</dd>
 
           <dt>Diarization</dt>
-          <dd>Labels who spoke when, e.g. <code>SPEAKER_00</code>, <code>SPEAKER_01</code>.</dd>
+          <dd>Labels who spoke when. Set <code>diarize</code> (plus <code>num_speakers</code>); the verbose response includes <code>speakers</code>, <code>speaker_turns</code>, and a <code>speaker</code> on each segment.</dd>
 
-          <dt>Speaker identification</dt>
-          <dd>Maps anonymous speaker labels to enrolled names.</dd>
+          <dt>Speaker enrolment</dt>
+          <dd>Register a known speaker's voice with a name via <code>POST /v1/speakers/register</code> (and remove with <code>DELETE /v1/speakers/delete</code>).</dd>
 
           <dt>Code-switching</dt>
           <dd>Mixing languages in one utterance (e.g. Hinglish). Model: <a class="hf-model-link" href="https://huggingface.co/shunyalabs/zero-stt-hinglish" target="_blank" rel="noopener" title="View on Hugging Face"><code>zero-codeswitch</code></a>.</dd>
 
           <dt>Transliteration</dt>
-          <dd>Same words in a different script, set <code>output_script</code>.</dd>
+          <dd>Same words in a different script. Not a parameter of the STT API — translation across scripts is handled by Vāķ Translate.</dd>
 
           <dt>Word timestamps</dt>
-          <dd>Start and end time for each word in the transcript.</dd>
+          <dd>Start and end time for each word in the transcript. Returned with <code>response_format=verbose_json</code>.</dd>
 
           <dt>WER (word error rate)</dt>
-          <dd>STT accuracy metric, lower is better. Zero STT composite WER: 3.10%.</dd>
+          <dd>STT accuracy metric, lower is better. Shunya does not publish benchmark WER figures in the API reference.</dd>
 
           <dt>Intent detection</dt>
           <dd>Classifies what the speaker wanted from the transcript.</dd>
@@ -144,9 +144,6 @@
 
           <dt>HIPAA</dt>
           <dd>US healthcare privacy law, requires a BAA for PHI.</dd>
-
-          <dt>FHIR / HL7</dt>
-          <dd>Healthcare data standards for EHR integration.</dd>
         </dl>
         </div>
 
@@ -155,9 +152,6 @@
         <dl class="glossary">
           <dt>Triton Inference Server</dt>
           <dd>NVIDIA inference server used to serve models at scale.</dd>
-
-          <dt>RTFx (real-time factor)</dt>
-          <dd>How fast batch audio is processed, higher means faster.</dd>
 
           <dt>WebSocket</dt>
           <dd>Persistent connection used for streaming STT and TTS.</dd>

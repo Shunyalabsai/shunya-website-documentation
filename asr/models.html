@@ -17,17 +17,22 @@
           <a href="/web_doc/index.html">Docs</a><span class="sep">/</span><span>Speech-to-Text</span><span class="sep">/</span><span>Models</span>
         </div>
         <h1>ASR <span class="accent-italic">models</span></h1>
-        <p class="lead">Four speech recognition models tuned for different domains. Pass the name in the <code>model</code> field. You can't mix models within a single request, but you can switch between requests freely.</p>
+        <p class="lead">Four speech recognition models tuned for different domains. Pass the name in the <code>model</code> field. You can't mix models within a single request, but you can switch between requests freely. If you don't pass a model, the request uses your account model.</p>
+
+        <div class="callout callout-info">
+          <div class="callout-title">Auth in these examples</div>
+          Each example uses <code>&lt;ACCESS_TOKEN&gt;</code> — the short-lived token from <code>POST /auth/token</code> (exchange your API key there once, then reuse the token). <a href="/web_doc/asr/api-reference.html#post-auth-token">See authentication →</a>
+        </div>
 
         <h2>Side-by-side</h2>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Model</th><th>Languages</th><th>Special behaviour</th><th>Price ($/min)</th></tr></thead>
+            <thead><tr><th>Model</th><th>Languages</th><th>Special behaviour</th></tr></thead>
             <tbody>
-              <tr><td><a class="hf-model-link" href="https://huggingface.co/spaces/shunyalabs/Zero-STT-Shunya-Labs" target="_blank" rel="noopener" title="View on Hugging Face"><code>zero-indic</code></a></td><td>55+ Indian languages</td><td>Standard transcription</td><td>$0.0045</td></tr>
-              <tr><td><a class="hf-model-link" href="https://huggingface.co/shunyalabs/pingala-v1-universal" target="_blank" rel="noopener" title="View on Hugging Face"><code>zero-universal</code></a></td><td>204 languages</td><td>Standard transcription, strongest on English</td><td>$0.0039</td></tr>
-              <tr><td><a class="hf-model-link" href="https://huggingface.co/spaces/shunyalabs/Zero_STT_Med_Shunya_Labs" target="_blank" rel="noopener" title="View on Hugging Face"><code>zero-med</code></a></td><td>English + Indic</td><td>Auto medical-terminology correction (MedGemma)</td><td>$0.0050</td></tr>
-              <tr><td><a class="hf-model-link" href="https://huggingface.co/shunyalabs/zero-stt-hinglish" target="_blank" rel="noopener" title="View on Hugging Face"><code>zero-codeswitch</code></a></td><td>Hinglish, Tanglish, etc.</td><td>Auto English-token restoration to Latin script</td><td>$0.0050</td></tr>
+              <tr><td><a class="hf-model-link" href="https://huggingface.co/spaces/shunyalabs/Zero-STT-Shunya-Labs" target="_blank" rel="noopener" title="View on Hugging Face"><code>zero-indic</code></a></td><td>Indian languages</td><td>Standard transcription</td></tr>
+              <tr><td><a class="hf-model-link" href="https://huggingface.co/shunyalabs/pingala-v1-universal" target="_blank" rel="noopener" title="View on Hugging Face"><code>zero-universal</code></a></td><td>English + international</td><td>Standard transcription, strongest on English</td></tr>
+              <tr><td><a class="hf-model-link" href="https://huggingface.co/spaces/shunyalabs/Zero_STT_Med_Shunya_Labs" target="_blank" rel="noopener" title="View on Hugging Face"><code>zero-med</code></a></td><td>English + Indic</td><td>Auto medical-terminology correction (MedGemma)</td></tr>
+              <tr><td><a class="hf-model-link" href="https://huggingface.co/shunyalabs/zero-stt-hinglish" target="_blank" rel="noopener" title="View on Hugging Face"><code>zero-codeswitch</code></a></td><td>Hinglish, Tanglish, etc.</td><td>Auto English-token restoration to Latin script</td></tr>
             </tbody>
           </table>
         </div>
@@ -43,31 +48,29 @@
         </ul>
 
         <h3>Example</h3>
-<pre><code>curl -X POST https://asr.shunyalabs.ai/v1/audio/transcriptions \
-  -H "Authorization: Bearer $SHUNYALABS_API_KEY" \
-  -F "file=@call.wav" \
-  -F "model=zero-indic" \
-  -F "language_code=hi"</code></pre>
+<pre><code>curl --location 'https://asrv2prod.shunyalabs.ai/v1/audio/transcriptions' \
+  --header 'accept: application/json' \
+  --header 'Authorization: Bearer &lt;ACCESS_TOKEN&gt;' \
+  --form 'file=@"call.wav"' \
+  --form 'model=zero-indic' \
+  --form 'language_code=hi'</code></pre>
 
         <h2 id="zero-universal"><a class="hf-model-link" href="https://huggingface.co/shunyalabs/pingala-v1-universal" target="_blank" rel="noopener" title="View on Hugging Face"><code>zero-universal</code></a></h2>
-        <p>99-language Whisper-class foundation model (docs say 204; the published leaderboard number varies by evaluation set). Strongest on English and European languages. Use when the input could be anything.</p>
+        <p>Whisper-class foundation model. Strongest on English and European languages. Use when the input could be anything.</p>
 
         <h3>When to use</h3>
         <ul>
           <li>English or non-Indian-language content</li>
-          <li>Audio where you don't know the language in advance, set <code>language_code=auto</code></li>
+          <li>Audio where you don't know the language in advance — set <code>language_code=auto</code> (the default)</li>
           <li>International meetings with mixed English and other languages</li>
         </ul>
 
-        <h3>Benchmarks</h3>
-        <p>Composite WER on the HuggingFace Open ASR leaderboard: <strong>3.10%</strong>, claimed 48% fewer errors than the next-best model.</p>
-        <a href="/web_doc/get-started/capability-matrix.html#asr-accuracy--openasr-composite" class="persona-link">See per-dataset numbers →</a>
-
         <h3>Example</h3>
-<pre><code>curl -X POST https://asr.shunyalabs.ai/v1/audio/transcriptions \
-  -H "Authorization: Bearer $SHUNYALABS_API_KEY" \
-  -F "file=@podcast.wav" \
-  -F "model=zero-universal"</code></pre>
+<pre><code>curl --location 'https://asrv2prod.shunyalabs.ai/v1/audio/transcriptions' \
+  --header 'accept: application/json' \
+  --header 'Authorization: Bearer &lt;ACCESS_TOKEN&gt;' \
+  --form 'file=@"podcast.wav"' \
+  --form 'model=zero-universal'</code></pre>
 
         <h2 id="zero-med"><a class="hf-model-link" href="https://huggingface.co/spaces/shunyalabs/Zero_STT_Med_Shunya_Labs" target="_blank" rel="noopener" title="View on Hugging Face"><code>zero-med</code></a></h2>
         <p>Clinical-grade. Trained to recognise drug names, procedures, anatomy, dosages, and diagnostic terms. Auto-applies medical terminology correction via MedGemma (no extra flag needed).</p>
@@ -86,17 +89,18 @@
         </div>
 
         <h3>Example</h3>
-<pre><code>curl -X POST https://asr.shunyalabs.ai/v1/audio/transcriptions \
-  -H "Authorization: Bearer $SHUNYALABS_API_KEY" \
-  -F "file=@consult.wav" \
-  -F "model=zero-med" \
-  -F "language_code=en"</code></pre>
+<pre><code>curl --location 'https://asrv2prod.shunyalabs.ai/v1/audio/transcriptions' \
+  --header 'accept: application/json' \
+  --header 'Authorization: Bearer &lt;ACCESS_TOKEN&gt;' \
+  --form 'file=@"consult.wav"' \
+  --form 'model=zero-med' \
+  --form 'language_code=en'</code></pre>
 
         <h3>Output shape</h3>
-        <p>Same response schema as other models; the value-add is in the text itself, drug names in correct spelling, procedure names in standard terminology. Pair with <code>enable_keyterm_normalization</code> for further normalization against your own glossary.</p>
+        <p>Same response schema as other models; the value-add is in the text itself — drug names in correct spelling, procedure names in standard terminology.</p>
 
         <h2 id="zero-codeswitch"><a class="hf-model-link" href="https://huggingface.co/shunyalabs/zero-stt-hinglish" target="_blank" rel="noopener" title="View on Hugging Face"><code>zero-codeswitch</code></a></h2>
-        <p>Tuned for speech that mixes two languages within a single utterance, Hinglish ("<em>mujhe yeh passbook update karna hai</em>"), Tanglish, Banglish, etc. Automatically restores English words to Latin script so the final transcript reads cleanly.</p>
+        <p>Tuned for speech that mixes two languages within a single utterance — Hinglish ("<em>mujhe yeh passbook update karna hai</em>"), Tanglish, Banglish, etc. Automatically restores English words to Latin script so the final transcript reads cleanly.</p>
 
         <h3>When to use</h3>
         <ul>
@@ -106,10 +110,11 @@
         </ul>
 
         <h3>Example</h3>
-<pre><code>curl -X POST https://asr.shunyalabs.ai/v1/audio/transcriptions \
-  -H "Authorization: Bearer $SHUNYALABS_API_KEY" \
-  -F "file=@hinglish.wav" \
-  -F "model=zero-codeswitch"</code></pre>
+<pre><code>curl --location 'https://asrv2prod.shunyalabs.ai/v1/audio/transcriptions' \
+  --header 'accept: application/json' \
+  --header 'Authorization: Bearer &lt;ACCESS_TOKEN&gt;' \
+  --form 'file=@"hinglish.wav"' \
+  --form 'model=zero-codeswitch'</code></pre>
 
         <h3>What the output looks like</h3>
 <pre><code>{

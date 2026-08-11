@@ -20,18 +20,18 @@
         <p class="lead">Cloud APIs for speech-to-text and text-to-speech. Use the sidebar to open General guides or jump straight to an endpoint.</p>
 
         <h2 class="product-chapter">Speech-to-Text <span class="accent-italic">(ASR)</span></h2>
-        <p>Every endpoint under <code>asr.shunyalabs.ai</code>, their request fields, response shapes, and error codes.</p>
+        <p>Every endpoint under <code>asrv2prod.shunyalabs.ai</code>, their request fields, response shapes, and error codes. All ASR endpoints authenticate with the short-lived access token from <code>POST /auth/token</code>.</p>
 
         <h3>Endpoints</h3>
         <div class="table-wrap">
           <table>
             <thead><tr><th>Mode</th><th>Endpoint</th><th>Use for</th></tr></thead>
             <tbody>
-              <tr><td>Batch</td><td><code>POST https://asr.shunyalabs.ai/v1/audio/transcriptions</code></td><td>Uploaded files, post-processing, async jobs.</td></tr>
-              <tr><td>Streaming</td><td><code>wss://asr.shunyalabs.ai/ws</code></td><td>Live transcription, voice agents, IVR.</td></tr>
-              <tr><td>Health</td><td><code>GET https://asr.shunyalabs.ai/health</code></td><td>Liveness checks. No auth.</td></tr>
-              <tr><td>Languages</td><td><code>GET https://asr.shunyalabs.ai/languages</code></td><td>Returns supported language names, ISO codes, and scripts.</td></tr>
-              <tr><td>Speakers</td><td><code>/v1/speakers/*</code></td><td>Register, list, identify, delete voice profiles for speaker identification.</td></tr>
+              <tr><td>Auth</td><td><code>POST https://asrv2prod.shunyalabs.ai/auth/token</code></td><td>Exchange your API key for a short-lived access token.</td></tr>
+              <tr><td>Batch</td><td><code>POST https://asrv2prod.shunyalabs.ai/v1/audio/transcriptions</code></td><td>Uploaded files, post-processing, async jobs.</td></tr>
+              <tr><td>Streaming</td><td><code>wss://asrv2prod.shunyalabs.ai/v1/realtime</code></td><td>Live transcription, voice agents, IVR. Also at <code>WS /ws</code>.</td></tr>
+              <tr><td>Speech Intelligence</td><td><code>POST /v1/speechintelligence</code></td><td>NLP over text: intent, summary, sentiment, key terms.</td></tr>
+              <tr><td>Speakers</td><td><code>POST /v1/speakers/register</code> · <code>DELETE /v1/speakers/delete</code></td><td>Enrol and remove named voiceprints.</td></tr>
             </tbody>
           </table>
         </div>

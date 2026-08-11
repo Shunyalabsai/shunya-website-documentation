@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>ASR API reference | Shunya Labs Docs</title>
-  <meta name="description" content="Complete API reference for Zero STT: endpoints, request fields, response schema, error codes, speaker APIs.">
+  <meta name="description" content="Complete API reference for Zero STT: authentication, batch transcription, realtime streaming, speech intelligence, speaker enrolment, and error codes.">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@1,500;1,600;1,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/web_doc/assets/css/main.css?v=37">
   <script src="/web_doc/assets/js/theme.js"></script>
@@ -17,211 +17,250 @@
           <a href="/web_doc/index.html">Docs</a><span class="sep">/</span><a href="/web_doc/api-reference/index.html">API Reference</a><span class="sep">/</span><span>Speech-to-Text</span><span class="sep">/</span><span>API reference</span>
         </div>
         <h1>ASR API <span class="accent-italic">reference</span></h1>
-        <p class="lead">Every endpoint under <code>asr.shunyalabs.ai</code>, their request fields, response shapes, and error codes.</p>
-
-        <h2 id="authentication">1. Authentication</h2>
-        <p>All endpoints except <code>/health</code> require a bearer token in the <code>Authorization</code> header.</p>
-<pre><code class="language-http">Authorization: Bearer $SHUNYALABS_API_KEY</code></pre>
-
-        <h2 id="post-transcriptions">2. POST /v1/audio/transcriptions</h2>
-        <p>Batch transcription of an audio file or URL. Returns the full transcript, per-segment timestamps, and any intelligence results you enabled.</p>
-        <p>Required fields: <code>file</code> (or <code>url</code>) and <code>model</code>. Content-Type: <code>multipart/form-data</code>. See <a href="/web_doc/asr/configuration.html">Configuration</a> for every parameter.</p>
-
-        <p><strong>Request:</strong></p>
-<pre><code class="language-bash">curl -X POST https://asr.shunyalabs.ai/v1/audio/transcriptions \
-  -H "Authorization: Bearer $SHUNYALABS_API_KEY" \
-  -F "file=@call.wav" \
-  -F "model=zero-indic" \
-  -F "language_code=hi" \
-  -F "response_format=verbose_json"</code></pre>
-
-        <p><strong>Response (<code>verbose_json</code>):</strong></p>
-<pre><code class="language-json">{
-  "success": true,
-  "request_id": "b3f1a2c4-...",
-  "text": "नमस्ते मोहम्मद जी...",
-  "segments": [
-    { "start": 0.51, "end": 5.70, "text": "...", "speaker": "SPEAKER_00" }
-  ],
-  "detected_language": "Hindi",
-  "speakers": ["SPEAKER_00", "SPEAKER_01"],
-  "audio_duration": 5.7,
-  "inference_time_ms": 812.3,
-  "nlp_analysis": {
-    "intent": { "label": "...", "confidence": 0.92, "reasoning": "..." },
-    "sentiment": { "label": "neutral", "score": 0.12, "explanation": "..." },
-    "summary": "...",
-    "translation": "...",
-    "normalized_text": "..."
-  }
-}</code></pre>
-
-        <p><strong>Response (<code>json</code>: minimal, OpenAI-compatible):</strong></p>
-<pre><code class="language-json">{ "text": "नमस्ते मोहम्मद जी..." }</code></pre>
-
-        <h2 id="websocket">3. WebSocket /ws</h2>
-        <p>Full protocol documented in <a href="/web_doc/asr/streaming.html">Streaming</a>. Summary of the lifecycle:</p>
-        <ol>
-          <li>Open <code>wss://asr.shunyalabs.ai/ws</code></li>
-          <li>Send JSON init with <code>api_key</code>, <code>model</code>, <code>language</code>, <code>sample_rate</code>, <code>dtype</code></li>
-          <li>Stream binary audio frames</li>
-          <li>Send <code>"END"</code> / <code>{"type":"end"}</code> / empty binary to finalize</li>
-          <li>Receive <code>ready</code> → <code>speech_start</code> → <code>partial</code>* → <code>speech_end</code> → <code>final_segment</code> → ... → <code>end_of_transcript</code> → <code>done</code></li>
-        </ol>
-
-        <h2 id="health">4. GET /health</h2>
-        <p>Unauthenticated. Use for deployment smoke tests.</p>
-
-        <p><strong>Request:</strong></p>
-<pre><code class="language-bash">curl https://asr.shunyalabs.ai/health</code></pre>
-
-        <p><strong>Response:</strong></p>
-<pre><code class="language-json">{
-  "status": "ok",
-  "services": {
-    "triton": "ready",
-    "qwen3_asr_streaming": "ready",
-    "qwen3_asr_bls": "ready",
-    "auth": "connected"
-  }
-}</code></pre>
-
-        <p><code>status</code> is <code>"ok"</code> when Triton is healthy, <code>"degraded"</code> otherwise.</p>
-
-        <h2 id="languages">5. GET /languages</h2>
-        <p>Returns the full supported language list with ISO codes and script mappings.</p>
-
-        <p><strong>Request:</strong></p>
-<pre><code class="language-bash">curl https://asr.shunyalabs.ai/languages \
-  -H "Authorization: Bearer $SHUNYALABS_API_KEY"</code></pre>
-
-        <h2 id="speakers">6. Speaker APIs</h2>
-        <p>Diarization produces <code>SPEAKER_00</code>-style labels. To map those to actual names, register voice profiles using these four endpoints.</p>
+        <p class="lead">Every endpoint in the Shunya Speech-to-Text API — authentication, batch transcription, realtime streaming, speech intelligence, and speaker enrolment — with request fields, response shapes, and error codes.</p>
 
         <div class="callout callout-info">
-          <div class="callout-title">Reference clip requirements</div>
-          5-15 seconds, speaker alone, no background music, no overlapping voices, 16 kHz or higher sample rate.
+          <div class="callout-title">Base URLs</div>
+          Batch / HTTP: <code>https://asrv2prod.shunyalabs.ai</code><br>
+          Streaming / WebSocket: <code>wss://asrv2prod.shunyalabs.ai</code>
         </div>
 
-        <h3 id="speakers-register">6.1 POST /v1/speakers/register</h3>
-        <p><strong>Request:</strong></p>
-<pre><code class="language-bash">curl -X POST https://asr.shunyalabs.ai/v1/speakers/register \
-  -H "Authorization: Bearer $SHUNYALABS_API_KEY" \
-  -F "name=Priya" \
-  -F "file=@priya_sample.wav" \
-  -F "project=support_team"</code></pre>
+        <h2 id="post-auth-token">1. Authentication — <code>POST /auth/token</code></h2>
+        <p>You use your <strong>API key once</strong> to obtain a short-lived <strong>access token</strong>, then send that token on every request. Do not send your API key to the transcription endpoints.</p>
 
-        <p><strong>Response:</strong></p>
-<pre><code class="language-json">{ "success": true, "speaker": "Priya", "message": "Registered successfully" }</code></pre>
+        <p><strong>Request</strong> — send the API key in the <code>Authorization</code> header:</p>
+<pre><code class="language-http">POST /auth/token
+Authorization: Bearer &lt;YOUR_API_KEY&gt;</code></pre>
 
-        <h3 id="speakers-list">6.2 GET /v1/speakers/list</h3>
-        <p><strong>Request:</strong></p>
-<pre><code class="language-bash">curl "https://asr.shunyalabs.ai/v1/speakers/list?project=support_team" \
-  -H "Authorization: Bearer $SHUNYALABS_API_KEY"</code></pre>
+        <p><strong>Example — cURL:</strong></p>
+<pre><code class="language-bash">curl --location --request POST 'https://asrv2prod.shunyalabs.ai/auth/token' \
+  --header 'accept: application/json' \
+  --header 'Authorization: Bearer &lt;API_KEY_GENERATED_IN_DASHBOARD&gt;'</code></pre>
+        <p class="text-muted">Use the <code>token</code> returned by this request as the Bearer token for transcription and other authenticated ASR endpoints.</p>
 
-        <p><strong>Response:</strong></p>
+        <p><strong>Response</strong> <code>200 OK</code>:</p>
+<pre><code class="language-json">{ "token": "&lt;access_token&gt;", "expires_at": 1784745886, "expires_in": 900 }</code></pre>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><code>token</code></td><td>string</td><td>The access token to use on ASR requests.</td></tr>
+              <tr><td><code>expires_at</code></td><td>integer</td><td>Unix time when the token expires.</td></tr>
+              <tr><td><code>expires_in</code></td><td>integer</td><td>Seconds until expiry (typically 900 = 15 min).</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p><strong>Errors:</strong> <code>400</code> (no key supplied), <code>401</code> (invalid key), <code>402</code> (insufficient balance), <code>429</code> (too many requests).</p>
+
+        <div class="callout callout-info">
+          <div class="callout-title">Usage</div>
+          Cache the token and reuse it until shortly before <code>expires_at</code>; request a new one on expiry or a <code>401</code>.
+        </div>
+
+        <h2 id="post-transcriptions">2. Batch transcription — <code>POST /v1/audio/transcriptions</code></h2>
+        <p>Transcribe an audio file. Use for pre-recorded audio — you get the whole transcript in one response.</p>
+
+        <p><strong>Request</strong> — <code>multipart/form-data</code>, with the access token:</p>
+<pre><code class="language-http">POST /v1/audio/transcriptions
+Authorization: Bearer &lt;access_token&gt;
+Content-Type: multipart/form-data</code></pre>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><code>file</code></td><td>file</td><td>one of <code>file</code>/<code>audio_base64</code>/<code>url</code></td><td>Audio file (wav, mp3, flac, ogg/opus). Max 50 MB.</td></tr>
+              <tr><td><code>audio_base64</code></td><td>string</td><td>—</td><td>Base64 audio instead of a file upload.</td></tr>
+              <tr><td><code>url</code></td><td>string</td><td>—</td><td>URL to fetch the audio from.</td></tr>
+              <tr><td><code>model</code></td><td>string</td><td>no</td><td>ASR model (e.g. <code>zero-indic</code>, <code>zero-universal</code>). Defaults to the account model.</td></tr>
+              <tr><td><code>language_code</code></td><td>string</td><td>no</td><td>Language (e.g. <code>en</code>, <code>hi</code>) or <code>auto</code> to detect. Default <code>auto</code>.</td></tr>
+              <tr><td><code>diarize</code></td><td>boolean</td><td>no</td><td>Return per-speaker segments. Default <code>false</code>.</td></tr>
+              <tr><td><code>num_speakers</code></td><td>integer</td><td>no</td><td>Hint for the number of speakers (improves diarization).</td></tr>
+              <tr><td><code>response_format</code></td><td>string</td><td>no</td><td><code>json</code> (default) or <code>verbose_json</code>.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <p><strong>Example — cURL (file upload):</strong></p>
+<pre><code class="language-bash">curl --location 'https://asrv2prod.shunyalabs.ai/v1/audio/transcriptions' \
+  --header 'accept: application/json' \
+  --header 'Authorization: Bearer &lt;ACCESS_TOKEN&gt;' \
+  --form 'file=@"audio.wav"'</code></pre>
+        <p class="text-muted">Replace <code>&lt;ACCESS_TOKEN&gt;</code> with the short-lived token returned by <code>POST /auth/token</code>, and replace the example audio path with your local file path.</p>
+
+        <p><strong>Response — <code>json</code> (default)</strong> <code>200 OK</code>:</p>
+<pre><code class="language-json">{ "text": "the transcribed text" }</code></pre>
+
+        <p><strong>Response — <code>verbose_json</code></strong> <code>200 OK</code>:</p>
 <pre><code class="language-json">{
-  "speakers": [
-    { "name": "Priya", "project": "support_team", "registered_at": "2026-03-17T10:00:00" },
-    { "name": "Rahul", "project": "support_team", "registered_at": "2026-03-17T10:05:00" }
-  ]
+  "text": "the transcribed text",
+  "audio_duration": 8.0,
+  "inference_time_ms": 116.6,
+  "request_id": "c1a686efeedf",
+  "success": true,
+  "segments": [ { "start": 0.0, "end": 2.4, "text": "…", "speaker": "SPEAKER_00" } ],
+  "words":    [ { "word": "…", "start": 0.0, "end": 0.3 } ],
+  "speakers": [ "SPEAKER_00", "SPEAKER_01" ],
+  "speaker_turns": [ { "start": 0.0, "end": 2.4, "speaker": "SPEAKER_00" } ]
 }</code></pre>
 
-        <h3 id="speakers-identify">6.3 POST /v1/speakers/identify</h3>
-        <p>Standalone speaker ID, skip diarization, just identify who is in a clip.</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
+            <tbody>
+              <tr><td><code>text</code></td><td>string</td><td>Full transcript.</td></tr>
+              <tr><td><code>audio_duration</code></td><td>float</td><td>Audio length in seconds.</td></tr>
+              <tr><td><code>inference_time_ms</code></td><td>float</td><td>Processing time.</td></tr>
+              <tr><td><code>request_id</code></td><td>string</td><td>Identifier for this request (quote it in support tickets).</td></tr>
+              <tr><td><code>success</code></td><td>boolean</td><td>Whether transcription succeeded.</td></tr>
+              <tr><td><code>segments</code></td><td>array</td><td>Time-stamped segments (with <code>speaker</code> when <code>diarize=true</code>).</td></tr>
+              <tr><td><code>words</code></td><td>array</td><td>Word-level timestamps.</td></tr>
+              <tr><td><code>speakers</code> / <code>speaker_turns</code></td><td>array</td><td>Present when <code>diarize=true</code>.</td></tr>
+            </tbody>
+          </table>
+        </div>
 
-        <p><strong>Request:</strong></p>
-<pre><code class="language-bash">curl -X POST https://asr.shunyalabs.ai/v1/speakers/identify \
-  -H "Authorization: Bearer $SHUNYALABS_API_KEY" \
-  -F "file=@unknown.wav" \
-  -F "project=support_team"</code></pre>
+        <p><strong>Errors:</strong> <code>400</code> (bad request / audio exceeds plan limit), <code>401</code> (missing/invalid/expired token), <code>403</code> (token not permitted for this endpoint), <code>413</code> (file too large), <code>415</code> (unsupported audio), <code>429</code> (rate limit), <code>504</code> (timeout).</p>
 
-        <p><strong>Response (recognised):</strong></p>
-<pre><code class="language-json">{ "speaker": "Priya", "confidence": 0.91 }</code></pre>
+        <h2 id="websocket">3. Realtime streaming — <code>WS /v1/realtime</code></h2>
+        <p>Live speech-to-text over WebSocket (English + 22 Indic languages). Also reachable at <code>WS /ws</code> (same behaviour). For <strong>pre-recorded</strong> files use the batch endpoint above — it's faster and returns the whole transcript at once. Streaming is for <strong>live</strong> audio where partial results matter.</p>
 
-        <p><strong>Response (below threshold):</strong></p>
-<pre><code class="language-json">{ "speaker": "unknown", "confidence": 0.23 }</code></pre>
+<pre><code>wss://asrv2prod.shunyalabs.ai/v1/realtime</code></pre>
 
-        <h3 id="speakers-delete">6.4 DELETE /v1/speakers/delete</h3>
-        <p><strong>Request:</strong></p>
-<pre><code class="language-bash">curl -X DELETE https://asr.shunyalabs.ai/v1/speakers/delete \
-  -H "Authorization: Bearer $SHUNYALABS_API_KEY" \
-  -F "name=Priya" \
-  -F "project=support_team"</code></pre>
+        <p><strong>Authentication</strong> — the <strong>access token</strong> from <code>/auth/token</code> (the same token used for batch), sent as:</p>
+        <ul>
+          <li>a field in the first message: <code>{"token": "&lt;access_token&gt;", ...}</code> (the field <code>api_key</code> is also accepted for the same value), or</li>
+          <li>a query parameter: <code>?token=&lt;access_token&gt;</code>, or</li>
+          <li>an <code>Authorization: Bearer &lt;access_token&gt;</code> header on the WebSocket upgrade.</li>
+        </ul>
 
-        <p><strong>Response:</strong></p>
+        <h3>1. Open the session</h3>
+        <p>Send one JSON message (text or binary frame):</p>
+<pre><code class="language-json">{ "token": "&lt;access_token&gt;", "language": "hi", "sample_rate": 8000, "diarize": true, "num_speakers": 2 }</code></pre>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Field</th><th>Required</th><th>Notes</th></tr></thead>
+            <tbody>
+              <tr><td><code>token</code></td><td>yes (or query param / Bearer header)</td><td>The access token from <code>/auth/token</code>.</td></tr>
+              <tr><td><code>language</code></td><td><strong>yes</strong></td><td><code>en</code>, <code>hi</code>, <code>bn</code>, <code>gu</code>, <code>kn</code>, <code>ml</code>, <code>mr</code>, <code>ta</code>, <code>te</code>, … There is <strong>no auto-detect</strong> — omitting <code>language</code> or sending <code>"auto"</code> produces wrong output.</td></tr>
+              <tr><td><code>sample_rate</code></td><td>no</td><td>Of the PCM you will send. Default <code>16000</code>; <code>8000</code> supported.</td></tr>
+              <tr><td><code>diarize</code></td><td>no</td><td><code>true</code> labels each <code>final</code> with a speaker.</td></tr>
+              <tr><td><code>num_speakers</code></td><td>no</td><td>How many speakers, if known — improves labelling.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h3>2. Send audio</h3>
+        <p>Raw binary WebSocket frames: <strong>16-bit signed PCM, little-endian, mono</strong>, at the <code>sample_rate</code> you declared, 20–320 ms per frame (20 ms = 320 bytes at 8 kHz is typical for telephony), no headers (raw PCM, not WAV/MP3). Pace at roughly realtime (a 20 ms frame every 20 ms).</p>
+
+        <h3>3. Finish</h3>
+        <p>Send the text message <code>end</code>.</p>
+
+        <h3>Response events</h3>
+<pre><code class="language-json">{"type":"ready","language":"hi","sample_rate":8000,"diarize":true}
+{"type":"partial","seg":3,"delta":"और फिर","text":"हाँ जी बोलिए और फिर","elapsed_ms":8420}
+{"type":"final","seg":3,"text":"हाँ जी बोलिए और फिर वो अकाउंट","speaker":"SPEAKER_00","elapsed_ms":11200}
+{"type":"error","error":"invalid or missing api key"}</code></pre>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Type</th><th>Meaning</th></tr></thead>
+            <tbody>
+              <tr><td><code>ready</code></td><td>Session open, waiting for audio. Sent once, echoes your settings — check them before streaming.</td></tr>
+              <tr><td><code>partial</code></td><td>In-progress text for the current segment (~every 640 ms). <code>delta</code> = new since the last partial; <code>text</code> = segment so far. Provisional, may change.</td></tr>
+              <tr><td><code>final</code></td><td>Segment closed; its <code>text</code> won't change. <code>seg</code> increments per segment.</td></tr>
+              <tr><td><code>error</code></td><td>Request rejected; the socket closes afterwards.</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="callout callout-info">
+          <div class="callout-title">Building the transcript</div>
+          Concatenate <code>final.text</code> in <code>seg</code> order; use <code>partial</code> for live display only. <code>speaker</code> appears on <code>final</code> when <code>diarize</code> was set (<code>SPEAKER_00</code>, …, stable for the connection); it may be <code>null</code> on a very short segment (treat as unknown, not an error).
+        </div>
+
+        <h3>Example (Python)</h3>
+<pre><code class="language-python">import asyncio, json, websockets
+
+async def transcribe(pcm_frames, token, lang="hi", sr=8000):
+    url = "wss://asrv2prod.shunyalabs.ai/v1/realtime"
+    finals = []
+    async with websockets.connect(url, max_size=None) as ws:
+        await ws.send(json.dumps({"token": token, "language": lang, "sample_rate": sr}))
+
+        async def read():
+            async for msg in ws:
+                ev = json.loads(msg)
+                if ev.get("type") == "final" and ev.get("text"):
+                    finals.append(ev["text"])
+                elif ev.get("type") == "error":
+                    raise RuntimeError(ev["error"])
+
+        reader = asyncio.create_task(read())
+        for frame in pcm_frames:                 # bytes: int16 LE mono
+            await ws.send(frame)
+            await asyncio.sleep(0.02)             # pace ~realtime
+        await ws.send("end")
+        await reader
+    return " ".join(finals)</code></pre>
+
+        <div class="callout callout-warn">
+          <div class="callout-title">Pacing &amp; reconnection</div>
+          Pace audio at realtime — pushing a long recording as fast as the socket allows can outrun the decoder and end the connection early. On an unexpected close, reconnect and resume; transcript already received via <code>final</code> events stays valid.
+        </div>
+
+        <h2 id="post-speechintelligence">4. Speech Intelligence — <code>POST /v1/speechintelligence</code></h2>
+        <p>Run NLP analysis (intent, summary, sentiment, key terms, …) over text.</p>
+
+        <p><strong>Request</strong> — <code>application/json</code>, with the access token:</p>
+<pre><code class="language-json">{ "text": "…", "enable_intent_detection": true, "enable_summarization": true,
+  "enable_sentiment_analysis": true }</code></pre>
+
+        <p><strong>Response</strong> <code>200 OK</code>:</p>
+<pre><code class="language-json">{ "success": true, "text": "…", "analysis": { "intent": "…", "summary": "…", "sentiment": "…" } }</code></pre>
+
+        <p><strong>Errors:</strong> <code>400</code> (text required), <code>401</code>/<code>403</code> (auth), <code>503</code> (analysis unavailable).</p>
+
+        <h2 id="speakers">5. Speaker enrolment</h2>
+        <p>Enrol a named voiceprint so it is recognised in later calls.</p>
+
+        <h3 id="speakers-register">5.1 POST /v1/speakers/register</h3>
+        <p><strong>Request</strong> — <code>multipart/form-data</code>: <code>name</code> (string), <code>file</code> (audio), <code>project</code> (string, optional).</p>
+        <p><strong>Response</strong> <code>200 OK</code>:</p>
+<pre><code class="language-json">{ "success": true, "speaker": "&lt;name&gt;", "message": "…" }</code></pre>
+
+        <h3 id="speakers-delete">5.2 DELETE /v1/speakers/delete</h3>
+        <p>Remove a named voiceprint. <strong>Request:</strong> <code>name</code> (string), <code>project</code> (optional). <strong>Response:</strong></p>
 <pre><code class="language-json">{ "success": true }</code></pre>
 
-        <h2>7. HTTP error codes</h2>
+        <h2 id="http-error-codes">6. Errors</h2>
+        <p>All errors return JSON <code>{ "detail": "&lt;message&gt;" }</code> with the HTTP status:</p>
         <div class="table-wrap">
           <table>
             <thead><tr><th>Status</th><th>Meaning</th></tr></thead>
             <tbody>
-              <tr><td>200</td><td>Success, audio or JSON body returned.</td></tr>
-              <tr><td>400</td><td>Bad request, missing or malformed fields. Response body: <code>{"detail": "..."}</code>.</td></tr>
-              <tr><td>401</td><td>Unauthorized, API key invalid or missing.</td></tr>
-              <tr><td>422</td><td>Synthesis / transcription error (invalid text or config).</td></tr>
-              <tr><td>429</td><td>Rate limit exceeded. Back off and retry.</td></tr>
-              <tr><td>500</td><td>Internal server error, unexpected server-side failure.</td></tr>
-              <tr><td>503</td><td>Service unavailable, Triton or Redis temporarily down.</td></tr>
-              <tr><td>504</td><td>Gateway timeout, request exceeded the processing window.</td></tr>
+              <tr><td><code>400</code></td><td>Bad request (missing/invalid input, or audio exceeds your plan limit).</td></tr>
+              <tr><td><code>401</code></td><td>Missing, invalid, or expired token. Re-mint at <code>/auth/token</code>.</td></tr>
+              <tr><td><code>402</code></td><td>Insufficient balance (at <code>/auth/token</code>).</td></tr>
+              <tr><td><code>403</code></td><td>Token not authorized for this endpoint.</td></tr>
+              <tr><td><code>413</code></td><td>Upload too large (limit 50 MB).</td></tr>
+              <tr><td><code>415</code></td><td>Unsupported audio format.</td></tr>
+              <tr><td><code>429</code></td><td>Rate limit exceeded.</td></tr>
+              <tr><td><code>504</code></td><td>Request timed out.</td></tr>
             </tbody>
           </table>
         </div>
 
-        <h2 id="reconnect">8. Retry patterns</h2>
-        <p>Safe to retry: <code>429</code>, <code>500</code>, <code>502</code>, <code>503</code>, <code>504</code>. Not safe: <code>400</code>, <code>401</code>, <code>422</code>: fix the request first.</p>
-
-        <h3>Exponential backoff (Python)</h3>
-<pre><code>import time, requests
-
-def transcribe_with_retry(file_path, retries=3):
-    for attempt in range(retries):
-        with open(file_path, "rb") as f:
-            r = requests.post(
-                "https://asr.shunyalabs.ai/v1/audio/transcriptions",
-                headers={"Authorization": f"Bearer {API_KEY}"},
-                files={"file": f},
-                data={"model": "zero-indic"},
-                timeout=120,
-            )
-        if r.status_code == 200:
-            return r.json()
-        if r.status_code in (429, 500, 502, 503, 504):
-            time.sleep(2 ** attempt)  # 1s, 2s, 4s
-            continue
-        r.raise_for_status()
-    raise RuntimeError("Max retries exceeded")</code></pre>
-
-        <h3>WebSocket reconnection</h3>
-<pre><code>async def stream_with_reconnect(max_attempts=3):
-    for attempt in range(max_attempts):
-        try:
-            async with websockets.connect("wss://asr.shunyalabs.ai/ws") as ws:
-                await ws.send(json.dumps({...}))
-                async for msg in ws:
-                    yield json.loads(msg)
-                return
-        except websockets.ConnectionClosed:
-            await asyncio.sleep(2 ** attempt)
-    raise RuntimeError("Max reconnects exceeded")</code></pre>
-
-        <h2>9. Rate limits</h2>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Limit</th><th>Value</th></tr></thead>
-            <tbody>
-              <tr><td>Max file size</td><td>500 MB</td></tr>
-              <tr><td>Max audio duration per file</td><td>4 hours</td></tr>
-              <tr><td>Concurrent requests (default tier)</td><td>16</td></tr>
-              <tr><td>HTTP request timeout</td><td>Use at least 120 s for long audio</td></tr>
-              <tr><td>WebSocket inactivity timeout</td><td>300 s (configurable up to 3600 s)</td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <h2>10. Request IDs</h2>
-        <p>Every response includes <code>request_id</code> (and an <code>X-Request-Id</code> header). Log it, Shunya support uses it to trace issues. On WebSocket, the <code>session_id</code> in the <code>ready</code> event is the equivalent.</p>
+        <h2 id="notes-for-clients">7. Notes for clients</h2>
+        <ul>
+          <li><strong>Batch vs streaming:</strong> pre-recorded audio → batch <code>POST /v1/audio/transcriptions</code>; live audio → streaming <code>WS /v1/realtime</code>. <strong>Both authenticate with the access token</strong> from <code>/auth/token</code>.</li>
+          <li><strong>Token lifetime:</strong> ~15 minutes. Cache and reuse for both batch and streaming; re-mint on expiry or a <code>401</code> / streaming <code>error</code>.</li>
+          <li><strong>Audio:</strong> batch — wav, mp3, flac, ogg/opus, up to 50 MB per request. Streaming — raw 16-bit PCM, LE, mono, at 8 kHz or 16 kHz.</li>
+          <li><strong><code>request_id</code>:</strong> include it when contacting support — it identifies your request in our logs. For a streaming session, quote the UTC time, language, and approximate call duration.</li>
+        </ul>
 
         <div class="pager">
           <a class="pager-link" href="/web_doc/asr/dashboard.html">

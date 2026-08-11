@@ -52,13 +52,16 @@
 
     { category: 'features', query: 'ASR features and intelligence flags', keywords: ['diarization', 'features', 'enable_'], href: '/asr/features.html' },
     { category: 'features', query: 'Batch vs streaming, when to use which?', keywords: ['batch', 'streaming', 'transport'], href: '/asr/overview.html#batch-vs-streaming' },
-    { category: 'features', query: 'Speaker registration and identification APIs', keywords: ['speaker', 'register', 'identify'], href: '/asr/api-reference.html#speakers' },
+    { category: 'features', query: 'Speaker registration and deletion APIs', keywords: ['speaker', 'register', 'delete', 'enrol'], href: '/asr/api-reference.html#speakers' },
 
-    { category: 'intel', query: 'Intelligence overview with examples', keywords: ['intelligence', 'nlp', 'gemini'], href: '/intelligence/overview.html' },
-    { category: 'intel', query: 'Diarization, who spoke when?', keywords: ['diarization', 'speaker', 'segments'], href: '/intelligence/overview.html#diarization' },
+    { category: 'intel', query: 'Speech Intelligence overview with examples', keywords: ['intelligence', 'nlp', 'speechintelligence', 'analysis'], href: '/intelligence/overview.html' },
+    { category: 'features', query: 'Diarization, who spoke when?', keywords: ['diarization', 'diarize', 'speaker', 'segments'], href: '/asr/features.html#diarization' },
     { category: 'intel', query: 'Intent detection on transcripts', keywords: ['intent', 'classification', 'complaint'], href: '/intelligence/overview.html#intent-detection' },
-    { category: 'intel', query: 'Sentiment analysis and summarization', keywords: ['sentiment', 'summary', 'nlp_analysis'], href: '/intelligence/overview.html#sentiment-analysis' },
-    { category: 'intel', query: 'Redaction, profanity hashing, PII masking', keywords: ['hash_keywords', 'profanity', 'redact', 'pii'], href: '/intelligence/overview.html#custom-keyword-redaction' },
+    { category: 'intel', query: 'Sentiment analysis and summarization', keywords: ['sentiment', 'summary', 'speechintelligence'], href: '/intelligence/overview.html#sentiment-analysis' },
+    { category: 'features', query: 'Data privacy, audio deletion, compliance', keywords: ['privacy', 'compliance', 'deleted', 'sovereign'], href: '/security/compliance.html' },
+
+    { category: 'api', query: 'Mint an access token (POST /auth/token)', keywords: ['access token', 'auth token', 'bearer', 'mint', 'expires'], href: '/asr/api-reference.html#post-auth-token' },
+    { category: 'stt', query: 'Realtime protocol (WS /v1/realtime)', keywords: ['realtime', 'websocket', 'ws', 'pcm', 'end'], href: '/asr/api-reference.html#websocket' },
   ];
 
   let activeIndex = -1;

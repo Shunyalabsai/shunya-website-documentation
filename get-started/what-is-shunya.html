@@ -74,7 +74,7 @@
               <tr><th>Component</th><th>Does</th><th>Best for</th></tr>
             </thead>
             <tbody>
-              <tr><td><strong>Zero STT</strong></td><td>Transcribes audio to text. 204 languages. Streaming or batch.</td><td>Call centres, meeting notes, media captions, medical scribe.</td></tr>
+              <tr><td><strong>Zero STT</strong></td><td>Transcribes audio to text. Models for Indic, international, medical, and code-switched audio. Streaming or batch.</td><td>Call centres, meeting notes, media captions, medical scribe.</td></tr>
               <tr><td><strong>Zero TTS</strong></td><td>Generates natural speech in 23 Indic languages and English. 46 voices, 11 styles.</td><td>IVR, notifications, voice agents, audiobooks.</td></tr>
               <tr><td><strong>Vāķ Translate</strong></td><td>Translates between any two Indian languages. 2,970 pairs.</td><td>Live conversation translation, multilingual content.</td></tr>
               <tr><td><strong><a href="/web_doc/intelligence/overview.html">Intelligence layer</a></strong></td><td>Intent, entity, sentiment, diarization, summarization, on top of transcripts.</td><td>Agent assist, analytics, compliance monitoring.</td></tr>
@@ -124,7 +124,7 @@
               <div class="bs-section">
                 <span class="bs-section-label">Endpoints</span>
                 <dl class="bs-props">
-                  <dt>ASR</dt><dd>POST <code>https://asr.shunyalabs.ai/v1/audio/transcriptions</code></dd>
+                  <dt>ASR</dt><dd>POST <code>https://asrv2prod.shunyalabs.ai/v1/audio/transcriptions</code></dd>
                   <dt>TTS</dt><dd>POST <code>https://tts.shunyalabs.ai/v1/audio/speech</code></dd>
                 </dl>
               </div>
@@ -166,7 +166,7 @@
               <div class="bs-section">
                 <span class="bs-section-label">Endpoints</span>
                 <dl class="bs-props">
-                  <dt>ASR</dt><dd><code>wss://asr.shunyalabs.ai/ws</code></dd>
+                  <dt>ASR</dt><dd><code>wss://asrv2prod.shunyalabs.ai/v1/realtime</code></dd>
                   <dt>TTS</dt><dd><code>wss://tts.shunyalabs.ai/ws/v1/audio/speech</code></dd>
                 </dl>
               </div>

@@ -168,7 +168,7 @@ wscat -c "wss://tts.shunyalabs.ai/ws/v1/audio/speech" \
           <li>✅ <code>response_format</code> matched to use case (PCM/μ-law for real-time, MP3 for storage)</li>
           <li>✅ Reconnect + exponential backoff on WebSocket drops</li>
           <li>✅ <code>GET /health</code> wired into deploy smoke tests</li>
-          <li>✅ <code>X-Request-Id</code> logged for support debugging</li>
+          <li>✅ Batch <code>request_id</code> logged for support debugging</li>
         </ul>
 
         <div class="callout callout-success">

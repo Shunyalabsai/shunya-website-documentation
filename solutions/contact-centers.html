@@ -26,12 +26,12 @@
             <tbody>
               <tr>
                 <td>Live streaming ASR</td>
-                <td>WebSocket endpoint <code>wss://asr.shunyalabs.ai/ws</code> with <code>partial</code>, <code>final_segment</code>, and <code>speech_start</code> / <code>speech_end</code> events</td>
+                <td>WebSocket endpoint <code>wss://asrv2prod.shunyalabs.ai/v1/realtime</code> with <code>ready</code>, <code>partial</code>, <code>final</code>, and <code>error</code> events</td>
                 <td>ASR API guide</td>
               </tr>
               <tr>
                 <td>Telephony codecs</td>
-                <td><code>ulaw</code> / <code>alaw</code> at 8 kHz, accepted natively, no resampling required</td>
+                <td>8 kHz PCM streaming (<code>sample_rate: 8000</code> in the init message); send raw 16-bit PCM frames</td>
                 <td>ASR API guide</td>
               </tr>
               <tr>
@@ -41,18 +41,18 @@
               </tr>
               <tr>
                 <td>Speaker separation</td>
-                <td><code>enable_diarization=true</code> on batch, plus <code>enable_speaker_identification</code> for registered voices</td>
+                <td><code>diarize=true</code> on batch (or in the streaming init message), plus <code>num_speakers</code> as an optional hint</td>
                 <td>ASR API guide</td>
               </tr>
               <tr>
                 <td>Per-call analytics</td>
-                <td><code>enable_intent_detection</code>, <code>enable_sentiment_analysis</code>, <code>enable_summarization</code>, <code>enable_emotion_diarization</code></td>
+                <td>Run the transcript through <code>POST /v1/speechintelligence</code> with <code>enable_intent_detection</code>, <code>enable_sentiment_analysis</code>, and <code>enable_summarization</code></td>
                 <td>ASR API guide</td>
               </tr>
               <tr>
-                <td>Redaction</td>
-                <td><code>enable_profanity_hashing</code> and <code>hash_keywords</code> for masking sensitive phrases in stored transcripts</td>
-                <td>ASR API guide</td>
+                <td>Data privacy</td>
+                <td>Raw audio is deleted on completion and transcripts are delivered over TLS — see the <a href="/web_doc/security/compliance.html">Security &amp; Compliance</a> page</td>
+                <td>Security policy</td>
               </tr>
               <tr>
                 <td>Bot voice / IVR prompts</td>

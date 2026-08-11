@@ -135,7 +135,6 @@
     .section-intro {
       font-size: 0.85rem;
       color: var(--text-muted, #6b7280);
-      margin: -0.5rem 0 1.25rem;
     }
 
     /* Dark theme: error cards use site tokens; code keeps readable contrast */
@@ -187,113 +186,30 @@
 
         <!-- ── ASR ──────────────────────────────────────────────────────── -->
         <h2 class="product-chapter">Speech-to-Text <span class="accent-italic">(ASR)</span></h2>
-        <p class="section-intro">Returned by the <code>/v1/asr/transcribe</code> endpoint when submitting audio for transcription.</p>
+        <p class="section-intro">Returned by the ASR endpoints (<code>POST /v1/audio/transcriptions</code>, <code>WS /v1/realtime</code>, <code>POST /v1/speechintelligence</code>, speaker enrolment) and <code>POST /auth/token</code>. All error bodies are JSON: <code>{ "detail": "&lt;message&gt;" }</code>.</p>
 
         <div class="error-grid">
-
-          <!-- 200 -->
-          <div class="error-card">
-            <div class="error-badge s2xx">200</div>
-            <div class="error-body">
-              <p class="error-title">OK — transcription succeeded</p>
-              <div class="error-meta">
-                <span class="tag tag-ok">Success</span>
-              </div>
-              <div class="error-rows">
-                <div>
-                  <p class="error-row-label">What happened</p>
-                  <p class="error-row-value">Your audio was received and transcribed. The response body contains the transcript as JSON or raw text depending on the <code>response_format</code> you set.</p>
-                </div>
-                <div>
-                  <p class="error-row-label">What to do</p>
-                  <p class="error-row-value">Nothing - read the transcript from the response body. Check <code>language</code> and <code>confidence</code> fields if your use case needs them.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- 201, 202, 204
-          <div class="error-card">
-            <div class="error-badge s2xx">201</div>
-            <div class="error-body">
-              <p class="error-title">Created - resource successfully created</p>
-              <div class="error-meta">
-                <span class="tag tag-ok">Success</span>
-              </div>
-              <div class="error-rows">
-                <div>
-                  <p class="error-row-label">What happened</p>
-                  <p class="error-row-value">A new resource (e.g. a custom vocabulary or async job) was created on the server. The response body contains the new resource's <code>id</code> and initial <code>status</code>.</p>
-                </div>
-                <div>
-                  <p class="error-row-label">What to do</p>
-                  <p class="error-row-value">Store the returned <code>id</code> - you'll need it to poll for status or retrieve results later.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="error-card">
-            <div class="error-badge s2xx">202</div>
-            <div class="error-body">
-              <p class="error-title">Accepted - queued for async processing</p>
-              <div class="error-meta">
-                <span class="tag tag-ok">Success</span>
-              </div>
-              <div class="error-rows">
-                <div>
-                  <p class="error-row-label">What happened</p>
-                  <p class="error-row-value">Your request was received and queued but hasn't been processed yet. The response body will include a job <code>id</code> and <code>status: "processing"</code>. This is normal for long audio files submitted via the async endpoint.</p>
-                </div>
-                <div>
-                  <p class="error-row-label">What to do</p>
-                  <p class="error-row-value">Poll the job status endpoint with the returned <code>id</code> at a reasonable interval (e.g. every 5 s) until the status changes to <code>completed</code> or <code>failed</code>.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="error-card">
-            <div class="error-badge s2xx">204</div>
-            <div class="error-body">
-              <p class="error-title">No Content - request succeeded, no body</p>
-              <div class="error-meta">
-                <span class="tag tag-ok">Success</span>
-              </div>
-              <div class="error-rows">
-                <div>
-                  <p class="error-row-label">What happened</p>
-                  <p class="error-row-value">The action completed successfully but there's nothing to return - typical for DELETE operations or config updates.</p>
-                </div>
-                <div>
-                  <p class="error-row-label">What to do</p>
-                  <p class="error-row-value">Treat this as success. Don't attempt to parse a response body - it will be empty.</p>
-                </div>
-              </div>
-            </div>
-          </div>
-          -->
 
           <!-- 400 -->
           <div class="error-card">
             <div class="error-badge s4xx">400</div>
             <div class="error-body">
-              <p class="error-title">Bad Request - missing or invalid fields</p>
+              <p class="error-title">Bad Request - missing or invalid input</p>
               <div class="error-meta">
                 <span class="tag tag-client">Client error</span>
               </div>
               <div class="error-rows">
                 <div>
                   <p class="error-row-label">What happened</p>
-                  <p class="error-row-value">The request was malformed. Common causes: missing <code>audio</code> field, unsupported file format, invalid <code>language</code> code, or a field set to the wrong type. The <code>detail</code> field in the response body explains exactly what was wrong.</p>
+                  <p class="error-row-value">The request was missing or had invalid input, or the audio exceeds your plan limit. The <code>detail</code> field in the JSON body identifies the exact problem.</p>
                 </div>
                 <div>
                   <p class="error-row-label">How to fix it</p>
                   <ol class="fix-steps">
-                    <li>Read the <code>detail</code> message in the JSON body - it identifies the exact field.</li>
-                    <li>Verify your audio is one of the supported formats (WAV, MP3, FLAC, OGG, M4A).</li>
-                    <li>Check that required fields like <code>audio</code> and <code>model</code> are present.</li>
-                    <li>Confirm field types match the schema (e.g., <code>language</code> must be an ISO 639-1 string).</li>
+                    <li>Read the <code>detail</code> message in the JSON body - it names the offending field.</li>
+                    <li>Verify your audio is one of the supported formats (wav, mp3, flac, ogg/opus).</li>
+                    <li>Check that one of <code>file</code> / <code>audio_base64</code> / <code>url</code> is present.</li>
+                    <li>Confirm the audio is within your plan limit.</li>
                   </ol>
                 </div>
               </div>
@@ -304,328 +220,144 @@
           <div class="error-card">
             <div class="error-badge s4xx">401</div>
             <div class="error-body">
-              <p class="error-title">Unauthorized - API key missing or invalid</p>
+              <p class="error-title">Unauthorized - missing, invalid, or expired token</p>
               <div class="error-meta">
                 <span class="tag tag-auth">Authentication</span>
               </div>
               <div class="error-rows">
                 <div>
                   <p class="error-row-label">What happened</p>
-                  <p class="error-row-value">The server could not verify your identity. Either no <code>Authorization</code> header was sent, the API key is incorrect, or the key has been revoked.</p>
+                  <p class="error-row-value">The access token was missing, invalid, or expired. ASR requests authenticate with the short-lived token minted at <code>POST /auth/token</code> - not your raw API key.</p>
                 </div>
                 <div>
                   <p class="error-row-label">How to fix it</p>
                   <ol class="fix-steps">
-                    <li>Confirm you're sending <code>Authorization: Bearer &lt;your-key&gt;</code> in every request.</li>
-                    <li>Copy your key fresh from the dashboard - avoid extra spaces or newlines.</li>
-                    <li>If the key was recently rotated, update it in your app's config and redeploy.</li>
-                    <li>Check your dashboard to ensure the key is active and hasn't been revoked.</li>
+                    <li>Re-mint a token at <code>POST /auth/token</code> and use it as <code>Authorization: Bearer &lt;access_token&gt;</code>.</li>
+                    <li>Cache the token and reuse it until shortly before <code>expires_at</code>.</li>
+                    <li>On expiry or a <code>401</code>, mint a fresh token before retrying.</li>
                   </ol>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- 403
+          <!-- 402 -->
+          <div class="error-card">
+            <div class="error-badge s4xx">402</div>
+            <div class="error-body">
+              <p class="error-title">Payment Required - insufficient balance</p>
+              <div class="error-meta">
+                <span class="tag tag-auth">Account</span>
+              </div>
+              <div class="error-rows">
+                <div>
+                  <p class="error-row-label">What happened</p>
+                  <p class="error-row-value">Your account has insufficient balance to complete the request. Returned at <code>POST /auth/token</code> when the API key can't be exchanged.</p>
+                </div>
+                <div>
+                  <p class="error-row-label">How to fix it</p>
+                  <ol class="fix-steps">
+                    <li>Top up your account balance from the dashboard.</li>
+                    <li>Retry once the balance is available.</li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- 403 -->
           <div class="error-card">
             <div class="error-badge s4xx">403</div>
             <div class="error-body">
-              <p class="error-title">Forbidden - permission denied</p>
+              <p class="error-title">Forbidden - token not permitted for this endpoint</p>
               <div class="error-meta">
                 <span class="tag tag-auth">Authentication</span>
               </div>
               <div class="error-rows">
                 <div>
                   <p class="error-row-label">What happened</p>
-                  <p class="error-row-value">Your credentials are valid but your account or API key doesn't have access to this resource. This differs from 401 - the server knows who you are, it just won't let you in.</p>
+                  <p class="error-row-value">The access token is valid, but it isn't permitted to call the endpoint you used.</p>
                 </div>
                 <div>
                   <p class="error-row-label">How to fix it</p>
                   <ol class="fix-steps">
-                    <li>Confirm the resource belongs to your account (check the resource <code>id</code>).</li>
-                    <li>Verify your plan includes access to this feature or endpoint.</li>
-                    <li>Check that your API key has the required scopes enabled in the dashboard.</li>
+                    <li>Confirm the endpoint you're calling is part of the ASR API surface.</li>
+                    <li>Mint a token from an API key with access to that endpoint.</li>
                     <li>Contact support if you believe access should be permitted.</li>
                   </ol>
                 </div>
               </div>
             </div>
           </div>
-          -->
 
-          <!-- 404 -->
-          <div class="error-card">
-            <div class="error-badge s4xx">404</div>
-            <div class="error-body">
-              <p class="error-title">Not Found - endpoint or resource doesn't exist</p>
-              <div class="error-meta">
-                <span class="tag tag-client">Client error</span>
-              </div>
-              <div class="error-rows">
-                <div>
-                  <p class="error-row-label">What happened</p>
-                  <p class="error-row-value">The URL path or resource ID you requested doesn't exist. Common causes: typo in the endpoint path, a stale resource <code>id</code> that was already deleted, or using a deprecated API version.</p>
-                </div>
-                <div>
-                  <p class="error-row-label">How to fix it</p>
-                  <ol class="fix-steps">
-                    <li>Double-check the endpoint URL against the API reference.</li>
-                    <li>Confirm the resource <code>id</code> still exists (it may have been deleted).</li>
-                    <li>Ensure you're targeting the correct API version prefix (e.g., <code>/v1/</code>).</li>
-                  </ol>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- 405 -->
-          <div class="error-card">
-            <div class="error-badge s4xx">405</div>
-            <div class="error-body">
-              <p class="error-title">Method Not Allowed - wrong HTTP verb</p>
-              <div class="error-meta">
-                <span class="tag tag-client">Client error</span>
-              </div>
-              <div class="error-rows">
-                <div>
-                  <p class="error-row-label">What happened</p>
-                  <p class="error-row-value">The endpoint exists but doesn't support the HTTP method you used (e.g., sending a <code>GET</code> to an endpoint that only accepts <code>POST</code>).</p>
-                </div>
-                <div>
-                  <p class="error-row-label">How to fix it</p>
-                  <ol class="fix-steps">
-                    <li>Check the API reference for the correct method for this endpoint.</li>
-                    <li>Inspect the <code>Allow</code> response header - it lists the accepted methods.</li>
-                  </ol>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- 408, 409, 413, 415
-          <div class="error-card">
-            <div class="error-badge s4xx">408</div>
-            <div class="error-body">
-              <p class="error-title">Request Timeout - client took too long to send</p>
-              <div class="error-meta">
-                <span class="tag tag-client">Client error</span>
-              </div>
-              <div class="error-rows">
-                <div>
-                  <p class="error-row-label">What happened</p>
-                  <p class="error-row-value">The server closed the connection because your client didn't finish sending the request within the allowed time. Usually caused by slow upload of large audio files on a poor connection.</p>
-                </div>
-                <div>
-                  <p class="error-row-label">How to fix it</p>
-                  <ol class="fix-steps">
-                    <li>Check your upload speed - large files on slow connections will time out.</li>
-                    <li>Compress or reduce audio quality before uploading if file size is large.</li>
-                    <li>Increase your HTTP client's send timeout setting.</li>
-                    <li>Retry on a more stable network connection.</li>
-                  </ol>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div class="error-card">
-            <div class="error-badge s4xx">409</div>
-            <div class="error-body">
-              <p class="error-title">Conflict - request contradicts current state</p>
-              <div class="error-meta">
-                <span class="tag tag-client">Client error</span>
-              </div>
-              <div class="error-rows">
-                <div>
-                  <p class="error-row-label">What happened</p>
-                  <p class="error-row-value">Your request conflicts with the server's current state. For example, trying to create a resource with a name that already exists, or modifying a job that's already completed.</p>
-                </div>
-                <div>
-                  <p class="error-row-label">How to fix it</p>
-                  <ol class="fix-steps">
-                    <li>Read the error <code>message</code> to identify what's in conflict.</li>
-                    <li>Fetch the current state of the resource before modifying it.</li>
-                    <li>Use a unique name or identifier if creating a resource that already exists.</li>
-                  </ol>
-                </div>
-              </div>
-            </div>
-          </div>
-
+          <!-- 413 -->
           <div class="error-card">
             <div class="error-badge s4xx">413</div>
             <div class="error-body">
-              <p class="error-title">Payload Too Large - file or body exceeds size limit</p>
+              <p class="error-title">Payload Too Large - upload too large</p>
               <div class="error-meta">
                 <span class="tag tag-client">Client error</span>
               </div>
               <div class="error-rows">
                 <div>
                   <p class="error-row-label">What happened</p>
-                  <p class="error-row-value">The uploaded audio file or request body exceeds the maximum allowed size for a single synchronous request.</p>
+                  <p class="error-row-value">The uploaded audio exceeds the 50 MB limit for a single request.</p>
                 </div>
                 <div>
                   <p class="error-row-label">How to fix it</p>
                   <ol class="fix-steps">
-                    <li>Check the file size limit in the API reference for your plan tier.</li>
-                    <li>Compress the audio (e.g., lower bitrate MP3) to reduce file size.</li>
+                    <li>Compress or re-encode the audio (e.g., lower bitrate MP3) to stay under 50 MB.</li>
                     <li>Split long recordings into shorter segments and submit them separately.</li>
-                    <li>Use the async transcription endpoint, which supports larger files.</li>
+                    <li>For streaming, send raw PCM frames instead of uploading a file.</li>
                   </ol>
                 </div>
               </div>
             </div>
           </div>
 
+          <!-- 415 -->
           <div class="error-card">
             <div class="error-badge s4xx">415</div>
             <div class="error-body">
-              <p class="error-title">Unsupported Media Type - format not accepted</p>
+              <p class="error-title">Unsupported Media Type - unsupported audio format</p>
               <div class="error-meta">
                 <span class="tag tag-client">Client error</span>
               </div>
               <div class="error-rows">
                 <div>
                   <p class="error-row-label">What happened</p>
-                  <p class="error-row-value">The audio format or <code>Content-Type</code> header you sent isn't supported. Common causes: sending a video file, an uncommon codec (e.g., AMR-NB), or a mismatched <code>Content-Type</code> header.</p>
+                  <p class="error-row-value">The audio format isn't supported. Batch accepts wav, mp3, flac, and ogg/opus; streaming accepts raw 16-bit signed PCM, little-endian, mono.</p>
                 </div>
                 <div>
                   <p class="error-row-label">How to fix it</p>
                   <ol class="fix-steps">
-                    <li>Convert your audio to a supported format: WAV, MP3, FLAC, OGG, or M4A.</li>
-                    <li>Set the <code>Content-Type</code> header to match the actual file format (e.g., <code>audio/mpeg</code> for MP3).</li>
-                    <li>If sending JSON, ensure <code>Content-Type: application/json</code> is set.</li>
-                  </ol>
-                </div>
-              </div>
-            </div>
-          </div>
-          -->
-
-          <!-- 422 -->
-          <div class="error-card">
-            <div class="error-badge s4xx">422</div>
-            <div class="error-body">
-              <p class="error-title">Unprocessable - audio or config rejected by the model</p>
-              <div class="error-meta">
-                <span class="tag tag-client">Client error</span>
-              </div>
-              <div class="error-rows">
-                <div>
-                  <p class="error-row-label">What happened</p>
-                  <p class="error-row-value">The request was structurally valid but the transcription engine rejected it. Common causes: corrupt or silent audio file, audio duration exceeds the limit, or an unsupported combination of model parameters.</p>
-                </div>
-                <div>
-                  <p class="error-row-label">How to fix it</p>
-                  <ol class="fix-steps">
-                    <li>Play the audio locally to confirm it's audible and not corrupt.</li>
-                    <li>Check that the file duration is within the per-request limit (see rate limits).</li>
-                    <li>Remove non-default model parameters and retry with defaults first.</li>
-                    <li>Re-export or re-encode the audio if the file may be malformed.</li>
+                    <li>Convert your audio to a supported batch format: wav, mp3, flac, or ogg/opus.</li>
+                    <li>For streaming, send raw PCM - no WAV/MP3 headers.</li>
                   </ol>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- 429
+          <!-- 429 -->
           <div class="error-card">
             <div class="error-badge s4xx">429</div>
             <div class="error-body">
-              <p class="error-title">Too Many Requests - rate limit reached</p>
+              <p class="error-title">Too Many Requests - rate limit exceeded</p>
               <div class="error-meta">
                 <span class="tag tag-limit">Rate limited</span>
               </div>
               <div class="error-rows">
                 <div>
                   <p class="error-row-label">What happened</p>
-                  <p class="error-row-value">Your account has exceeded the allowed number of requests per minute (or per hour). Requests are being dropped until the window resets. Check the <code>Retry-After</code> response header for the exact wait time.</p>
+                  <p class="error-row-value">Your account has exceeded the allowed request rate. Requests are being dropped until the window resets.</p>
                 </div>
                 <div>
                   <p class="error-row-label">How to fix it</p>
                   <ol class="fix-steps">
                     <li>Wait for the number of seconds in the <code>Retry-After</code> header, then retry.</li>
-                    <li>Implement exponential back-off in your retry loop (e.g., 1 s → 2 s → 4 s).</li>
-                    <li>Queue requests client-side to stay within your tier's limits.</li>
-                    <li>If you regularly hit this limit, request a higher-throughput plan from the dashboard.</li>
-                  </ol>
-                </div>
-              </div>
-            </div>
-          </div>
-          -->
-
-          <!-- 500 -->
-          <div class="error-card">
-            <div class="error-badge s5xx">500</div>
-            <div class="error-body">
-              <p class="error-title">Internal Server Error - unexpected failure</p>
-              <div class="error-meta">
-                <span class="tag tag-server">Server error</span>
-              </div>
-              <div class="error-rows">
-                <div>
-                  <p class="error-row-label">What happened</p>
-                  <p class="error-row-value">Something went wrong on our side that wasn't caused by your request. This is almost always transient and resolves on its own.</p>
-                </div>
-                <div>
-                  <p class="error-row-label">How to fix it</p>
-                  <ol class="fix-steps">
-                    <li>Wait 5–10 seconds and retry with the same request.</li>
-                    <li>Use exponential back-off for up to 3 retries before surfacing an error to users.</li>
-                    <li>If the error persists for more than a few minutes, contact support with the request ID.</li>
-                    <li>Report the issue with your request ID (from the <code>X-Request-Id</code> header) if it continues.</li>
-                  </ol>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- 502 -->
-          <div class="error-card">
-            <div class="error-badge s5xx">502</div>
-            <div class="error-body">
-              <p class="error-title">Bad Gateway - upstream returned an invalid response</p>
-              <div class="error-meta">
-                <span class="tag tag-infra">Infrastructure</span>
-              </div>
-              <div class="error-rows">
-                <div>
-                  <p class="error-row-label">What happened</p>
-                  <p class="error-row-value">The API gateway received a bad or unreadable response from an upstream service (e.g., the inference engine or an internal microservice). This is a server-side issue, not caused by your request.</p>
-                </div>
-                <div>
-                  <p class="error-row-label">How to fix it</p>
-                  <ol class="fix-steps">
-                    <li>Wait a few seconds and retry - upstream errors are often momentary.</li>
-                    <li>Contact support if the error continues.</li>
-                    <li>If the error recurs consistently, report it with the <code>X-Request-Id</code> header value.</li>
-                  </ol>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- 503 -->
-          <div class="error-card">
-            <div class="error-badge s5xx">503</div>
-            <div class="error-body">
-              <p class="error-title">Service Unavailable - backend temporarily down</p>
-              <div class="error-meta">
-                <span class="tag tag-infra">Infrastructure</span>
-              </div>
-              <div class="error-rows">
-                <div>
-                  <p class="error-row-label">What happened</p>
-                  <p class="error-row-value">The inference backend (Triton) or cache layer (Redis) is temporarily unavailable. This typically happens during a deployment, a restart, or an unexpected outage and usually lasts under 60 seconds.</p>
-                </div>
-                <div>
-                  <p class="error-row-label">How to fix it</p>
-                  <ol class="fix-steps">
-                    <li>Retry after 15–30 seconds.</li>
-                    <li>Honour the <code>Retry-After</code> header if present.</li>
-                    <li>Contact support if the error continues.</li>
-                    <li>Consider queuing requests in your app so users aren't directly exposed to this error.</li>
+                    <li>Implement exponential back-off in your retry loop.</li>
+                    <li>Cache your access token so you aren't minting a new one on every call.</li>
                   </ol>
                 </div>
               </div>
@@ -636,22 +368,21 @@
           <div class="error-card">
             <div class="error-badge s5xx">504</div>
             <div class="error-body">
-              <p class="error-title">Gateway Timeout - request took too long</p>
+              <p class="error-title">Gateway Timeout - request timed out</p>
               <div class="error-meta">
                 <span class="tag tag-infra">Infrastructure</span>
               </div>
               <div class="error-rows">
                 <div>
                   <p class="error-row-label">What happened</p>
-                  <p class="error-row-value">The request didn't complete within the gateway's processing window. Most common with long audio files (>10 min) submitted during peak load.</p>
+                  <p class="error-row-value">The request didn't complete within the gateway's processing window.</p>
                 </div>
                 <div>
                   <p class="error-row-label">How to fix it</p>
                   <ol class="fix-steps">
-                    <li>Split long audio files into shorter segments (recommended: ≤5 min each) and submit them in parallel.</li>
-                    <li>Retry the same request during off-peak hours if the audio is short.</li>
-                    <li>Consider using the async transcription endpoint for files longer than 5 minutes.</li>
-                    <li>If timeouts are frequent for normal-length audio, contact support with the <code>X-Request-Id</code>.</li>
+                    <li>Retry the same request once - it may have been a transient spike.</li>
+                    <li>Split long audio into shorter segments and submit them separately.</li>
+                    <li>If timeouts persist, contact support with the <code>request_id</code> from your <code>verbose_json</code> response.</li>
                   </ol>
                 </div>
               </div>
@@ -659,6 +390,7 @@
           </div>
 
         </div><!-- /error-grid ASR -->
+
 
 
         <!-- ── TTS ──────────────────────────────────────────────────────── -->

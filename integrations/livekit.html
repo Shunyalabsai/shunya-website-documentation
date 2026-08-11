@@ -82,9 +82,9 @@ session = AgentSession(
             </thead>
             <tbody>
               <tr><td><code>api_key</code></td><td><code>str</code></td><td><code>None</code></td><td>API key. Falls back to <code>SHUNYALABS_API_KEY</code> env var.</td></tr>
-              <tr><td><code>language</code></td><td><code>str</code></td><td><code>"auto"</code></td><td>BCP-47 language code or <code>"auto"</code> for detection.</td></tr>
-              <tr><td><code>api_url</code></td><td><code>str</code></td><td><code>https://asr.shunyalabs.ai</code></td><td>REST batch endpoint base URL.</td></tr>
-              <tr><td><code>ws_url</code></td><td><code>str</code></td><td><code>wss://asr.shunyalabs.ai/ws</code></td><td>WebSocket streaming endpoint URL.</td></tr>
+              <tr><td><code>language</code></td><td><code>str</code></td><td><code>None</code></td><td>Required for streaming. BCP-47 language code (e.g. <code>"hi"</code>); there is no auto-detect on streaming.</td></tr>
+              <tr><td><code>api_url</code></td><td><code>str</code></td><td><code>https://asrv2prod.shunyalabs.ai</code></td><td>REST batch endpoint base URL.</td></tr>
+              <tr><td><code>ws_url</code></td><td><code>str</code></td><td><code>wss://asrv2prod.shunyalabs.ai/v1/realtime</code></td><td>WebSocket streaming endpoint URL.</td></tr>
             </tbody>
           </table>
         </div>
@@ -107,9 +107,8 @@ session = AgentSession(
           <table>
             <thead><tr><th>Shunyalabs event</th><th>LiveKit SpeechEventType</th></tr></thead>
             <tbody>
-              <tr><td><code>PARTIAL</code></td><td><code>INTERIM_TRANSCRIPT</code></td></tr>
-              <tr><td><code>FINAL_SEGMENT</code></td><td><code>FINAL_TRANSCRIPT</code> + <code>END_OF_SPEECH</code></td></tr>
-              <tr><td><code>FINAL</code></td><td><code>FINAL_TRANSCRIPT</code> + <code>RECOGNITION_USAGE</code></td></tr>
+              <tr><td><code>partial</code></td><td><code>INTERIM_TRANSCRIPT</code></td></tr>
+              <tr><td><code>final</code></td><td><code>FINAL_TRANSCRIPT</code></td></tr>
             </tbody>
           </table>
         </div>

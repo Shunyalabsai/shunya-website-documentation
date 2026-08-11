@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>ASR streaming | Shunya Labs Docs</title>
-  <meta name="description" content="Real-time speech recognition over WebSocket with partial and final transcripts.">
+  <meta name="description" content="Real-time speech-to-text over WebSocket: open a session, stream raw PCM frames, and receive partial + final results.">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@1,500;1,600;1,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/web_doc/assets/css/main.css?v=37">
   <script src="/web_doc/assets/js/theme.js"></script>
@@ -16,196 +16,160 @@
         <div class="breadcrumb">
           <a href="/web_doc/index.html">Docs</a><span class="sep">/</span><span>Speech-to-Text</span><span class="sep">/</span><span>Streaming</span>
         </div>
-        <h1>Streaming ASR over <span class="accent-italic">WebSocket</span></h1>
-        <p class="lead">For voice agents, IVR, and live captioning. You open a WebSocket, send audio frames as they arrive, and receive partial and final transcripts in real time.</p>
+        <h1>Realtime streaming over <span class="accent-italic">WebSocket</span></h1>
+        <p class="lead">For live audio where partial results matter: voice agents, IVR, live captioning. Open a WebSocket, stream raw PCM frames, and receive partial and final transcripts as the speaker talks. For pre-recorded files use <a href="/web_doc/asr/api-reference.html#post-transcriptions">batch transcription</a> instead — it's faster and returns the whole transcript at once.</p>
 
         <h2>Endpoint</h2>
-<pre><code>wss://asr.shunyalabs.ai/ws</code></pre>
+        <p>Live speech-to-text over WebSocket (English + 22 Indic languages). Also reachable at <code>WS /ws</code> (same behaviour).</p>
+<pre><code>wss://asrv2prod.shunyalabs.ai/v1/realtime</code></pre>
 
         <h2>Connection lifecycle</h2>
         <div class="mermaid">sequenceDiagram
   participant C as Client
   participant S as Shunya ASR
   C->>S: Open WebSocket
-  S-->>C: ready { session_id }
-  C->>S: Init JSON (api_key, model, language, sample_rate, dtype)
+  C->>S: Init JSON (token, language, sample_rate, …)
+  S-->>C: ready { echoes settings }
   loop Audio streaming
-    C->>S: Binary audio frames
-    S-->>C: speech_start, partial, speech_end
+    C->>S: Raw PCM frames (16-bit LE mono)
+    S-->>C: partial (provisional)
   end
-  S-->>C: final_segment (per utterance)
-  C->>S: "END"
-  S-->>C: end_of_transcript
-  S-->>C: done { total_segments, total_audio_duration_sec }</div>
+  C->>S: "end"
+  S-->>C: final (per segment, stable)
+  S-->>C: error (only on rejection)</div>
 
-        <h2>Step 1: Open the connection & send init</h2>
-        <p>The first message after connecting is a JSON config that authenticates and sets audio parameters. You can't change these mid-stream.</p>
+        <h2>Authentication</h2>
+        <p>The <strong>access token</strong> from <code>POST /auth/token</code> — the same token used for batch transcription. Send it one of three ways:</p>
+        <ul>
+          <li>a field in the first message: <code>{"token": "&lt;access_token&gt;", ...}</code> (the field <code>api_key</code> is also accepted for the same value), or</li>
+          <li>a query parameter: <code>?token=&lt;access_token&gt;</code>, or</li>
+          <li>an <code>Authorization: Bearer &lt;access_token&gt;</code> header on the WebSocket upgrade.</li>
+        </ul>
 
-<pre><code>{
-  "api_key": "sk-your-api-key",
-  "model": "zero-indic",
-  "language": "hi",
-  "sample_rate": 8000,
-  "dtype": "ulaw",
-  "chunk_size_sec": 2.0,
-  "silence_threshold_sec": 0.8
-}</code></pre>
+        <h2>Step 1: Open the session</h2>
+        <p>Send one JSON message (text or binary frame). The fields you set here apply for the whole connection and can't change mid-stream:</p>
+<pre><code class="language-json">{ "token": "&lt;access_token&gt;", "language": "hi", "sample_rate": 8000, "diarize": true, "num_speakers": 2 }</code></pre>
 
         <h3>Init fields</h3>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Field</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
+            <thead><tr><th>Field</th><th>Required</th><th>Notes</th></tr></thead>
             <tbody>
-              <tr><td><code>api_key</code></td><td>string</td><td>required</td><td>Bearer token</td></tr>
-              <tr><td><code>session_id</code></td><td>string</td><td>auto</td><td>Custom session ID for tracking</td></tr>
-              <tr><td><code>model</code></td><td>string</td><td><a class="hf-model-link" href="https://huggingface.co/spaces/shunyalabs/Zero-STT-Shunya-Labs" target="_blank" rel="noopener" title="View on Hugging Face"><code>zero-indic</code></a></td><td>ASR model</td></tr>
-              <tr><td><code>language</code></td><td>string</td><td>auto</td><td>ISO code or full name</td></tr>
-              <tr><td><code>sample_rate</code></td><td>int</td><td>16000</td><td>Audio sample rate (Hz)</td></tr>
-              <tr><td><code>dtype</code></td><td>string</td><td><code>float32</code></td><td><code>ulaw</code>, <code>alaw</code>, <code>int16</code>, <code>float32</code></td></tr>
-              <tr><td><code>chunk_size_sec</code></td><td>float</td><td>2.0</td><td>Audio buffer size before returning results</td></tr>
-              <tr><td><code>silence_threshold_sec</code></td><td>float</td><td>0.8</td><td>Silence duration before finalizing a segment</td></tr>
-              <tr><td><code>inactivity_timeout</code></td><td>float</td><td>300</td><td>Max idle time before timeout</td></tr>
-              <tr><td><code>max_connection_duration</code></td><td>float</td><td>3600</td><td>Max total connection time</td></tr>
+              <tr><td><code>token</code></td><td>yes (or query param / Bearer header)</td><td>The access token from <code>/auth/token</code>.</td></tr>
+              <tr><td><code>language</code></td><td><strong>yes</strong></td><td><code>en</code>, <code>hi</code>, <code>bn</code>, <code>gu</code>, <code>kn</code>, <code>ml</code>, <code>mr</code>, <code>ta</code>, <code>te</code>, … There is <strong>no auto-detect</strong> — omitting <code>language</code> or sending <code>"auto"</code> produces wrong output.</td></tr>
+              <tr><td><code>sample_rate</code></td><td>no</td><td>Of the PCM you will send. Default <code>16000</code>; <code>8000</code> supported.</td></tr>
+              <tr><td><code>diarize</code></td><td>no</td><td><code>true</code> labels each <code>final</code> with a speaker.</td></tr>
+              <tr><td><code>num_speakers</code></td><td>no</td><td>How many speakers, if known — improves labelling.</td></tr>
             </tbody>
           </table>
         </div>
 
-        <h2>Step 2: Stream audio frames</h2>
-        <p>Send raw binary audio frames. The encoding must match <code>dtype</code>:</p>
+        <div class="callout callout-warn">
+          <div class="callout-title">Language is required</div>
+          Unlike batch, streaming has <strong>no auto-detect</strong>. You must always set <code>language</code> to a supported code (e.g. <code>hi</code>, <code>en</code>). Omitting it or sending <code>"auto"</code> produces wrong output.
+        </div>
+
+        <h2>Step 2: Send audio</h2>
+        <p>Send raw binary WebSocket frames: <strong>16-bit signed PCM, little-endian, mono</strong>, at the <code>sample_rate</code> you declared, 20–320 ms per frame (20 ms = 320 bytes at 8 kHz is typical for telephony), no headers (raw PCM, not WAV/MP3). Pace at roughly realtime — a 20 ms frame every 20 ms.</p>
+
+        <div class="callout callout-info">
+          <div class="callout-title">Frame format</div>
+          16-bit signed PCM · little-endian · mono · no WAV/MP3 headers · 20–320 ms per frame.
+        </div>
+
+        <h2>Step 3: Finish</h2>
+        <p>Send the text message <code>end</code>.</p>
+
+        <h2>Response events</h2>
+<pre><code class="language-json">{"type":"ready","language":"hi","sample_rate":8000,"diarize":true}
+{"type":"partial","seg":3,"delta":"और फिर","text":"हाँ जी बोलिए और फिर","elapsed_ms":8420}
+{"type":"final","seg":3,"text":"हाँ जी बोलिए और फिर वो अकाउंट","speaker":"SPEAKER_00","elapsed_ms":11200}
+{"type":"error","error":"invalid or missing api key"}</code></pre>
+
         <div class="table-wrap">
           <table>
-            <thead><tr><th><code>dtype</code></th><th>Description</th><th>Use for</th></tr></thead>
+            <thead><tr><th>Type</th><th>Meaning</th></tr></thead>
             <tbody>
-              <tr><td><code>ulaw</code></td><td>G.711 μ-law, 8-bit</td><td>Telephony (8 kHz), SIP</td></tr>
-              <tr><td><code>alaw</code></td><td>G.711 A-law, 8-bit</td><td>European telephony</td></tr>
-              <tr><td><code>int16</code></td><td>16-bit signed PCM</td><td>General recording</td></tr>
-              <tr><td><code>float32</code></td><td>32-bit IEEE float</td><td>Pre-processed audio</td></tr>
+              <tr><td><code>ready</code></td><td>Session open, waiting for audio. Sent once, echoes your settings — check them before streaming.</td></tr>
+              <tr><td><code>partial</code></td><td>In-progress text for the current segment (~every 640 ms). <code>delta</code> = new since the last partial; <code>text</code> = segment so far. Provisional, may change.</td></tr>
+              <tr><td><code>final</code></td><td>Segment closed; its <code>text</code> won't change. <code>seg</code> increments per segment.</td></tr>
+              <tr><td><code>error</code></td><td>Request rejected; the socket closes afterwards.</td></tr>
             </tbody>
           </table>
         </div>
 
         <div class="callout callout-info">
-          <div class="callout-title">WAV headers are auto-detected</div>
-          If your audio has a WAV header, sample rate and dtype are extracted automatically from the first binary frame, you don't need to set them in the init.
+          <div class="callout-title">Building the transcript</div>
+          Concatenate <code>final.text</code> in <code>seg</code> order; use <code>partial</code> for live display only. <code>speaker</code> appears on <code>final</code> when <code>diarize</code> was set (<code>SPEAKER_00</code>, …, stable for the connection); it may be <code>null</code> on a very short segment — treat as unknown, not an error.
         </div>
 
-        <h2>Step 3: Handle server events</h2>
-
-        <h3>Event table</h3>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Event</th><th>When</th><th>Key fields</th></tr></thead>
-            <tbody>
-              <tr><td><code>ready</code></td><td>Connection accepted</td><td><code>session_id</code></td></tr>
-              <tr><td><code>speech_start</code></td><td>Speech onset detected</td><td><code>offset_ms</code>, <code>segment_id</code></td></tr>
-              <tr><td><code>partial</code></td><td>Interim transcription (best-guess, not final)</td><td><code>text</code>, <code>language</code>, <code>segment_id</code>, <code>offset_ms</code>, <code>duration_ms</code>, <code>is_final: false</code></td></tr>
-              <tr><td><code>speech_end</code></td><td>Silence detected</td><td><code>offset_ms</code>, <code>segment_id</code></td></tr>
-              <tr><td><code>final_segment</code></td><td>Segment finalized</td><td><code>text</code>, <code>language</code>, <code>segment_id</code>, <code>offset_ms</code>, <code>status</code>, <code>is_final: true</code></td></tr>
-              <tr><td><code>end_of_transcript</code></td><td>All segments delivered</td><td><code>total_segments</code>, <code>total_audio_duration_sec</code></td></tr>
-              <tr><td><code>done</code></td><td>Session complete</td><td><code>total_segments</code>, <code>total_audio_duration_sec</code></td></tr>
-              <tr><td><code>error</code></td><td>Error occurred</td><td><code>message</code>, <code>code</code></td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <h3>End-of-audio signals</h3>
-        <p>Three equivalent ways to tell the server you're done sending:</p>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Method</th><th>Format</th></tr></thead>
-            <tbody>
-              <tr><td>Text message</td><td><code>"END"</code> or <code>"END_OF_AUDIO"</code></td></tr>
-              <tr><td>JSON message</td><td><code>{"type": "end"}</code></td></tr>
-              <tr><td>Empty binary frame</td><td><code>Buffer.alloc(0)</code></td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <h2>Error codes</h2>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Code</th><th>Description</th></tr></thead>
-            <tbody>
-              <tr><td><code>AUTH_FAILED</code></td><td>Invalid API key (WS close 4001)</td></tr>
-              <tr><td><code>TIMEOUT</code></td><td>Inactivity or max connection duration exceeded</td></tr>
-              <tr><td><code>CAPACITY_FULL</code></td><td>Server at max concurrent sessions</td></tr>
-              <tr><td><code>PROTOCOL_ERROR</code></td><td>Invalid init config or message format</td></tr>
-              <tr><td><code>INTERNAL_ERROR</code></td><td>Unexpected server error</td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <h2>Full example</h2>
+        <h2>Example</h2>
 
         <div class="code-group">
           <div class="code-tabs" role="tablist">
-            <button class="code-tab active">Node.js</button>
-            <button class="code-tab">Python</button>
+            <button class="code-tab active">Python</button>
+            <button class="code-tab">Node.js</button>
           </div>
 
           <div class="code-panel active">
-            <div class="code-header"><span>node</span><button class="copy-btn">Copy</button></div>
-<pre><code class="language-javascript">import WebSocket from "ws";
-const ws = new WebSocket("wss://asr.shunyalabs.ai/ws");
+            <div class="code-header"><span>python</span><button class="copy-btn">Copy</button></div>
+<pre><code class="language-python">import asyncio, json, websockets
 
-ws.on("open", () => {
-  ws.send(JSON.stringify({
-    api_key: process.env.SHUNYALABS_API_KEY,
-    language: "hi",
-    sample_rate: 8000,
-    dtype: "ulaw",
-    model: "zero-indic",
-  }));
-});
+async def transcribe(pcm_frames, token, lang="hi", sr=8000):
+    url = "wss://asrv2prod.shunyalabs.ai/v1/realtime"
+    finals = []
+    async with websockets.connect(url, max_size=None) as ws:
+        await ws.send(json.dumps({"token": token, "language": lang, "sample_rate": sr}))
 
-ws.on("message", (raw) => {
-  const msg = JSON.parse(raw.toString());
-  switch (msg.type) {
-    case "ready":         console.log("Session:", msg.session_id); break;
-    case "speech_start":  console.log("Speech start @", msg.offset_ms); break;
-    case "partial":       console.log("Partial:", msg.text); break;
-    case "final_segment": console.log("Final:", msg.text); break;
-    case "done":          console.log("Done:", msg.total_segments, "segments"); break;
-    case "error":         console.error("Error:", msg.code, msg.message); break;
-  }
-});
+        async def read():
+            async for msg in ws:
+                ev = json.loads(msg)
+                if ev.get("type") == "final" and ev.get("text"):
+                    finals.append(ev["text"])
+                elif ev.get("type") == "error":
+                    raise RuntimeError(ev["error"])
 
-// Stream audio from a source (e.g. telephony media, mic, file)
-audioSource.on("data", (chunk) => ws.send(chunk));
-audioSource.on("end",  () => ws.send("END"));</code></pre>
+        reader = asyncio.create_task(read())
+        for frame in pcm_frames:                 # bytes: int16 LE mono
+            await ws.send(frame)
+            await asyncio.sleep(0.02)             # pace ~realtime
+        await ws.send("end")
+        await reader
+    return " ".join(finals)</code></pre>
           </div>
 
           <div class="code-panel">
-            <div class="code-header"><span>python</span><button class="copy-btn">Copy</button></div>
-<pre><code class="language-python">import asyncio, json, os, websockets
+            <div class="code-header"><span>node</span><button class="copy-btn">Copy</button></div>
+<pre><code class="language-javascript">import WebSocket from "ws";
 
-async def transcribe_stream(audio_iter):
-    async with websockets.connect("wss://asr.shunyalabs.ai/ws") as ws:
-        await ws.send(json.dumps({
-            "api_key": os.environ["SHUNYALABS_API_KEY"],
-            "model": "zero-indic",
-            "language": "hi",
-            "sample_rate": 16000,
-            "dtype": "int16",
-        }))
+const ws = new WebSocket("wss://asrv2prod.shunyalabs.ai/v1/realtime");
 
-        async def sender():
-            async for frame in audio_iter:
-                await ws.send(frame)
-            await ws.send("END")
+ws.on("open", () => {
+  ws.send(JSON.stringify({
+    token: process.env.ACCESS_TOKEN,   // from POST /auth/token
+    language: "hi",                    // required — no auto-detect
+    sample_rate: 8000,
+  }));
+});
 
-        async def receiver():
-            async for raw in ws:
-                msg = json.loads(raw)
-                if msg["type"] == "partial":
-                    print(" partial:", msg["text"])
-                elif msg["type"] == "final_segment":
-                    print(" final:  ", msg["text"])
-                elif msg["type"] == "done":
-                    return
+const finals = [];
+ws.on("message", (raw) => {
+  const ev = JSON.parse(raw.toString());
+  if (ev.type === "ready") console.log("Session ready:", ev);
+  else if (ev.type === "partial") console.log("partial:", ev.text);
+  else if (ev.type === "final" && ev.text) finals.push(ev.text);
+  else if (ev.type === "error") console.error("Error:", ev.error);
+});
 
-        await asyncio.gather(sender(), receiver())</code></pre>
+// Stream raw 16-bit PCM mono frames from a source (mic, telephony media, file)
+audioSource.on("data", (chunk) => ws.send(chunk));
+audioSource.on("end",  () => ws.send("end"));</code></pre>
           </div>
+        </div>
+
+        <div class="callout callout-warn">
+          <div class="callout-title">Pacing &amp; reconnection</div>
+          Pace audio at realtime — pushing a long recording as fast as the socket allows can outrun the decoder and end the connection early. On an unexpected close, reconnect and resume; transcript already received via <code>final</code> events stays valid.
         </div>
 
         <div class="pager">
