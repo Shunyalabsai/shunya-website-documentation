@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>LiveKit Integration | Shunya Labs Docs</title>
-  <meta name="description" content="Shunyalabs STT and TTS plugin for LiveKit Agents — streaming and batch speech recognition and synthesis inside AgentSession.">
+  <meta name="description" content="Shunyalabs STT and TTS plugin for LiveKit Agents: streaming and batch speech recognition and synthesis inside AgentSession.">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@1,500;1,600;1,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/web_doc/assets/css/main.css?v=32">
   <script src="/web_doc/assets/js/theme.js"></script>
@@ -16,7 +16,7 @@
 
         <div class="breadcrumb">
           <a href="/web_doc/index.html">Docs</a><span class="sep">/</span>
-          <a href="/web_doc/integrations/index.html">Integrations</a><span class="sep">/</span>
+          <a href="/web_doc/integrations/overview.html">Integrations</a><span class="sep">/</span>
           <span>LiveKit</span>
         </div>
 
@@ -50,7 +50,7 @@
           <pre><code>export SHUNYALABS_API_KEY="your-api-key"</code></pre>
         </div>
         <div class="code-group">
-          <div class="code-header"><span>Python — inline</span></div>
+          <div class="code-header"><span>Python (inline)</span></div>
           <pre><code>stt = shunyalabs.STT(api_key="your-api-key")
 tts = shunyalabs.TTS(api_key="your-api-key")</code></pre>
         </div>
@@ -113,7 +113,7 @@ session = AgentSession(
           </table>
         </div>
         <div class="code-group">
-          <div class="code-header"><span>Python — streaming STT</span></div>
+          <div class="code-header"><span>Python (streaming STT)</span></div>
           <pre><code>from livekit.agents import AgentSession
 from livekit.plugins import shunyalabs, silero
 
@@ -130,7 +130,7 @@ def on_speech(ev):
         <h3>Batch STT</h3>
         <p>Single-shot transcription of an audio buffer via <code>POST /v1/audio/transcriptions</code>:</p>
         <div class="code-group">
-          <div class="code-header"><span>Python — batch STT</span></div>
+          <div class="code-header"><span>Python (batch STT)</span></div>
           <pre><code>from livekit.plugins import shunyalabs
 
 stt = shunyalabs.STT(language="en")

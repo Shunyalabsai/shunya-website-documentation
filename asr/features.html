@@ -17,7 +17,7 @@
           <a href="/web_doc/index.html">Docs</a><span class="sep">/</span><span>Speech-to-Text</span><span class="sep">/</span><span>Features</span>
         </div>
         <h1>ASR <span class="accent-italic">features</span></h1>
-        <p class="lead">What you can do on top of a transcript: per-speaker diarization, word timestamps, named speaker enrolment, and Speech Intelligence — NLP analysis over the text via the separate <code>POST /v1/speechintelligence</code> endpoint.</p>
+        <p class="lead">What you can do on top of a transcript: per-speaker diarization, word timestamps, named speaker enrolment, and Speech Intelligence (NLP analysis over the text via the separate <code>POST /v1/speechintelligence</code> endpoint.</p>
 
         <div class="callout callout-info">
           <div class="callout-title">Auth reminder</div>
@@ -52,7 +52,7 @@
         </ul>
 
         <h2 id="word-timestamps">2. Word timestamps</h2>
-        <p>Word-level timing is included in the <code>verbose_json</code> response of batch transcription via the <code>words</code> array — no extra flag needed.</p>
+        <p>Word-level timing is included in the <code>verbose_json</code> response of batch transcription via the <code>words</code> array; no extra flag needed.</p>
 
         <p><strong>Request:</strong></p>
 <pre><code class="language-bash">curl --location 'https://asrv2prod.shunyalabs.ai/v1/audio/transcriptions' \
@@ -67,8 +67,8 @@
   "words": [ { "word": "…", "start": 0.0, "end": 0.3 } ]
 }</code></pre>
 
-        <h2 id="speech-intelligence">3. Speech Intelligence — <code>POST /v1/speechintelligence</code></h2>
-        <p>NLP analysis (intent, summary, sentiment, key terms, …) over text. Send the transcript (or any text) as JSON and get the analysis back. Request fields are <code>enable_intent_detection</code>, <code>enable_summarization</code>, and <code>enable_sentiment_analysis</code> — all optional, combine freely.</p>
+        <h2 id="speech-intelligence">3. Speech Intelligence: <code>POST /v1/speechintelligence</code></h2>
+        <p>NLP analysis (intent, summary, sentiment, key terms, …) over text. Send the transcript (or any text) as JSON and get the analysis back. Request fields are <code>enable_intent_detection</code>, <code>enable_summarization</code>, and <code>enable_sentiment_analysis</code>; all optional, combine freely.</p>
 
         <p><strong>Request:</strong></p>
 <pre><code class="language-bash">curl --location 'https://asrv2prod.shunyalabs.ai/v1/speechintelligence' \
@@ -94,9 +94,9 @@
 }</code></pre>
 
         <ul>
-          <li><strong>Intent detection</strong> — <code>enable_intent_detection: true</code> → <code>analysis.intent</code>.</li>
-          <li><strong>Summarization</strong> — <code>enable_summarization: true</code> → <code>analysis.summary</code>.</li>
-          <li><strong>Sentiment analysis</strong> — <code>enable_sentiment_analysis: true</code> → <code>analysis.sentiment</code>.</li>
+          <li><strong>Intent detection</strong>: <code>enable_intent_detection: true</code> → <code>analysis.intent</code>.</li>
+          <li><strong>Summarization</strong>: <code>enable_summarization: true</code> → <code>analysis.summary</code>.</li>
+          <li><strong>Sentiment analysis</strong>: <code>enable_sentiment_analysis: true</code> → <code>analysis.sentiment</code>.</li>
           <li>Errors: <code>400</code> (text required), <code>401</code>/<code>403</code> (auth), <code>503</code> (analysis unavailable).</li>
         </ul>
 
@@ -105,7 +105,7 @@
         <h2 id="speaker-enrolment">4. Speaker enrolment</h2>
         <p>Enrol a named voiceprint so it is recognised in later calls.</p>
 
-        <h3>Register a speaker — <code>POST /v1/speakers/register</code></h3>
+        <h3>Register a speaker: <code>POST /v1/speakers/register</code></h3>
         <p>Send <code>name</code> and an audio <code>file</code> (multipart/form-data). <code>project</code> is optional and scopes the speaker library.</p>
 <pre><code class="language-bash">curl --location 'https://asrv2prod.shunyalabs.ai/v1/speakers/register' \
   --header 'accept: application/json' \
@@ -117,7 +117,7 @@
         <p><strong>Response:</strong></p>
 <pre><code class="language-json">{ "success": true, "speaker": "Priya", "message": "…" }</code></pre>
 
-        <h3>Delete a speaker — <code>DELETE /v1/speakers/delete</code></h3>
+        <h3>Delete a speaker: <code>DELETE /v1/speakers/delete</code></h3>
         <p>Remove a named voiceprint. Send <code>name</code> (and optionally <code>project</code>) as form fields.</p>
 <pre><code class="language-bash">curl --location --request DELETE 'https://asrv2prod.shunyalabs.ai/v1/speakers/delete' \
   --header 'accept: application/json' \

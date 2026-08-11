@@ -65,7 +65,7 @@ result = await client.tts.synthesize("Guten Morgen!", config=config)</code></pre
         <p>The streaming init message has no latency knobs beyond <code>token</code>, <code>language</code>, <code>sample_rate</code>, <code>diarize</code>, and <code>num_speakers</code>. Latency is controlled by how you send frames and end the session:</p>
         <ul>
           <li><strong>Send 20–320 ms frames</strong> of raw 16-bit signed PCM, paced roughly in real time, so the server can emit <code>partial</code> transcripts while the caller is still speaking.</li>
-          <li><strong>Finish with a text message <code>end</code></strong> — the server finalises the session and returns the last <code>final</code> event.</li>
+          <li><strong>Finish with a text message <code>end</code></strong>: the server finalises the session and returns the last <code>final</code> event.</li>
           <li><strong>For barge-in / interruption</strong>, treat an incoming <code>partial</code>/<code>final</code> event as the caller taking the floor and cancel any in-flight TTS stream. See <a href="/web_doc/tts/llm-to-tts.html">LLM → TTS pipeline</a>.</li>
         </ul>
 

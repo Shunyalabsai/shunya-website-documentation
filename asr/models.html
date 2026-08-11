@@ -21,7 +21,7 @@
 
         <div class="callout callout-info">
           <div class="callout-title">Auth in these examples</div>
-          Each example uses <code>&lt;ACCESS_TOKEN&gt;</code> — the short-lived token from <code>POST /auth/token</code> (exchange your API key there once, then reuse the token). <a href="/web_doc/asr/api-reference.html#post-auth-token">See authentication →</a>
+          Each example uses <code>&lt;ACCESS_TOKEN&gt;</code>; the short-lived token from <code>POST /auth/token</code> (exchange your API key there once, then reuse the token). <a href="/web_doc/asr/api-reference.html#post-auth-token">See authentication →</a>
         </div>
 
         <h2>Side-by-side</h2>
@@ -61,7 +61,7 @@
         <h3>When to use</h3>
         <ul>
           <li>English or non-Indian-language content</li>
-          <li>Audio where you don't know the language in advance — set <code>language_code=auto</code> (the default)</li>
+          <li>Audio where you don't know the language in advance; set <code>language_code=auto</code> (the default)</li>
           <li>International meetings with mixed English and other languages</li>
         </ul>
 
@@ -97,10 +97,10 @@
   --form 'language_code=en'</code></pre>
 
         <h3>Output shape</h3>
-        <p>Same response schema as other models; the value-add is in the text itself — drug names in correct spelling, procedure names in standard terminology.</p>
+        <p>Same response schema as other models; the value-add is in the text itself: drug names in correct spelling, procedure names in standard terminology.</p>
 
         <h2 id="zero-codeswitch"><a class="hf-model-link" href="https://huggingface.co/shunyalabs/zero-stt-hinglish" target="_blank" rel="noopener" title="View on Hugging Face"><code>zero-codeswitch</code></a></h2>
-        <p>Tuned for speech that mixes two languages within a single utterance — Hinglish ("<em>mujhe yeh passbook update karna hai</em>"), Tanglish, Banglish, etc. Automatically restores English words to Latin script so the final transcript reads cleanly.</p>
+        <p>Tuned for speech that mixes two languages within a single utterance: Hinglish ("<em>mujhe yeh passbook update karna hai</em>"), Tanglish, Banglish, etc. Automatically restores English words to Latin script so the final transcript reads cleanly.</p>
 
         <h3>When to use</h3>
         <ul>

@@ -16,7 +16,7 @@
 
         <div class="breadcrumb">
           <a href="/web_doc/index.html">Docs</a><span class="sep">/</span>
-          <a href="/web_doc/integrations/index.html">Integrations</a><span class="sep">/</span>
+          <a href="/web_doc/integrations/overview.html">Integrations</a><span class="sep">/</span>
           <span>Pipecat</span>
         </div>
 
@@ -57,7 +57,7 @@
           <pre><code>export SHUNYALABS_API_KEY="your-api-key"</code></pre>
         </div>
         <div class="code-group">
-          <div class="code-header"><span>Python — inline</span></div>
+          <div class="code-header"><span>Python (inline)</span></div>
           <pre><code>stt = ShunyalabsSTTService(api_key="your-api-key")
 tts = ShunyalabsTTSService(api_key="your-api-key")</code></pre>
         </div>
@@ -109,7 +109,7 @@ if __name__ == "__main__":
 
         <!-- STT -->
         <h2>STT - <code>ShunyalabsSTTService</code></h2>
-        <p>Real-time streaming speech-to-text over a persistent WebSocket connection. The language is set in the init message — there is no auto-detect on streaming.</p>
+        <p>Real-time streaming speech-to-text over a persistent WebSocket connection. The language is set in the init message; there is no auto-detect on streaming.</p>
 
         <h3>Parameters</h3>
         <div class="table-wrap">
@@ -140,11 +140,11 @@ if __name__ == "__main__":
         </div>
 
         <div class="code-group">
-          <div class="code-header"><span>Python — STT example</span></div>
+          <div class="code-header"><span>Python (STT example)</span></div>
           <pre><code>from pipecat_shunyalabs import ShunyalabsSTTService
 
 stt = ShunyalabsSTTService(
-    language="hi",       # required — no auto-detect on streaming
+    language="hi",       # required; no auto-detect on streaming
     sample_rate=16000,
 )</code></pre>
         </div>
@@ -296,9 +296,9 @@ tts = ShunyalabsTTSService(voice="Varun", language="en", style="&lt;News&gt;")</
               <tr><td><code>PermissionDeniedError</code></td><td>403</td><td>API key lacks permission for the resource.</td></tr>
               <tr><td><code>RateLimitError</code></td><td>429</td><td>Rate limit exceeded. Implement exponential backoff.</td></tr>
               <tr><td><code>ServerError</code></td><td>5xx</td><td>Server-side error. Retried automatically.</td></tr>
-              <tr><td><code>TimeoutError</code></td><td>—</td><td>Request exceeded timeout (default 60 s).</td></tr>
-              <tr><td><code>TranscriptionError</code></td><td>—</td><td>ASR-specific failure (e.g. unsupported audio format).</td></tr>
-              <tr><td><code>SynthesisError</code></td><td>—</td><td>TTS-specific failure (e.g. invalid voice parameter).</td></tr>
+              <tr><td><code>TimeoutError</code></td><td>n/a</td><td>Request exceeded timeout (default 60 s).</td></tr>
+              <tr><td><code>TranscriptionError</code></td><td>n/a</td><td>ASR-specific failure (e.g. unsupported audio format).</td></tr>
+              <tr><td><code>SynthesisError</code></td><td>n/a</td><td>TTS-specific failure (e.g. invalid voice parameter).</td></tr>
             </tbody>
           </table>
         </div>

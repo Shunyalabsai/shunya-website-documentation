@@ -27,7 +27,7 @@
       heading: 'Intelligence',
       items: [
         { href: '/web_doc/intelligence/overview.html', label: 'Overview & examples', icon: 'sparkles' },
-        { href: '/web_doc/asr/configuration.html#intelligence-layer', label: 'Configuration', icon: 'sliders' },
+        { href: '/web_doc/asr/api-reference.html#post-speechintelligence', label: 'Configuration', icon: 'sliders' },
         { href: '/web_doc/asr/features.html', label: 'Full reference', icon: 'book' },
       ]
     },

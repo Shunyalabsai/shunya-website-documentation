@@ -17,7 +17,7 @@
           <a href="/web_doc/index.html">Docs</a><span class="sep">/</span><span>Intelligence</span>
         </div>
         <h1>Speech <span class="accent-italic">Intelligence</span></h1>
-        <p class="lead">NLP analysis over text — intent, summary, sentiment, key terms, and more — via the <code>POST /v1/speechintelligence</code> endpoint. Feed it a transcript (or any text) and get the analysis back in one JSON response.</p>
+        <p class="lead">NLP analysis over text: intent, summary, sentiment, key terms, and more, via the <code>POST /v1/speechintelligence</code> endpoint. Feed it a transcript (or any text) and get the analysis back in one JSON response.</p>
 
         <div class="callout callout-info">
           <div class="callout-title">Endpoint &amp; auth</div>
@@ -27,7 +27,7 @@
         <h2 id="how-to-call">How to call it</h2>
         <p>Send the <code>text</code> to analyse plus the <code>enable_*</code> flags for the capabilities you want. All flags are optional and combine freely. The result lives in the <code>analysis</code> object of the response.</p>
         <ol>
-          <li>Get a transcript — from <a href="/web_doc/asr/api-reference.html#post-transcriptions">batch transcription</a> or <a href="/web_doc/asr/api-reference.html#websocket">realtime streaming</a>.</li>
+          <li>Get a transcript from <a href="/web_doc/asr/api-reference.html#post-transcriptions">batch transcription</a> or <a href="/web_doc/asr/api-reference.html#websocket">realtime streaming</a>.</li>
           <li>POST the <code>text</code> to <code>/v1/speechintelligence</code> with the flags you need.</li>
           <li>Read <code>analysis.intent</code>, <code>analysis.summary</code>, and <code>analysis.sentiment</code> on the response.</li>
         </ol>

@@ -17,7 +17,7 @@
           <a href="/web_doc/index.html">Docs</a><span class="sep">/</span><span>Speech-to-Text</span><span class="sep">/</span><span>Streaming</span>
         </div>
         <h1>Realtime streaming over <span class="accent-italic">WebSocket</span></h1>
-        <p class="lead">For live audio where partial results matter: voice agents, IVR, live captioning. Open a WebSocket, stream raw PCM frames, and receive partial and final transcripts as the speaker talks. For pre-recorded files use <a href="/web_doc/asr/api-reference.html#post-transcriptions">batch transcription</a> instead — it's faster and returns the whole transcript at once.</p>
+        <p class="lead">For live audio where partial results matter: voice agents, IVR, live captioning. Open a WebSocket, stream raw PCM frames, and receive partial and final transcripts as the speaker talks. For pre-recorded files use <a href="/web_doc/asr/api-reference.html#post-transcriptions">batch transcription</a> instead; it's faster and returns the whole transcript at once.</p>
 
         <h2>Endpoint</h2>
         <p>Live speech-to-text over WebSocket (English + 22 Indic languages). Also reachable at <code>WS /ws</code> (same behaviour).</p>
@@ -39,7 +39,7 @@
   S-->>C: error (only on rejection)</div>
 
         <h2>Authentication</h2>
-        <p>The <strong>access token</strong> from <code>POST /auth/token</code> — the same token used for batch transcription. Send it one of three ways:</p>
+        <p>The <strong>access token</strong> from <code>POST /auth/token</code> (the same token used for batch transcription). Send it one of three ways:</p>
         <ul>
           <li>a field in the first message: <code>{"token": "&lt;access_token&gt;", ...}</code> (the field <code>api_key</code> is also accepted for the same value), or</li>
           <li>a query parameter: <code>?token=&lt;access_token&gt;</code>, or</li>
@@ -56,10 +56,10 @@
             <thead><tr><th>Field</th><th>Required</th><th>Notes</th></tr></thead>
             <tbody>
               <tr><td><code>token</code></td><td>yes (or query param / Bearer header)</td><td>The access token from <code>/auth/token</code>.</td></tr>
-              <tr><td><code>language</code></td><td><strong>yes</strong></td><td><code>en</code>, <code>hi</code>, <code>bn</code>, <code>gu</code>, <code>kn</code>, <code>ml</code>, <code>mr</code>, <code>ta</code>, <code>te</code>, … There is <strong>no auto-detect</strong> — omitting <code>language</code> or sending <code>"auto"</code> produces wrong output.</td></tr>
+              <tr><td><code>language</code></td><td><strong>yes</strong></td><td><code>en</code>, <code>hi</code>, <code>bn</code>, <code>gu</code>, <code>kn</code>, <code>ml</code>, <code>mr</code>, <code>ta</code>, <code>te</code>, … There is <strong>no auto-detect</strong>: omitting <code>language</code> or sending <code>"auto"</code> produces wrong output.</td></tr>
               <tr><td><code>sample_rate</code></td><td>no</td><td>Of the PCM you will send. Default <code>16000</code>; <code>8000</code> supported.</td></tr>
               <tr><td><code>diarize</code></td><td>no</td><td><code>true</code> labels each <code>final</code> with a speaker.</td></tr>
-              <tr><td><code>num_speakers</code></td><td>no</td><td>How many speakers, if known — improves labelling.</td></tr>
+              <tr><td><code>num_speakers</code></td><td>no</td><td>How many speakers, if known (improves labelling).</td></tr>
             </tbody>
           </table>
         </div>
@@ -70,7 +70,7 @@
         </div>
 
         <h2>Step 2: Send audio</h2>
-        <p>Send raw binary WebSocket frames: <strong>16-bit signed PCM, little-endian, mono</strong>, at the <code>sample_rate</code> you declared, 20–320 ms per frame (20 ms = 320 bytes at 8 kHz is typical for telephony), no headers (raw PCM, not WAV/MP3). Pace at roughly realtime — a 20 ms frame every 20 ms.</p>
+        <p>Send raw binary WebSocket frames: <strong>16-bit signed PCM, little-endian, mono</strong>, at the <code>sample_rate</code> you declared, 20–320 ms per frame (20 ms = 320 bytes at 8 kHz is typical for telephony), no headers (raw PCM, not WAV/MP3). Pace at roughly realtime; a 20 ms frame every 20 ms.</p>
 
         <div class="callout callout-info">
           <div class="callout-title">Frame format</div>
@@ -90,7 +90,7 @@
           <table>
             <thead><tr><th>Type</th><th>Meaning</th></tr></thead>
             <tbody>
-              <tr><td><code>ready</code></td><td>Session open, waiting for audio. Sent once, echoes your settings — check them before streaming.</td></tr>
+              <tr><td><code>ready</code></td><td>Session open, waiting for audio. Sent once, echoes your settings; check them before streaming.</td></tr>
               <tr><td><code>partial</code></td><td>In-progress text for the current segment (~every 640 ms). <code>delta</code> = new since the last partial; <code>text</code> = segment so far. Provisional, may change.</td></tr>
               <tr><td><code>final</code></td><td>Segment closed; its <code>text</code> won't change. <code>seg</code> increments per segment.</td></tr>
               <tr><td><code>error</code></td><td>Request rejected; the socket closes afterwards.</td></tr>
@@ -100,7 +100,7 @@
 
         <div class="callout callout-info">
           <div class="callout-title">Building the transcript</div>
-          Concatenate <code>final.text</code> in <code>seg</code> order; use <code>partial</code> for live display only. <code>speaker</code> appears on <code>final</code> when <code>diarize</code> was set (<code>SPEAKER_00</code>, …, stable for the connection); it may be <code>null</code> on a very short segment — treat as unknown, not an error.
+          Concatenate <code>final.text</code> in <code>seg</code> order; use <code>partial</code> for live display only. <code>speaker</code> appears on <code>final</code> when <code>diarize</code> was set (<code>SPEAKER_00</code>, …, stable for the connection); it may be <code>null</code> on a very short segment; treat as unknown, not an error.
         </div>
 
         <h2>Example</h2>
@@ -147,7 +147,7 @@ const ws = new WebSocket("wss://asrv2prod.shunyalabs.ai/v1/realtime");
 ws.on("open", () => {
   ws.send(JSON.stringify({
     token: process.env.ACCESS_TOKEN,   // from POST /auth/token
-    language: "hi",                    // required — no auto-detect
+    language: "hi",                    // required; no auto-detect
     sample_rate: 8000,
   }));
 });
@@ -169,7 +169,7 @@ audioSource.on("end",  () => ws.send("end"));</code></pre>
 
         <div class="callout callout-warn">
           <div class="callout-title">Pacing &amp; reconnection</div>
-          Pace audio at realtime — pushing a long recording as fast as the socket allows can outrun the decoder and end the connection early. On an unexpected close, reconnect and resume; transcript already received via <code>final</code> events stays valid.
+          Pace audio at realtime; pushing a long recording as fast as the socket allows can outrun the decoder and end the connection early. On an unexpected close, reconnect and resume; transcript already received via <code>final</code> events stays valid.
         </div>
 
         <div class="pager">

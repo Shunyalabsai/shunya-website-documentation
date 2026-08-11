@@ -17,7 +17,7 @@
           <a href="/web_doc/index.html">Docs</a><span class="sep">/</span><span>Speech-to-Text</span><span class="sep">/</span><span>Configuration</span>
         </div>
         <h1>ASR <span class="accent-italic">configuration</span></h1>
-        <p class="lead">Every parameter you can pass to <code>POST /v1/audio/transcriptions</code>, in one place. Only the audio source is required; everything else has a documented default. Authenticate with the access token from <code>POST /auth/token</code> — never your raw API key.</p>
+        <p class="lead">Every parameter you can pass to <code>POST /v1/audio/transcriptions</code>, in one place. Only the audio source is required; everything else has a documented default. Authenticate with the access token from <code>POST /auth/token</code>; never your raw API key.</p>
 
         <h2 id="audio-source">Audio source</h2>
         <p>Send exactly one of these three fields. The file size limit is <strong>50 MB</strong>.</p>
@@ -26,8 +26,8 @@
             <thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
             <tbody>
               <tr><td><code>file</code></td><td>file</td><td>one of <code>file</code>/<code>audio_base64</code>/<code>url</code></td><td>Audio file (wav, mp3, flac, ogg/opus). Max 50 MB.</td></tr>
-              <tr><td><code>audio_base64</code></td><td>string</td><td>—</td><td>Base64 audio instead of a file upload.</td></tr>
-              <tr><td><code>url</code></td><td>string</td><td>—</td><td>URL to fetch the audio from.</td></tr>
+              <tr><td><code>audio_base64</code></td><td>string</td><td>n/a</td><td>Base64 audio instead of a file upload.</td></tr>
+              <tr><td><code>url</code></td><td>string</td><td>n/a</td><td>URL to fetch the audio from.</td></tr>
             </tbody>
           </table>
         </div>
@@ -41,7 +41,7 @@
                 <td><code>model</code></td>
                 <td>string</td>
                 <td>no</td>
-                <td>ASR model — e.g. <a class="hf-model-link" href="https://huggingface.co/spaces/shunyalabs/Zero-STT-Shunya-Labs" target="_blank" rel="noopener" title="View on Hugging Face"><code>zero-indic</code></a>, <a class="hf-model-link" href="https://huggingface.co/shunyalabs/pingala-v1-universal" target="_blank" rel="noopener" title="View on Hugging Face"><code>zero-universal</code></a>, <a class="hf-model-link" href="https://huggingface.co/spaces/shunyalabs/Zero_STT_Med_Shunya_Labs" target="_blank" rel="noopener" title="View on Hugging Face"><code>zero-med</code></a>, <a class="hf-model-link" href="https://huggingface.co/shunyalabs/zero-stt-hinglish" target="_blank" rel="noopener" title="View on Hugging Face"><code>zero-codeswitch</code></a>. Defaults to the account model. <a href="/web_doc/asr/models.html">Model guide →</a></td>
+                <td>ASR model: e.g. <a class="hf-model-link" href="https://huggingface.co/spaces/shunyalabs/Zero-STT-Shunya-Labs" target="_blank" rel="noopener" title="View on Hugging Face"><code>zero-indic</code></a>, <a class="hf-model-link" href="https://huggingface.co/shunyalabs/pingala-v1-universal" target="_blank" rel="noopener" title="View on Hugging Face"><code>zero-universal</code></a>, <a class="hf-model-link" href="https://huggingface.co/spaces/shunyalabs/Zero_STT_Med_Shunya_Labs" target="_blank" rel="noopener" title="View on Hugging Face"><code>zero-med</code></a>, <a class="hf-model-link" href="https://huggingface.co/shunyalabs/zero-stt-hinglish" target="_blank" rel="noopener" title="View on Hugging Face"><code>zero-codeswitch</code></a>. Defaults to the account model. <a href="/web_doc/asr/models.html">Model guide →</a></td>
               </tr>
             </tbody>
           </table>
@@ -89,7 +89,7 @@
         </div>
         <p><code>json</code> returns just the transcript:</p>
 <pre><code class="language-json">{ "text": "the transcribed text" }</code></pre>
-        <p><code>verbose_json</code> adds timing, segments, words, and — when <code>diarize=true</code> — speakers:</p>
+        <p><code>verbose_json</code> adds timing, segments, words, and (when <code>diarize=true</code>) speakers:</p>
 <pre><code class="language-json">{
   "text": "the transcribed text",
   "audio_duration": 8.0,
@@ -104,7 +104,7 @@
 
         <div class="callout callout-info">
           <div class="callout-title">NLP: intent, summary, sentiment</div>
-          Transcript-level NLP (intent detection, summarization, sentiment analysis) is not a transcription flag — it runs on the separate <code>POST /v1/speechintelligence</code> endpoint with the text as input. <a href="/web_doc/intelligence/overview.html">Speech Intelligence →</a>
+          Transcript-level NLP (intent detection, summarization, sentiment analysis) is not a transcription flag; it runs on the separate <code>POST /v1/speechintelligence</code> endpoint with the text as input. <a href="/web_doc/intelligence/overview.html">Speech Intelligence →</a>
         </div>
 
         <h2 id="realtime">Realtime streaming fields</h2>

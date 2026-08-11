@@ -316,7 +316,7 @@ client = Shunya()  # reads SHUNYA_API_KEY from env</code></pre>
               </summary>
               <div class="faq-answer">
                 <p>Transcription accuracy depends on several factors. Here are the most common fixes:</p>
-                <ul><li><strong>Audio quality:</strong> Ensure the recording is clear, with minimal background noise. For streaming, send 16-bit signed PCM at <strong>16 kHz</strong> (the default sample rate); 8 kHz is also supported.</li><li><strong>Language selection:</strong> Set the correct <code>language_code</code> on batch requests (it defaults to <code>auto</code>). On streaming, <code>language</code> is <strong>required</strong> — there is no auto-detect, and omitting it or sending <code>"auto"</code> produces wrong output.</li><li><strong>Model selection:</strong> Pick a model tuned for your audio — <code>zero-indic</code> for Indian languages, <code>zero-universal</code> for English and international content, <code>zero-med</code> for healthcare, <code>zero-codeswitch</code> for Hinglish/Tanglish.</li><li><strong>Audio length:</strong> Very short clips (&lt; 1 second) may not produce reliable results. Aim for 3+ seconds of speech per utterance.</li></ul>
+                <ul><li><strong>Audio quality:</strong> Ensure the recording is clear, with minimal background noise. For streaming, send 16-bit signed PCM at <strong>16 kHz</strong> (the default sample rate); 8 kHz is also supported.</li><li><strong>Language selection:</strong> Set the correct <code>language_code</code> on batch requests (it defaults to <code>auto</code>). On streaming, <code>language</code> is <strong>required</strong>: there is no auto-detect, and omitting it or sending <code>"auto"</code> produces wrong output.</li><li><strong>Model selection:</strong> Pick a model tuned for your audio: <code>zero-indic</code> for Indian languages, <code>zero-universal</code> for English and international content, <code>zero-med</code> for healthcare, <code>zero-codeswitch</code> for Hinglish/Tanglish.</li><li><strong>Audio length:</strong> Very short clips (&lt; 1 second) may not produce reliable results. Aim for 3+ seconds of speech per utterance.</li></ul>
                 <p>See <a href="/web_doc/asr/overview.html">the ASR overview</a> for the full set of request fields.</p>
               </div>
             </details>
@@ -328,7 +328,7 @@ client = Shunya()  # reads SHUNYA_API_KEY from env</code></pre>
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>Batch transcription (<code>POST /v1/audio/transcriptions</code>) accepts <strong>WAV</strong>, <strong>MP3</strong>, <strong>FLAC</strong>, <strong>OGG</strong>, and <strong>Opus</strong> files up to <strong>50 MB</strong>. Supply the audio as a <code>file</code> upload, as base64 (<code>audio_base64</code>), or via a <code>url</code> — exactly one of the three is required.</p>
+                <p>Batch transcription (<code>POST /v1/audio/transcriptions</code>) accepts <strong>WAV</strong>, <strong>MP3</strong>, <strong>FLAC</strong>, <strong>OGG</strong>, and <strong>Opus</strong> files up to <strong>50 MB</strong>. Supply the audio as a <code>file</code> upload, as base64 (<code>audio_base64</code>), or via a <code>url</code>; exactly one of the three is required.</p>
                 <p>For streaming (<code>WS /v1/realtime</code>), send raw <strong>16-bit signed PCM, little-endian, mono</strong> at the declared sample rate (default 16000; 8000 is supported).</p>
               </div>
             </details>
@@ -353,7 +353,7 @@ client = Shunya()  # reads SHUNYA_API_KEY from env</code></pre>
               </summary>
               <div class="faq-answer">
                 <p>Streaming STT uses a <strong>WebSocket</strong> connection. Common issues include:</p>
-                <ul><li><strong>Wrong endpoint:</strong> Use <code>wss://asrv2prod.shunyalabs.ai/v1/realtime</code> (<code>wss://asrv2prod.shunyalabs.ai/ws</code> behaves the same), not the HTTP URL</li><li><strong>Auth:</strong> Send the short-lived <strong>access token</strong> (from <code>POST /auth/token</code>) as the <code>token</code> field of your first message, as a <code>?token=</code> query parameter, or as <code>Authorization: Bearer</code> on the upgrade — not the raw API key</li><li><strong>Missing language:</strong> <code>language</code> is required in the init message. There is no auto-detect on streaming; omitting it or sending <code>"auto"</code> gives wrong output</li><li><strong>Audio format mismatch:</strong> Send 16-bit signed PCM, little-endian, mono, at the sample rate you declared (default 16000). Check your microphone and encoder settings</li><li><strong>Connection closed early:</strong> Pace your frames roughly in real time (20–320 ms per frame) and finish by sending the text message <code>end</code></li></ul>
+                <ul><li><strong>Wrong endpoint:</strong> Use <code>wss://asrv2prod.shunyalabs.ai/v1/realtime</code> (<code>wss://asrv2prod.shunyalabs.ai/ws</code> behaves the same), not the HTTP URL</li><li><strong>Auth:</strong> Send the short-lived <strong>access token</strong> (from <code>POST /auth/token</code>) as the <code>token</code> field of your first message, as a <code>?token=</code> query parameter, or as <code>Authorization: Bearer</code> on the upgrade; not the raw API key</li><li><strong>Missing language:</strong> <code>language</code> is required in the init message. There is no auto-detect on streaming; omitting it or sending <code>"auto"</code> gives wrong output</li><li><strong>Audio format mismatch:</strong> Send 16-bit signed PCM, little-endian, mono, at the sample rate you declared (default 16000). Check your microphone and encoder settings</li><li><strong>Connection closed early:</strong> Pace your frames roughly in real time (20–320 ms per frame) and finish by sending the text message <code>end</code></li></ul>
                 <p>Refer to the <a href="/web_doc/asr/streaming.html">Streaming guide</a> for code examples in Python and Node.js.</p>
               </div>
             </details>
@@ -378,8 +378,8 @@ client = Shunya()  # reads SHUNYA_API_KEY from env</code></pre>
               </summary>
               <div class="faq-answer">
                 <p>Shunya Labs offers four STT model families, selected via the <code>model</code> parameter:</p>
-                <ul><li><strong><code>zero-indic</code></strong> — tuned for Indian languages, handling regional accents and code-switching.</li><li><strong><code>zero-universal</code></strong> — English and international content; the strongest on English.</li><li><strong><code>zero-med</code></strong> — English and Indic, with automatic medical-terminology correction.</li><li><strong><code>zero-codeswitch</code></strong> — Hinglish, Tanglish, and similar mixed speech, restoring English tokens to Latin script.</li></ul>
-                <p>The <code>model</code> field is optional — when omitted, the account's default model is used. See the <a href="/web_doc/asr/models.html">models page</a> for details.</p>
+                <ul><li><strong><code>zero-indic</code></strong>: tuned for Indian languages, handling regional accents and code-switching.</li><li><strong><code>zero-universal</code></strong>: English and international content; the strongest on English.</li><li><strong><code>zero-med</code></strong>: English and Indic, with automatic medical-terminology correction.</li><li><strong><code>zero-codeswitch</code></strong>: Hinglish, Tanglish, and similar mixed speech, restoring English tokens to Latin script.</li></ul>
+                <p>The <code>model</code> field is optional; when omitted, the account's default model is used. See the <a href="/web_doc/asr/models.html">models page</a> for details.</p>
               </div>
             </details>
 
@@ -409,7 +409,7 @@ client = Shunya()  # reads SHUNYA_API_KEY from env</code></pre>
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>The STT API returns the raw transcript text. There is no punctuation parameter — add punctuation and capitalization as a formatting step in your application.</p>
+                <p>The STT API returns the raw transcript text. There is no punctuation parameter; add punctuation and capitalization as a formatting step in your application.</p>
                 <p>Set <code>response_format=verbose_json</code> to get segments and word-level timing to work with.</p>
               </div>
             </details>
@@ -439,7 +439,7 @@ client = Shunya()  # reads SHUNYA_API_KEY from env</code></pre>
               </summary>
               <div class="faq-answer">
                 <p>Auto-detection only applies to <strong>batch</strong> requests, where <code>language_code</code> defaults to <code>auto</code>. If the detection is off, set <code>language_code</code> explicitly to the correct language code.</p>
-                <p>For <strong>streaming</strong>, there is no auto-detection — <code>language</code> is required in the init message, and omitting it or sending <code>"auto"</code> gives wrong output.</p>
+                <p>For <strong>streaming</strong>, there is no auto-detection: <code>language</code> is required in the init message, and omitting it or sending <code>"auto"</code> gives wrong output.</p>
               </div>
             </details>
 
@@ -493,7 +493,7 @@ client = Shunya()  # reads SHUNYA_API_KEY from env</code></pre>
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>No. The transcription response returns the <code>text</code> and, with <code>response_format=verbose_json</code>, <code>segments</code>, <code>words</code>, <code>speakers</code>, and timing metadata — but no per-segment confidence score.</p>
+                <p>No. The transcription response returns the <code>text</code> and, with <code>response_format=verbose_json</code>, <code>segments</code>, <code>words</code>, <code>speakers</code>, and timing metadata, but no per-segment confidence score.</p>
               </div>
             </details>
 
@@ -1111,7 +1111,7 @@ const mediaRecorder = new MediaRecorder(stream);
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>Batch transcription (<code>POST /v1/audio/transcriptions</code>) is synchronous — it returns the full transcript in a single response, so no webhook is needed.</p>
+                <p>Batch transcription (<code>POST /v1/audio/transcriptions</code>) is synchronous; it returns the full transcript in a single response, so no webhook is needed.</p>
                 <pre><code>curl -X POST https://asrv2prod.shunyalabs.ai/v1/audio/transcriptions \
   -H "Authorization: Bearer $ACCESS_TOKEN" \
   -F "file=@long_meeting.wav" \
@@ -1698,7 +1698,7 @@ server {
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>Streaming STT does not upload files — you open a WebSocket to <code>WS /v1/realtime</code> and stream raw 16-bit PCM frames in real time, so there is no file-size limit. The file-size limit (50 MB) applies only to <strong>batch</strong> uploads.</p>
+                <p>Streaming STT does not upload files; you open a WebSocket to <code>WS /v1/realtime</code> and stream raw 16-bit PCM frames in real time, so there is no file-size limit. The file-size limit (50 MB) applies only to <strong>batch</strong> uploads.</p>
                 <p>For a pre-recorded audio file, use the batch transcription endpoint (<code>POST /v1/audio/transcriptions</code>) instead.</p>
               </div>
             </details>
@@ -1710,7 +1710,7 @@ server {
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>The STT API does not return per-word confidence scores. With <code>response_format=verbose_json</code> on the batch endpoint, each word carries <code>word</code>, <code>start</code>, and <code>end</code> fields — no confidence value.</p>
+                <p>The STT API does not return per-word confidence scores. With <code>response_format=verbose_json</code> on the batch endpoint, each word carries <code>word</code>, <code>start</code>, and <code>end</code> fields; no confidence value.</p>
                 <pre><code>curl -X POST https://asrv2prod.shunyalabs.ai/v1/audio/transcriptions \
   -H "Authorization: Bearer $ACCESS_TOKEN" \
   -F "file=@speech.wav" \
@@ -1968,7 +1968,7 @@ server {
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>There is no VAD parameter in the API — the transcription engine handles silence and non-speech audio automatically. For the best results, record clean audio with minimal background noise, and consider preprocessing with a noise-reduction tool like <code>ffmpeg</code> or <code>sox</code> before submission.</p>
+                <p>There is no VAD parameter in the API; the transcription engine handles silence and non-speech audio automatically. For the best results, record clean audio with minimal background noise, and consider preprocessing with a noise-reduction tool like <code>ffmpeg</code> or <code>sox</code> before submission.</p>
               </div>
             </details>
 

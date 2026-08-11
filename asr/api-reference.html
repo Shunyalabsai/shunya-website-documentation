@@ -17,7 +17,7 @@
           <a href="/web_doc/index.html">Docs</a><span class="sep">/</span><a href="/web_doc/api-reference/index.html">API Reference</a><span class="sep">/</span><span>Speech-to-Text</span><span class="sep">/</span><span>API reference</span>
         </div>
         <h1>ASR API <span class="accent-italic">reference</span></h1>
-        <p class="lead">Every endpoint in the Shunya Speech-to-Text API — authentication, batch transcription, realtime streaming, speech intelligence, and speaker enrolment — with request fields, response shapes, and error codes.</p>
+        <p class="lead">Every endpoint in the Shunya Speech-to-Text API: authentication, batch transcription, realtime streaming, speech intelligence, and speaker enrolment, with request fields, response shapes, and error codes.</p>
 
         <div class="callout callout-info">
           <div class="callout-title">Base URLs</div>
@@ -25,14 +25,14 @@
           Streaming / WebSocket: <code>wss://asrv2prod.shunyalabs.ai</code>
         </div>
 
-        <h2 id="post-auth-token">1. Authentication — <code>POST /auth/token</code></h2>
+        <h2 id="post-auth-token">1. Authentication: <code>POST /auth/token</code></h2>
         <p>You use your <strong>API key once</strong> to obtain a short-lived <strong>access token</strong>, then send that token on every request. Do not send your API key to the transcription endpoints.</p>
 
-        <p><strong>Request</strong> — send the API key in the <code>Authorization</code> header:</p>
+        <p><strong>Request</strong>: send the API key in the <code>Authorization</code> header:</p>
 <pre><code class="language-http">POST /auth/token
 Authorization: Bearer &lt;YOUR_API_KEY&gt;</code></pre>
 
-        <p><strong>Example — cURL:</strong></p>
+        <p><strong>Example (cURL):</strong></p>
 <pre><code class="language-bash">curl --location --request POST 'https://asrv2prod.shunyalabs.ai/auth/token' \
   --header 'accept: application/json' \
   --header 'Authorization: Bearer &lt;API_KEY_GENERATED_IN_DASHBOARD&gt;'</code></pre>
@@ -59,10 +59,10 @@ Authorization: Bearer &lt;YOUR_API_KEY&gt;</code></pre>
           Cache the token and reuse it until shortly before <code>expires_at</code>; request a new one on expiry or a <code>401</code>.
         </div>
 
-        <h2 id="post-transcriptions">2. Batch transcription — <code>POST /v1/audio/transcriptions</code></h2>
-        <p>Transcribe an audio file. Use for pre-recorded audio — you get the whole transcript in one response.</p>
+        <h2 id="post-transcriptions">2. Batch transcription: <code>POST /v1/audio/transcriptions</code></h2>
+        <p>Transcribe an audio file. Use for pre-recorded audio; you get the whole transcript in one response.</p>
 
-        <p><strong>Request</strong> — <code>multipart/form-data</code>, with the access token:</p>
+        <p><strong>Request</strong>: <code>multipart/form-data</code>, with the access token:</p>
 <pre><code class="language-http">POST /v1/audio/transcriptions
 Authorization: Bearer &lt;access_token&gt;
 Content-Type: multipart/form-data</code></pre>
@@ -72,8 +72,8 @@ Content-Type: multipart/form-data</code></pre>
             <thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Description</th></tr></thead>
             <tbody>
               <tr><td><code>file</code></td><td>file</td><td>one of <code>file</code>/<code>audio_base64</code>/<code>url</code></td><td>Audio file (wav, mp3, flac, ogg/opus). Max 50 MB.</td></tr>
-              <tr><td><code>audio_base64</code></td><td>string</td><td>—</td><td>Base64 audio instead of a file upload.</td></tr>
-              <tr><td><code>url</code></td><td>string</td><td>—</td><td>URL to fetch the audio from.</td></tr>
+              <tr><td><code>audio_base64</code></td><td>string</td><td>n/a</td><td>Base64 audio instead of a file upload.</td></tr>
+              <tr><td><code>url</code></td><td>string</td><td>n/a</td><td>URL to fetch the audio from.</td></tr>
               <tr><td><code>model</code></td><td>string</td><td>no</td><td>ASR model (e.g. <code>zero-indic</code>, <code>zero-universal</code>). Defaults to the account model.</td></tr>
               <tr><td><code>language_code</code></td><td>string</td><td>no</td><td>Language (e.g. <code>en</code>, <code>hi</code>) or <code>auto</code> to detect. Default <code>auto</code>.</td></tr>
               <tr><td><code>diarize</code></td><td>boolean</td><td>no</td><td>Return per-speaker segments. Default <code>false</code>.</td></tr>
@@ -83,17 +83,17 @@ Content-Type: multipart/form-data</code></pre>
           </table>
         </div>
 
-        <p><strong>Example — cURL (file upload):</strong></p>
+        <p><strong>Example (cURL, file upload):</strong></p>
 <pre><code class="language-bash">curl --location 'https://asrv2prod.shunyalabs.ai/v1/audio/transcriptions' \
   --header 'accept: application/json' \
   --header 'Authorization: Bearer &lt;ACCESS_TOKEN&gt;' \
   --form 'file=@"audio.wav"'</code></pre>
         <p class="text-muted">Replace <code>&lt;ACCESS_TOKEN&gt;</code> with the short-lived token returned by <code>POST /auth/token</code>, and replace the example audio path with your local file path.</p>
 
-        <p><strong>Response — <code>json</code> (default)</strong> <code>200 OK</code>:</p>
+        <p><strong>Response: <code>json</code> (default)</strong> <code>200 OK</code>:</p>
 <pre><code class="language-json">{ "text": "the transcribed text" }</code></pre>
 
-        <p><strong>Response — <code>verbose_json</code></strong> <code>200 OK</code>:</p>
+        <p><strong>Response: <code>verbose_json</code></strong> <code>200 OK</code>:</p>
 <pre><code class="language-json">{
   "text": "the transcribed text",
   "audio_duration": 8.0,
@@ -124,12 +124,12 @@ Content-Type: multipart/form-data</code></pre>
 
         <p><strong>Errors:</strong> <code>400</code> (bad request / audio exceeds plan limit), <code>401</code> (missing/invalid/expired token), <code>403</code> (token not permitted for this endpoint), <code>413</code> (file too large), <code>415</code> (unsupported audio), <code>429</code> (rate limit), <code>504</code> (timeout).</p>
 
-        <h2 id="websocket">3. Realtime streaming — <code>WS /v1/realtime</code></h2>
-        <p>Live speech-to-text over WebSocket (English + 22 Indic languages). Also reachable at <code>WS /ws</code> (same behaviour). For <strong>pre-recorded</strong> files use the batch endpoint above — it's faster and returns the whole transcript at once. Streaming is for <strong>live</strong> audio where partial results matter.</p>
+        <h2 id="websocket">3. Realtime streaming: <code>WS /v1/realtime</code></h2>
+        <p>Live speech-to-text over WebSocket (English + 22 Indic languages). Also reachable at <code>WS /ws</code> (same behaviour). For <strong>pre-recorded</strong> files use the batch endpoint above; it's faster and returns the whole transcript at once. Streaming is for <strong>live</strong> audio where partial results matter.</p>
 
 <pre><code>wss://asrv2prod.shunyalabs.ai/v1/realtime</code></pre>
 
-        <p><strong>Authentication</strong> — the <strong>access token</strong> from <code>/auth/token</code> (the same token used for batch), sent as:</p>
+        <p><strong>Authentication</strong>: the <strong>access token</strong> from <code>/auth/token</code> (the same token used for batch), sent as:</p>
         <ul>
           <li>a field in the first message: <code>{"token": "&lt;access_token&gt;", ...}</code> (the field <code>api_key</code> is also accepted for the same value), or</li>
           <li>a query parameter: <code>?token=&lt;access_token&gt;</code>, or</li>
@@ -145,10 +145,10 @@ Content-Type: multipart/form-data</code></pre>
             <thead><tr><th>Field</th><th>Required</th><th>Notes</th></tr></thead>
             <tbody>
               <tr><td><code>token</code></td><td>yes (or query param / Bearer header)</td><td>The access token from <code>/auth/token</code>.</td></tr>
-              <tr><td><code>language</code></td><td><strong>yes</strong></td><td><code>en</code>, <code>hi</code>, <code>bn</code>, <code>gu</code>, <code>kn</code>, <code>ml</code>, <code>mr</code>, <code>ta</code>, <code>te</code>, … There is <strong>no auto-detect</strong> — omitting <code>language</code> or sending <code>"auto"</code> produces wrong output.</td></tr>
+              <tr><td><code>language</code></td><td><strong>yes</strong></td><td><code>en</code>, <code>hi</code>, <code>bn</code>, <code>gu</code>, <code>kn</code>, <code>ml</code>, <code>mr</code>, <code>ta</code>, <code>te</code>, … There is <strong>no auto-detect</strong>: omitting <code>language</code> or sending <code>"auto"</code> produces wrong output.</td></tr>
               <tr><td><code>sample_rate</code></td><td>no</td><td>Of the PCM you will send. Default <code>16000</code>; <code>8000</code> supported.</td></tr>
               <tr><td><code>diarize</code></td><td>no</td><td><code>true</code> labels each <code>final</code> with a speaker.</td></tr>
-              <tr><td><code>num_speakers</code></td><td>no</td><td>How many speakers, if known — improves labelling.</td></tr>
+              <tr><td><code>num_speakers</code></td><td>no</td><td>How many speakers, if known; improves labelling.</td></tr>
             </tbody>
           </table>
         </div>
@@ -169,7 +169,7 @@ Content-Type: multipart/form-data</code></pre>
           <table>
             <thead><tr><th>Type</th><th>Meaning</th></tr></thead>
             <tbody>
-              <tr><td><code>ready</code></td><td>Session open, waiting for audio. Sent once, echoes your settings — check them before streaming.</td></tr>
+              <tr><td><code>ready</code></td><td>Session open, waiting for audio. Sent once, echoes your settings; check them before streaming.</td></tr>
               <tr><td><code>partial</code></td><td>In-progress text for the current segment (~every 640 ms). <code>delta</code> = new since the last partial; <code>text</code> = segment so far. Provisional, may change.</td></tr>
               <tr><td><code>final</code></td><td>Segment closed; its <code>text</code> won't change. <code>seg</code> increments per segment.</td></tr>
               <tr><td><code>error</code></td><td>Request rejected; the socket closes afterwards.</td></tr>
@@ -209,13 +209,13 @@ async def transcribe(pcm_frames, token, lang="hi", sr=8000):
 
         <div class="callout callout-warn">
           <div class="callout-title">Pacing &amp; reconnection</div>
-          Pace audio at realtime — pushing a long recording as fast as the socket allows can outrun the decoder and end the connection early. On an unexpected close, reconnect and resume; transcript already received via <code>final</code> events stays valid.
+          Pace audio at realtime; pushing a long recording as fast as the socket allows can outrun the decoder and end the connection early. On an unexpected close, reconnect and resume; transcript already received via <code>final</code> events stays valid.
         </div>
 
-        <h2 id="post-speechintelligence">4. Speech Intelligence — <code>POST /v1/speechintelligence</code></h2>
+        <h2 id="post-speechintelligence">4. Speech Intelligence: <code>POST /v1/speechintelligence</code></h2>
         <p>Run NLP analysis (intent, summary, sentiment, key terms, …) over text.</p>
 
-        <p><strong>Request</strong> — <code>application/json</code>, with the access token:</p>
+        <p><strong>Request</strong>: <code>application/json</code>, with the access token:</p>
 <pre><code class="language-json">{ "text": "…", "enable_intent_detection": true, "enable_summarization": true,
   "enable_sentiment_analysis": true }</code></pre>
 
@@ -228,7 +228,7 @@ async def transcribe(pcm_frames, token, lang="hi", sr=8000):
         <p>Enrol a named voiceprint so it is recognised in later calls.</p>
 
         <h3 id="speakers-register">5.1 POST /v1/speakers/register</h3>
-        <p><strong>Request</strong> — <code>multipart/form-data</code>: <code>name</code> (string), <code>file</code> (audio), <code>project</code> (string, optional).</p>
+        <p><strong>Request</strong>: <code>multipart/form-data</code>: <code>name</code> (string), <code>file</code> (audio), <code>project</code> (string, optional).</p>
         <p><strong>Response</strong> <code>200 OK</code>:</p>
 <pre><code class="language-json">{ "success": true, "speaker": "&lt;name&gt;", "message": "…" }</code></pre>
 
@@ -258,8 +258,8 @@ async def transcribe(pcm_frames, token, lang="hi", sr=8000):
         <ul>
           <li><strong>Batch vs streaming:</strong> pre-recorded audio → batch <code>POST /v1/audio/transcriptions</code>; live audio → streaming <code>WS /v1/realtime</code>. <strong>Both authenticate with the access token</strong> from <code>/auth/token</code>.</li>
           <li><strong>Token lifetime:</strong> ~15 minutes. Cache and reuse for both batch and streaming; re-mint on expiry or a <code>401</code> / streaming <code>error</code>.</li>
-          <li><strong>Audio:</strong> batch — wav, mp3, flac, ogg/opus, up to 50 MB per request. Streaming — raw 16-bit PCM, LE, mono, at 8 kHz or 16 kHz.</li>
-          <li><strong><code>request_id</code>:</strong> include it when contacting support — it identifies your request in our logs. For a streaming session, quote the UTC time, language, and approximate call duration.</li>
+          <li><strong>Audio:</strong> batch: wav, mp3, flac, ogg/opus, up to 50 MB per request. Streaming: raw 16-bit PCM, LE, mono, at 8 kHz or 16 kHz.</li>
+          <li><strong><code>request_id</code>:</strong> include it when contacting support; it identifies your request in our logs. For a streaming session, quote the UTC time, language, and approximate call duration.</li>
         </ul>
 
         <div class="pager">

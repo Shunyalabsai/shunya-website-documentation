@@ -26,10 +26,10 @@
               <tr><td>Max file size (batch)</td><td>50 MB</td></tr>
               <tr><td>Supported audio formats (batch)</td><td>wav, mp3, flac, ogg/opus</td></tr>
               <tr><td>Streaming audio format</td><td>Raw 16-bit signed PCM, little-endian, mono, at 8 kHz or 16 kHz</td></tr>
-              <tr><td>Access token lifetime</td><td>~15 minutes (900 s) — cache and reuse, re-mint at <code>/auth/token</code> on expiry</td></tr>
-              <tr><td>Upload too large</td><td><code>413</code> — exceeds the 50 MB limit</td></tr>
-              <tr><td>Request timed out</td><td><code>504</code> — didn't complete within the gateway window</td></tr>
-              <tr><td>Rate limit exceeded</td><td><code>429</code> — retry after the <code>Retry-After</code> window</td></tr>
+              <tr><td>Access token lifetime</td><td>~15 minutes (900 s); cache and reuse, re-mint at <code>/auth/token</code> on expiry</td></tr>
+              <tr><td>Upload too large</td><td><code>413</code>: exceeds the 50 MB limit</td></tr>
+              <tr><td>Request timed out</td><td><code>504</code>: didn't complete within the gateway window</td></tr>
+              <tr><td>Rate limit exceeded</td><td><code>429</code>: retry after the <code>Retry-After</code> window</td></tr>
             </tbody>
           </table>
         </div>
