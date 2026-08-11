@@ -54,19 +54,29 @@
         <p><a href="/web_doc/asr/api-reference.html#post-auth-token">Full ASR API reference →</a></p>
 
         <h2 class="product-chapter">Text-to-Speech <span class="accent-italic">(TTS)</span></h2>
-        <p>Same API key works for both transports. Pick the tab for the protocol you're using.</p>
+        <p>TTS authenticates with a short-lived <strong>Bearer token</strong> minted from your API key at <code>POST https://app.shunyalabs.ai/api/auth/token</code>. Send the token on every TTS request; never send the API key to end-user clients.</p>
 
-        <div class="code-group">
-          <div class="code-tabs" role="tablist">
-            <button class="code-tab active">HTTP (Bearer header)</button>
-            <button class="code-tab">WebSocket (header or query param)</button>
-          </div>
-          <div class="code-panel active"><pre><code class="language-http">Authorization: Bearer sk-your-api-key</code></pre></div>
-          <div class="code-panel">
-            <p>Send the key as an <code>Authorization</code> header on the WebSocket upgrade. If your client can't set headers, fall back to a <code>token</code> query parameter:</p>
-            <pre><code class="language-bash">wss://tts.shunyalabs.ai/ws?token=sk-your-api-key</code></pre>
-          </div>
+        <p><strong>1. Mint a Bearer token:</strong></p>
+<pre><code class="language-bash">curl -X POST 'https://app.shunyalabs.ai/api/auth/token' \
+  -H 'api-key: YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{"expires_in": 86400}'</code></pre>
+
+        <p><code>expires_in</code> is the token lifetime in seconds; the example requests 24 hours. The response returns a <code>token</code> field to send as <code>Authorization: Bearer YOUR_TOKEN</code> on all TTS calls.</p>
+
+        <p><strong>2. Use the token on every TTS request:</strong></p>
+<pre><code class="language-bash">curl -X POST 'https://ttsv2.shunyalabs.ai/v1/omni-voice/synthesize' \
+  -H "Authorization: Bearer $YOUR_TOKEN" \
+  -H 'Content-Type: application/json' \
+  -d '{"text": "Hello, how are you today?", "voice": "Meera"}' \
+  --output hello.wav</code></pre>
+
+        <div class="callout callout-warn">
+          <div class="callout-title">Keep credentials on the server side</div>
+          Keep API keys and auth tokens on the server side. Do not expose them in browser code, mobile app bundles, public repositories, or logs. Store the API key in a backend or secret manager, mint the token from the backend, reuse it until near expiry, then refresh.
         </div>
+
+        <p><a href="/web_doc/tts/api-reference.html#authentication">Full TTS API reference →</a></p>
       </div>
       <aside class="toc" aria-label="On this page"></aside>
     </main>

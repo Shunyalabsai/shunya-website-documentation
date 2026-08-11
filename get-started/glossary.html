@@ -48,7 +48,7 @@
           <dd>Raw uncompressed audio, common for low-latency streaming STT.</dd>
 
           <dt>μ-law / A-law (G.711)</dt>
-          <dd>8 kHz phone codecs. Use <code>ulaw</code> or <code>alaw</code> when audio comes from PSTN or SIP.</dd>
+          <dd>8 kHz phone codecs common on PSTN and SIP lines. Streaming ASR expects raw 16-bit signed PCM, mono, at 8 kHz or 16 kHz, so convert G.711 audio to that format before sending.</dd>
 
           <dt>VAD (voice activity detection)</dt>
           <dd>Detects when someone is speaking vs silent.</dd>
@@ -89,38 +89,35 @@
         </div>
 
         <h2 class="product-chapter glossary-chapter">Text-to-Speech <span class="accent-italic">(TTS)</span></h2>
-        <p class="lead">Text in, audio out. Shunya product family: <strong>Zero TTS</strong>, voices, styles, and cloning.</p>
+        <p class="lead">Text in, audio out. Shunya product family: <strong>Zero TTS</strong>. The new endpoints below are the recommended integration path for new client implementations.</p>
         <div class="glossary-panel">
         <dl class="glossary">
           <dt>TTS (text-to-speech)</dt>
-          <dd>Converting written text into spoken audio. Shunya endpoint: <code>POST /v1/audio/speech</code>.</dd>
+          <dd>Converting written text into spoken audio. Shunya endpoints: <code>POST /v1/omni-voice/synthesize</code> (standard and education) and <code>POST /v1/audio/speech</code> (OpenAI-compatible).</dd>
 
-          <dt>Batch TTS</dt>
-          <dd>Send text in one request; receive a complete audio file (MP3, WAV, etc.).</dd>
+          <dt>Auth token (Bearer token)</dt>
+          <dd>Short-lived token minted from your API key at <code>POST https://app.shunyalabs.ai/api/auth/token</code> using the <code>api-key</code> header and an <code>expires_in</code> body (seconds). Send it as <code>Authorization: Bearer</code> on every TTS call.</dd>
 
-          <dt>Streaming TTS</dt>
-          <dd>Send text over WebSocket; receive audio chunks as they are generated.</dd>
+          <dt>Standard TTS</dt>
+          <dd>Synthesize speech from plain text with <code>POST /v1/omni-voice/synthesize</code>. Key fields: <code>text</code> (content to synthesize) and <code>voice</code> (requested ShunyaLabs voice).</dd>
+
+          <dt>Education TTS (LaTeX)</dt>
+          <dd>Same <code>omni-voice/synthesize</code> endpoint with <code>"latex": true</code> when the input contains LaTeX expressions, and <code>language</code> identifying the content language.</dd>
+
+          <dt>OpenAI-compatible TTS</dt>
+          <dd><code>POST /v1/audio/speech</code> with the OpenAI request shape (<code>model</code>, <code>input</code>, <code>voice</code>, <code>response_format</code>). Select the response format as required by your integration, as supported by the API.</dd>
+
+          <dt>Raw PCM</dt>
+          <dd>Raw audio output from the OpenAI-compatible endpoint, useful for streaming and voice-agent pipelines.</dd>
 
           <dt>Voice</dt>
-          <dd>Which speaker reads the text, 46 voices across 23 languages.</dd>
+          <dd>Which speaker reads the text. Voice and language support is confirmed per client plan.</dd>
 
-          <dt>Cross-lingual voice</dt>
-          <dd>A voice speaking a language outside its native set, any Shunya voice can read any supported language.</dd>
-
-          <dt>Expression style</dt>
-          <dd>Tone tag in text, <code>&lt;Happy&gt;</code>, <code>&lt;News&gt;</code>, etc. The tag is not spoken aloud.</dd>
-
-          <dt>Voice cloning</dt>
-          <dd>Generate speech in a custom voice from a 3-6 second audio sample.</dd>
+          <dt>Pipecat</dt>
+          <dd>A voice-agent framework. Shunya TTS plugs in as <code>OpenAITTSService</code> pointed at <code>https://ttsv2.shunyalabs.ai/v1</code>.</dd>
 
           <dt>Prosody</dt>
           <dd>Rhythm and intonation of spoken output.</dd>
-
-          <dt>Sample rate (TTS output)</dt>
-          <dd><strong>16 kHz</strong> for MP3/WAV; <strong>8 kHz</strong> for telephony formats.</dd>
-
-          <dt>μ-law / A-law (TTS output)</dt>
-          <dd>Phone-line audio from TTS, set <code>response_format</code> to <code>mulaw</code> or <code>alaw</code>.</dd>
         </dl>
         </div>
 
@@ -154,10 +151,10 @@
           <dd>NVIDIA inference server used to serve models at scale.</dd>
 
           <dt>WebSocket</dt>
-          <dd>Persistent connection used for streaming STT and TTS.</dd>
+          <dd>Persistent connection used for streaming STT (ASR realtime transcription).</dd>
 
           <dt>Bearer token</dt>
-          <dd>API key sent as <code>Authorization: Bearer &lt;key&gt;</code>.</dd>
+          <dd>Short-lived token minted from your API key and sent as <code>Authorization: Bearer &lt;token&gt;</code>. ASR mints an access token at <code>POST /auth/token</code>; TTS mints a Bearer token at <code>POST https://app.shunyalabs.ai/api/auth/token</code>.</dd>
         </dl>
         </div>
 

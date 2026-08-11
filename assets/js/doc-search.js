@@ -34,10 +34,14 @@
     { category: 'stt', query: 'POST /v1/audio/transcriptions', keywords: ['endpoint', 'api', 'transcriptions'], href: '/asr/api-reference.html#post-transcriptions' },
 
     { category: 'tts', query: 'How do I synthesize text to speech?', keywords: ['tts', 'synthesize', 'voice', 'speech'], href: '/tts/quickstart.html' },
-    { category: 'tts', query: 'Text-to-Speech overview', keywords: ['zero tts', 'overview', 'indic'], href: '/tts/overview.html' },
-    { category: 'tts', query: 'Voices, languages, and expression styles', keywords: ['voices', 'rajesh', 'varun', 'happy', 'news'], href: '/tts/voices.html' },
-    { category: 'tts', query: 'TTS streaming WebSocket', keywords: ['websocket', 'stream', 'real-time audio'], href: '/tts/streaming.html' },
-    { category: 'tts', query: 'Audio formats and telephony codecs', keywords: ['mulaw', 'alaw', 'mp3', 'wav'], href: '/tts/audio-formats.html' },
+    { category: 'tts', query: 'Text-to-Speech overview', keywords: ['tts', 'overview', 'omni-voice'], href: '/tts/overview.html' },
+    { category: 'tts', query: 'TTS authentication and Bearer token', keywords: ['auth', 'token', 'bearer', 'api key', 'expires'], href: '/tts/api-reference.html#authentication' },
+    { category: 'tts', query: 'Standard TTS endpoint (omni-voice synthesize)', keywords: ['synthesize', 'omni-voice', 'endpoint', 'meera'], href: '/tts/api-reference.html#post-synthesize' },
+    { category: 'tts', query: 'Education TTS with LaTeX', keywords: ['latex', 'math', 'education', 'language'], href: '/tts/api-reference.html#education-tts' },
+    { category: 'tts', query: 'OpenAI-compatible TTS endpoint', keywords: ['openai', 'compatible', 'audio speech', 'base_url', 'pcm'], href: '/tts/api-reference.html#post-speech' },
+    { category: 'tts', query: 'Pipecat voice agent integration', keywords: ['pipecat', 'voice agent', 'openai tts service'], href: '/tts/api-reference.html#pipecat' },
+    { category: 'tts', query: 'Client integration checklist', keywords: ['checklist', 'onboarding', 'api key', 'token'], href: '/tts/api-reference.html#client-checklist' },
+    { category: 'tts', query: 'Interactive TTS API documentation', keywords: ['api docs', 'docs', 'ttsv2'], href: '/tts/api-reference.html#api-docs' },
     { category: 'tts', query: 'LLM to TTS pipeline for voice agents', keywords: ['llm', 'agent', 'conversational'], href: '/tts/llm-to-tts.html' },
 
     { category: 'api', query: 'API Reference hub', keywords: ['api reference', 'endpoints', 'rest'], href: '/api-reference/index.html' },

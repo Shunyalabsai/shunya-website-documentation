@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>LiveKit Integration | Shunya Labs Docs</title>
-  <meta name="description" content="Shunyalabs STT and TTS plugin for LiveKit Agents: streaming and batch speech recognition and synthesis inside AgentSession.">
+  <meta name="description" content="Run Shunya ASR and TTS inside LiveKit Agents. STT uses Shunya's streaming endpoint, TTS uses the OpenAI-compatible endpoint.">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@1,500;1,600;1,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/web_doc/assets/css/main.css?v=32">
   <script src="/web_doc/assets/js/theme.js"></script>
@@ -22,211 +22,51 @@
 
         <div class="doc-title-row">
           <h1>LiveKit <span class="accent-italic">integration</span></h1>
-          <a href="https://pypi.org/project/livekit-plugins-shunyalabs/" target="_blank" rel="noopener" class="doc-hf-badge">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            livekit-plugins-shunyalabs v1.0.1
-          </a>
         </div>
 
-        <p class="lead">Official Shunyalabs plugin for <a href="https://docs.livekit.io/agents/" target="_blank" rel="noopener">LiveKit Agents</a>. Plug <code>shunyalabs.STT</code> and <code>shunyalabs.TTS</code> directly into a LiveKit <code>AgentSession</code> - supports real-time streaming transcription, batch recognition, and high-fidelity multilingual voice synthesis.</p>
+        <p class="lead">Run Shunya ASR and TTS inside a <a href="https://docs.livekit.io/agents/" target="_blank" rel="noopener">LiveKit Agents</a> voice agent. STT uses Shunya's realtime streaming endpoint, TTS uses the OpenAI-compatible endpoint pointed at Shunya.</p>
 
-        <div class="callout callout-info">
-          <div class="callout-title">Requirements</div>
-          Python 3.9+, LiveKit Agents framework, and a valid Shunyalabs API key.
+        <h2>1. Mint a Bearer token</h2>
+        <p>Exchange your API key for a short-lived Bearer token at <code>POST https://app.shunyalabs.ai/api/auth/token</code>, then pass the token to your clients. Keep the API key on the server side; never send it to end-user clients.</p>
+
+<pre><code>curl -X POST 'https://app.shunyalabs.ai/api/auth/token' \
+  -H 'api-key: YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{"expires_in": 86400}'</code></pre>
+
+        <h2>2. STT with Shunya streaming</h2>
+        <p>Shunya streaming ASR runs over a persistent WebSocket at <code>wss://asrv2prod.shunyalabs.ai/v1/realtime</code>. Audio frames from LiveKit are forwarded to the socket and transcription events arrive as <code>partial</code> and <code>final</code> messages. See <a href="/web_doc/asr/streaming.html">ASR streaming</a> for the protocol.</p>
+
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Shunya event</th><th>Meaning</th></tr></thead>
+            <tbody>
+              <tr><td><code>partial</code></td><td>Interim transcript, emitted continuously as speech is recognised</td></tr>
+              <tr><td><code>final</code></td><td>Final transcript for the segment</td></tr>
+            </tbody>
+          </table>
         </div>
 
-        <!-- Installation -->
-        <h2>Installation</h2>
-        <div class="code-group">
-          <div class="code-header"><span>Terminal</span></div>
-          <pre><code>pip install livekit-plugins-shunyalabs</code></pre>
-        </div>
+        <h2>3. TTS with the OpenAI-compatible endpoint</h2>
+        <p>For TTS, point a LiveKit OpenAI-compatible TTS client at the Shunya endpoint <code>https://ttsv2.shunyalabs.ai/v1/audio/speech</code>. Pass the Bearer token as the <code>api_key</code>, and select the response format required by your integration as supported by the API. Raw PCM output (<code>response_format="pcm"</code>) is useful for streaming and voice-agent pipelines.</p>
 
-        <!-- Authentication -->
-        <h2>Authentication</h2>
-        <p>Set your API key as an environment variable or pass it directly to the plugin classes:</p>
-        <div class="code-group">
-          <div class="code-header"><span>Environment variable</span></div>
-          <pre><code>export SHUNYALABS_API_KEY="your-api-key"</code></pre>
-        </div>
-        <div class="code-group">
-          <div class="code-header"><span>Python (inline)</span></div>
-          <pre><code>stt = shunyalabs.STT(api_key="your-api-key")
-tts = shunyalabs.TTS(api_key="your-api-key")</code></pre>
-        </div>
-
-        <!-- Quick Start -->
-        <h2>Quick start</h2>
-        <p>The minimal wiring - pass <code>shunyalabs.STT</code> and <code>shunyalabs.TTS</code> into an <code>AgentSession</code>:</p>
         <div class="code-group">
           <div class="code-header"><span>Python</span></div>
-          <pre><code>from livekit.agents import AgentSession
-from livekit.plugins import shunyalabs, silero
+<pre><code>from livekit.plugins import openai
 
-session = AgentSession(
-    stt=shunyalabs.STT(language="en"),
-    tts=shunyalabs.TTS(speaker="Rajesh", style="&lt;Neutral&gt;"),
-    vad=silero.VAD.load(),
+tts = openai.TTS(
+    base_url="https://ttsv2.shunyalabs.ai/v1",
+    api_key="YOUR_TOKEN",
+    model="tts-1",
+    voice="Meera",
 )</code></pre>
         </div>
 
-        <!-- STT -->
-        <h2>STT - <code>shunyalabs.STT</code></h2>
-        <p>Streaming and batch speech-to-text backed by the Shunyalabs ASR gateway. Audio frames from LiveKit are forwarded over WebSocket; transcription events are pushed back as <code>SpeechEvent</code>s.</p>
-
-        <h3>Parameters</h3>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr>
-            </thead>
-            <tbody>
-              <tr><td><code>api_key</code></td><td><code>str</code></td><td><code>None</code></td><td>API key. Falls back to <code>SHUNYALABS_API_KEY</code> env var.</td></tr>
-              <tr><td><code>language</code></td><td><code>str</code></td><td><code>None</code></td><td>Required for streaming. BCP-47 language code (e.g. <code>"hi"</code>); there is no auto-detect on streaming.</td></tr>
-              <tr><td><code>api_url</code></td><td><code>str</code></td><td><code>https://asrv2prod.shunyalabs.ai</code></td><td>REST batch endpoint base URL.</td></tr>
-              <tr><td><code>ws_url</code></td><td><code>str</code></td><td><code>wss://asrv2prod.shunyalabs.ai/v1/realtime</code></td><td>WebSocket streaming endpoint URL.</td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <h3>Capabilities</h3>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Capability</th><th>Supported</th></tr></thead>
-            <tbody>
-              <tr><td>Streaming (real-time)</td><td><span class="pill pill-green">Yes</span></td></tr>
-              <tr><td>Interim results</td><td><span class="pill pill-green">Yes</span></td></tr>
-              <tr><td>Offline / batch recognition</td><td><span class="pill pill-green">Yes</span></td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <h3>Streaming STT</h3>
-        <p>Real-time transcription over WebSocket with event mapping to LiveKit's <code>SpeechEventType</code>:</p>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Shunyalabs event</th><th>LiveKit SpeechEventType</th></tr></thead>
-            <tbody>
-              <tr><td><code>partial</code></td><td><code>INTERIM_TRANSCRIPT</code></td></tr>
-              <tr><td><code>final</code></td><td><code>FINAL_TRANSCRIPT</code></td></tr>
-            </tbody>
-          </table>
-        </div>
-        <div class="code-group">
-          <div class="code-header"><span>Python (streaming STT)</span></div>
-          <pre><code>from livekit.agents import AgentSession
-from livekit.plugins import shunyalabs, silero
-
-session = AgentSession(
-    stt=shunyalabs.STT(language="en"),
-    vad=silero.VAD.load(),
-)
-
-@session.on("user_speech_committed")
-def on_speech(ev):
-    print(f"User said: {ev.transcript}")</code></pre>
-        </div>
-
-        <h3>Batch STT</h3>
-        <p>Single-shot transcription of an audio buffer via <code>POST /v1/audio/transcriptions</code>:</p>
-        <div class="code-group">
-          <div class="code-header"><span>Python (batch STT)</span></div>
-          <pre><code>from livekit.plugins import shunyalabs
-
-stt = shunyalabs.STT(language="en")
-
-# Inside an agent context:
-event = await stt.recognize(audio_buffer)
-print(event.alternatives[0].text)</code></pre>
-        </div>
-
-        <!-- TTS -->
-        <h2>TTS - <code>shunyalabs.TTS</code></h2>
-        <p>Streaming and chunked text-to-speech. Token-by-token streaming collects text then synthesises on flush via WebSocket; the batch API handles single-shot synthesis over HTTP.</p>
-
-        <h3>Parameters</h3>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr>
-            </thead>
-            <tbody>
-              <tr><td><code>api_key</code></td><td><code>str</code></td><td><code>None</code></td><td>API key. Falls back to <code>SHUNYALABS_API_KEY</code> env var.</td></tr>
-              <tr><td><code>api_url</code></td><td><code>str</code></td><td><code>https://tts.shunyalabs.ai</code></td><td>HTTP batch endpoint base URL.</td></tr>
-              <tr><td><code>ws_url</code></td><td><code>str</code></td><td><code>wss://tts.shunyalabs.ai/ws</code></td><td>WebSocket streaming endpoint URL.</td></tr>
-              <tr><td><code>model</code></td><td><code>str</code></td><td><code>"zero-indic"</code></td><td>TTS model name.</td></tr>
-              <tr><td><code>voice</code></td><td><code>str</code></td><td><code>"Rajesh"</code></td><td>Voice name for the API.</td></tr>
-              <tr><td><code>speaker</code></td><td><code>str</code></td><td><code>"Rajesh"</code></td><td>Speaker name prefix for text formatting.</td></tr>
-              <tr><td><code>style</code></td><td><code>str</code></td><td><code>"&lt;Neutral&gt;"</code></td><td>Emotion style tag.</td></tr>
-              <tr><td><code>language</code></td><td><code>str</code></td><td><code>"en"</code></td><td>Language code for transliteration.</td></tr>
-              <tr><td><code>sample_rate</code></td><td><code>int</code></td><td><code>16000</code></td><td>Output audio sample rate in Hz.</td></tr>
-              <tr><td><code>output_format</code></td><td><code>str</code></td><td><code>"pcm"</code></td><td>Audio format: <code>pcm</code>, <code>wav</code>, <code>mp3</code>, <code>ogg_opus</code>, <code>flac</code>.</td></tr>
-              <tr><td><code>speed</code></td><td><code>float</code></td><td><code>1.0</code></td><td>Speaking speed multiplier (0.25 – 4.0).</td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <h3>Style tags</h3>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Tag</th><th>Description</th></tr></thead>
-            <tbody>
-              <tr><td><code>&lt;Neutral&gt;</code></td><td>Neutral tone by default</td></tr>
-              <tr><td><code>&lt;Happy&gt;</code></td><td>Happy / cheerful</td></tr>
-              <tr><td><code>&lt;Sad&gt;</code></td><td>Sad / melancholic</td></tr>
-              <tr><td><code>&lt;Angry&gt;</code></td><td>Angry / intense</td></tr>
-              <tr><td><code>&lt;Fearful&gt;</code></td><td>Fearful / anxious</td></tr>
-              <tr><td><code>&lt;Surprised&gt;</code></td><td>Surprised / excited</td></tr>
-              <tr><td><code>&lt;Disgust&gt;</code></td><td>Disgusted</td></tr>
-              <tr><td><code>&lt;News&gt;</code></td><td>News anchor style</td></tr>
-              <tr><td><code>&lt;Conversational&gt;</code></td><td>Casual conversational - recommended for voice agents</td></tr>
-              <tr><td><code>&lt;Narrative&gt;</code></td><td>Storytelling / narration</td></tr>
-              <tr><td><code>&lt;Enthusiastic&gt;</code></td><td>Enthusiastic / energetic</td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <h3>Text formatting</h3>
-        <p>The plugin automatically prepends the style tag before sending text to the API:</p>
+        <h2>4. Full agent example</h2>
         <div class="code-group">
           <div class="code-header"><span>Python</span></div>
-          <pre><code>tts = shunyalabs.TTS(speaker="Rajesh", style="&lt;Happy&gt;")
-# Input:  "Welcome to our platform"
-# Sent:   "&lt;Happy&gt; Welcome to our platform"</code></pre>
-        </div>
-
-        <h3>Streaming TTS example</h3>
-        <div class="code-group">
-          <div class="code-header"><span>Python</span></div>
-          <pre><code>from livekit.agents import AgentSession
-from livekit.plugins import shunyalabs
-
-session = AgentSession(
-    tts=shunyalabs.TTS(
-        speaker="Nisha",
-        style="&lt;Conversational&gt;",
-        model="zero-indic",
-        voice="Nisha",
-    ),
-)</code></pre>
-        </div>
-
-        <h3>Chunked (batch) TTS example</h3>
-        <div class="code-group">
-          <div class="code-header"><span>Python</span></div>
-          <pre><code>from livekit.plugins import shunyalabs
-
-tts = shunyalabs.TTS(speaker="Varun", voice="Varun")
-stream = tts.synthesize("Hello, how can I help you today?")</code></pre>
-        </div>
-
-        <!-- Full agent example -->
-        <h2>Full agent example</h2>
-        <div class="code-group">
-          <div class="code-header"><span>Python</span></div>
-          <pre><code>import asyncio
-from livekit.agents import AgentSession, Agent, RoomInputOptions
-from livekit.plugins import shunyalabs, silero
+<pre><code>from livekit.agents import AgentSession, Agent, RoomInputOptions
+from livekit.plugins import openai, silero
 
 class MyAgent(Agent):
     def __init__(self):
@@ -234,12 +74,12 @@ class MyAgent(Agent):
 
 async def entrypoint(ctx):
     session = AgentSession(
-        stt=shunyalabs.STT(language="auto"),
-        tts=shunyalabs.TTS(
-            model="zero-indic",
-            voice="Rajesh",
-            speaker="Rajesh",
-            style="&lt;Conversational&gt;",
+        stt=stt,          # Shunya streaming STT, see section 2
+        tts=openai.TTS(
+            base_url="https://ttsv2.shunyalabs.ai/v1",
+            api_key="YOUR_TOKEN",
+            model="tts-1",
+            voice="Meera",
         ),
         vad=silero.VAD.load(),
     )
@@ -250,21 +90,9 @@ async def entrypoint(ctx):
     )</code></pre>
         </div>
 
-        <!-- Multilingual -->
-        <h2>Multilingual example</h2>
-        <div class="code-group">
-          <div class="code-header"><span>Python</span></div>
-          <pre><code># Hindi speaker
-tts_hindi = shunyalabs.TTS(
-    speaker="Rajesh", voice="Rajesh",
-    language="hi", style="&lt;Neutral&gt;",
-)
-
-# English speaker
-tts_english = shunyalabs.TTS(
-    speaker="Varun", voice="Varun",
-    language="en", style="&lt;Conversational&gt;",
-)</code></pre>
+        <div class="callout callout-warn">
+          <div class="callout-title">Keep credentials on the server side</div>
+          Do not expose API keys or auth tokens in browser code, mobile app bundles, public repositories, or logs.
         </div>
 
         <div class="pager">
@@ -281,16 +109,10 @@ tts_english = shunyalabs.TTS(
       </div>
       <aside class="toc" aria-label="On this page">
         <div class="toc-title">On this page</div>
-        <a href="#installation">Installation</a>
-        <a href="#authentication">Authentication</a>
-        <a href="#quick-start">Quick start</a>
-        <a href="#stt--shunyalabsstt">STT</a>
-        <a class="toc-l3" href="#streaming-stt">Streaming STT</a>
-        <a class="toc-l3" href="#batch-stt">Batch STT</a>
-        <a href="#tts--shunyalabstts">TTS</a>
-        <a class="toc-l3" href="#style-tags">Style tags</a>
-        <a href="#full-agent-example">Full agent example</a>
-        <a href="#multilingual-example">Multilingual</a>
+        <a href="#1-mint-a-bearer-token">Mint a Bearer token</a>
+        <a href="#2-stt-with-shunya-streaming">STT with Shunya streaming</a>
+        <a href="#3-tts-with-the-openai-compatible-endpoint">TTS with OpenAI-compatible endpoint</a>
+        <a href="#4-full-agent-example">Full agent example</a>
       </aside>
     </main>
   </div>

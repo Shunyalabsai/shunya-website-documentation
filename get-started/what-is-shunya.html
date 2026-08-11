@@ -75,7 +75,7 @@
             </thead>
             <tbody>
               <tr><td><strong>Zero STT</strong></td><td>Transcribes audio to text. Models for Indic, international, medical, and code-switched audio. Streaming or batch.</td><td>Call centres, meeting notes, media captions, medical scribe.</td></tr>
-              <tr><td><strong>Zero TTS</strong></td><td>Generates natural speech in 23 Indic languages and English. 46 voices, 11 styles.</td><td>IVR, notifications, voice agents, audiobooks.</td></tr>
+              <tr><td><strong>Zero TTS</strong></td><td>Generates natural speech. Standard, education (LaTeX), and OpenAI-compatible endpoints. Voice and language support is confirmed per client plan.</td><td>IVR, notifications, voice agents, education.</td></tr>
               <tr><td><strong>Vāķ Translate</strong></td><td>Translates between any two Indian languages. 2,970 pairs.</td><td>Live conversation translation, multilingual content.</td></tr>
               <tr><td><strong><a href="/web_doc/intelligence/overview.html">Intelligence layer</a></strong></td><td>Intent, entity, sentiment, diarization, summarization, on top of transcripts.</td><td>Agent assist, analytics, compliance monitoring.</td></tr>
               <tr><td><strong>Voice agents</strong></td><td>Composes the above into conversational workflows.</td><td>Automated support, debt collection, appointment booking.</td></tr>
@@ -89,7 +89,7 @@
         <div class="grid grid-2">
           <div class="card">
             <div class="card-title"><span class="pill pill-green">Managed</span></div>
-            <p class="card-desc"><strong>Cloud API</strong>, fastest to try. Global endpoint, bearer-token auth, streaming over WebSocket. You pay per minute.</p>
+            <p class="card-desc"><strong>Cloud API</strong>, fastest to try. Exchange your API key for a Bearer token. ASR streams over WebSocket. You pay per minute.</p>
           </div>
           <div class="card">
             <div class="card-title"><span class="pill pill-amber">Self-hosted</span></div>
@@ -102,11 +102,11 @@
           Shunya (शून्य) is the Sanskrit origin of the modern concept of zero, a South Asian mathematical contribution that rewired the world. The voice stack carries the same spirit: one primitive that lets a lot of things exist.
         </div>
 
-        <h2>Batch or Streaming?</h2>
-        <p>Every Shunya API, Speech-to-Text and Text-to-Speech, works in two transport modes. Same models, same voices, different transport. Pick the one that fits how your audio arrives.</p>
+        <h2>Batch or streaming?</h2>
+        <p>Speech-to-Text works in two transports. Text-to-Speech is served over HTTP endpoints, and raw PCM output lets you feed audio into streaming and voice-agent pipelines.</p>
 
         <div class="bs-compare">
-          <!-- BATCH -->
+          <!-- ASR BATCH -->
           <div class="bs-card bs-card-batch">
             <div class="bs-card-body">
               <div class="bs-head">
@@ -114,41 +114,30 @@
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
                 </div>
                 <div>
-                  <div class="bs-title">Batch</div>
-                  <div class="bs-subtitle">HTTP POST, one request, complete response</div>
+                  <div class="bs-title">ASR: Batch</div>
+                  <div class="bs-subtitle">HTTP POST, one request, complete transcript</div>
                 </div>
               </div>
 
-              <p class="bs-summary">Send via HTTP POST and receive a complete result in a single response.</p>
+              <p class="bs-summary">Upload an audio file and receive the complete transcript in a single response.</p>
 
               <div class="bs-section">
-                <span class="bs-section-label">Endpoints</span>
+                <span class="bs-section-label">Endpoint</span>
                 <dl class="bs-props">
                   <dt>ASR</dt><dd>POST <code>https://asrv2prod.shunyalabs.ai/v1/audio/transcriptions</code></dd>
-                  <dt>TTS</dt><dd>POST <code>https://tts.shunyalabs.ai/v1/audio/speech</code></dd>
                 </dl>
               </div>
 
               <div class="bs-section">
-                <span class="bs-section-label">Best for (ASR)</span>
+                <span class="bs-section-label">Best for</span>
                 <ul class="bs-best">
                   <li>Uploaded files, post-processing, async jobs.</li>
-                </ul>
-              </div>
-
-              <div class="bs-section">
-                <span class="bs-section-label">Best for (TTS)</span>
-                <ul class="bs-best">
-                  <li>Pre-rendered voice prompts for IVR and telephony systems.</li>
-                  <li>Notification audio, order updates, alerts, reminders.</li>
-                  <li>Podcast, audiobook, and long-form content generation.</li>
-                  <li>Any use case where audio does not need to start playing before synthesis is complete.</li>
                 </ul>
               </div>
             </div>
           </div>
 
-          <!-- STREAMING -->
+          <!-- ASR STREAMING -->
           <div class="bs-card bs-card-stream">
             <div class="bs-card-body">
               <div class="bs-head">
@@ -156,7 +145,7 @@
                   <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
                 </div>
                 <div>
-                  <div class="bs-title">Streaming</div>
+                  <div class="bs-title">ASR: Streaming</div>
                   <div class="bs-subtitle">WebSocket, audio chunks flow in real time</div>
                 </div>
               </div>
@@ -164,36 +153,38 @@
               <p class="bs-summary">Open a persistent WebSocket connection and exchange audio frames in real time as they're produced.</p>
 
               <div class="bs-section">
-                <span class="bs-section-label">Endpoints</span>
+                <span class="bs-section-label">Endpoint</span>
                 <dl class="bs-props">
                   <dt>ASR</dt><dd><code>wss://asrv2prod.shunyalabs.ai/v1/realtime</code></dd>
-                  <dt>TTS</dt><dd><code>wss://tts.shunyalabs.ai/ws/v1/audio/speech</code></dd>
                 </dl>
               </div>
 
               <div class="bs-section">
-                <span class="bs-section-label">Best for (ASR)</span>
+                <span class="bs-section-label">Best for</span>
                 <ul class="bs-best">
                   <li>Live transcription, voice agents, IVR.</li>
-                </ul>
-              </div>
-
-              <div class="bs-section">
-                <span class="bs-section-label">Best for (TTS)</span>
-                <ul class="bs-best">
-                  <li>Voice agents and conversational AI requiring sub-second audio start.</li>
-                  <li>IVR and telephony pipelines.</li>
-                  <li>Real-time audio playback in applications.</li>
-                  <li>Any use case where audio must begin playing before synthesis of the full text is complete.</li>
                 </ul>
               </div>
             </div>
           </div>
         </div>
 
-        <p class="bs-source">Source: Shunyalabs ASR Gateway API Reference (31 March), Base Call + WebSocket Streaming API; Shunyalabs TTS Developer Documentation v1.0 (March 2026), §2.1 + §3.1. Text reproduced verbatim.</p>
+        <h3>TTS endpoints</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Endpoint</th><th>Use for</th></tr></thead>
+            <tbody>
+              <tr><td><code>POST https://app.shunyalabs.ai/api/auth/token</code></td><td>Exchange an API key for a Bearer token.</td></tr>
+              <tr><td><code>POST https://ttsv2.shunyalabs.ai/v1/omni-voice/synthesize</code></td><td>Standard TTS.</td></tr>
+              <tr><td><code>POST https://ttsv2.shunyalabs.ai/v1/omni-voice/synthesize</code> with <code>latex: true</code></td><td>Education TTS with LaTeX content.</td></tr>
+              <tr><td><code>POST https://ttsv2.shunyalabs.ai/v1/audio/speech</code></td><td>OpenAI-compatible, for voice agents and Pipecat. Raw PCM output is useful for streaming and voice-agent pipelines.</td></tr>
+            </tbody>
+          </table>
+        </div>
 
-        <p>For the full set of models, parameters, and connection details for each transport, jump to <a href="/web_doc/asr/overview.html#batch-vs-streaming">ASR overview</a> or <a href="/web_doc/tts/overview.html#batch-vs-streaming">TTS overview</a>.</p>
+        <p class="bs-source">Source: Shunyalabs ASR Gateway API Reference (31 March); ShunyaLabs TTS API Integration Guide.</p>
+
+        <p>For the full set of models, parameters, and connection details, jump to <a href="/web_doc/asr/overview.html#batch-vs-streaming">ASR overview</a> or <a href="/web_doc/tts/overview.html">TTS overview</a>.</p>
 
 
         <div class="pager">

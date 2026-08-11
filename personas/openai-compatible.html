@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>OpenAI compatible | Shunya Labs Docs</title>
-  <meta name="description" content="Drop Shunya Labs into existing OpenAI SDK code. Same call shape, point base_url to Shunya, get Indic voices and sovereign deployment.">
+  <meta name="description" content="Drop ShunyaLabs into existing OpenAI SDK code. Same call shape, point base_url to ShunyaLabs, pass your Bearer token, get the OpenAI-compatible voice-agent endpoint.">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@1,500;1,600;1,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/web_doc/assets/css/main.css?v=32">
   <script src="/web_doc/assets/js/theme.js"></script>
@@ -18,19 +18,28 @@
         </div>
         <div class="persona-label" style="margin-bottom: 0.5rem;">For teams already on the OpenAI SDK</div>
         <h1>Drop in to <span class="accent-italic">existing OpenAI code</span></h1>
-        <p class="lead">Already using the OpenAI Python SDK? Keep your code. Point <code>base_url</code> to Shunya and you instantly gain 23 Indic languages, 46 voices, and on-prem deployment, no rewrites, no new client library.</p>
+        <p class="lead">Already using the OpenAI Python SDK? Keep your code. Point <code>base_url</code> to ShunyaLabs, pass your ShunyaLabs Bearer token as <code>api_key</code>, and call the OpenAI-compatible <code>POST /v1/audio/speech</code> endpoint.</p>
 
         <h2>Your journey</h2>
         <div class="mermaid">graph LR
-  A[1. Existing OpenAI code] --> B[2. Change base_url]
-  B --> C[3. Set Shunya API key]
-  C --> D[4. Pick a Shunya voice]
-  D --> E[5. Same call shape works]
+  A[1. Mint a Bearer token] --> B[2. Change base_url]
+  B --> C[3. Pass token as api_key]
+  C --> D[4. Same call shape works]
   style A fill:#6366f1,stroke:#4338ca,color:#fff,stroke-width:2px
-  style E fill:#6366f1,stroke:#4338ca,color:#fff,stroke-width:2px</div>
+  style D fill:#6366f1,stroke:#4338ca,color:#fff,stroke-width:2px</div>
 
-        <h2>Step 1: The two-line swap</h2>
-        <p>Take any working OpenAI TTS call. Change <strong>two lines</strong>, the <code>base_url</code> and the <code>voice</code>: and you're calling Shunya:</p>
+        <h2>Step 1: Authenticate first</h2>
+        <p>Generate an API key from your ShunyaLabs account, then exchange it for a short-lived Bearer token at the authentication endpoint. Use the token as the <code>api_key</code> in the OpenAI client. Keep the API key on the server side; never send it to end-user clients.</p>
+
+<pre><code>curl -X POST 'https://app.shunyalabs.ai/api/auth/token' \
+  -H 'api-key: YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{"expires_in": 86400}'</code></pre>
+
+        <p>See <a href="/web_doc/tts/api-reference.html#authentication">Authentication</a> for the full flow.</p>
+
+        <h2>Step 2: The two-line swap</h2>
+        <p>Take any working OpenAI TTS call. Change <code>base_url</code> and pass your ShunyaLabs token as <code>api_key</code>; use an OpenAI-compatible model and voice name.</p>
 
         <h3>Before: vanilla OpenAI</h3>
 <pre><code>from openai import OpenAI
@@ -45,90 +54,70 @@ response = client.audio.speech.create(
 )
 response.stream_to_file("output.mp3")</code></pre>
 
-        <h3>After: same SDK, Shunya backend</h3>
+        <h3>After: same SDK, ShunyaLabs backend</h3>
 <pre><code>from openai import OpenAI
 
 client = OpenAI(
-    api_key="YOUR_SHUNYA_KEY",
-    base_url="https://tts.shunyalabs.ai/v1",   # ← swap 1
+    api_key="YOUR_TOKEN",                 # ShunyaLabs Bearer token
+    base_url="https://ttsv2.shunyalabs.ai/v1",
 )
 
 response = client.audio.speech.create(
-    model="zero-indic",                         # ← swap 2 (model)
+    model="tts-1",
     input="Hello, how are you today?",
-    voice="Varun",                              # ← swap 3 (voice)
-    response_format="mp3",
+    voice="Meera",
+    response_format="pcm",
 )
-response.stream_to_file("output.mp3")</code></pre>
+response.stream_to_file("output.pcm")</code></pre>
 
-        <h2>Step 2: What stays the same</h2>
+        <h2>Step 3: What stays the same</h2>
         <ul>
           <li><strong>Client class</strong>, <code>OpenAI</code> / <code>AsyncOpenAI</code> from the official <code>openai</code> package.</li>
           <li><strong>Method shape</strong>, <code>client.audio.speech.create(...)</code>, same fields.</li>
           <li><strong>Response shape</strong>, <code>response.stream_to_file()</code>, <code>response.read()</code>, <code>response.iter_bytes()</code> all work as in OpenAI.</li>
           <li><strong>Auth pattern</strong>, Bearer token via <code>api_key</code>; the SDK sets the <code>Authorization</code> header for you.</li>
-          <li><strong>response_format</strong>, <code>mp3</code>, <code>wav</code>, <code>pcm</code>, <code>flac</code>, <code>ogg_opus</code> all map across.</li>
-          <li><strong>Error handling</strong>, <code>openai.AuthenticationError</code>, <code>openai.RateLimitError</code>, <code>openai.APIError</code> behave as expected.</li>
         </ul>
 
-        <h2>Step 3: What changes</h2>
+        <h2>Step 4: What changes</h2>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Field</th><th>OpenAI value</th><th>Shunya value</th></tr></thead>
+            <thead><tr><th>Field</th><th>OpenAI value</th><th>ShunyaLabs value</th></tr></thead>
             <tbody>
-              <tr><td><code>base_url</code></td><td><code>https://api.openai.com/v1</code></td><td><code>https://tts.shunyalabs.ai/v1</code></td></tr>
-              <tr><td><code>model</code></td><td><code>tts-1</code> / <code>tts-1-hd</code></td><td><a class="hf-model-link" href="https://huggingface.co/spaces/shunyalabs/Zero-STT-Shunya-Labs" target="_blank" rel="noopener" title="View on Hugging Face"><code>zero-indic</code></a></td></tr>
-              <tr><td><code>voice</code></td><td><code>alloy</code>, <code>echo</code>, <code>nova</code>, ...</td><td><code>Varun</code>, <code>Sunita</code>, <code>Murugan</code>, ... (46 voices)</td></tr>
-              <tr><td><code>api_key</code></td><td><code>sk-openai-...</code></td><td>Your Shunya key from the dashboard</td></tr>
+              <tr><td><code>base_url</code></td><td><code>https://api.openai.com/v1</code></td><td><code>https://ttsv2.shunyalabs.ai/v1</code></td></tr>
+              <tr><td><code>model</code></td><td><code>tts-1</code> / <code>tts-1-hd</code></td><td><code>tts-1</code></td></tr>
+              <tr><td><code>voice</code></td><td><code>alloy</code>, <code>echo</code>, <code>nova</code>, ...</td><td>A ShunyaLabs voice (for example, <code>Meera</code>)</td></tr>
+              <tr><td><code>api_key</code></td><td><code>sk-openai-...</code></td><td>Your ShunyaLabs Bearer token</td></tr>
             </tbody>
           </table>
         </div>
 
-        <h2>Step 4: Voice mapping cheatsheet</h2>
-        <p>OpenAI ships generic English voices. Shunya gives you native Indic voices that can also speak English (cross-lingual). Pick by language and gender:</p>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Language</th><th>Male</th><th>Female</th></tr></thead>
-            <tbody>
-              <tr><td>English</td><td><code>Varun</code></td><td><code>Nisha</code></td></tr>
-              <tr><td>Hindi</td><td><code>Rajesh</code></td><td><code>Sunita</code></td></tr>
-              <tr><td>Tamil</td><td><code>Murugan</code></td><td><code>Thangam</code></td></tr>
-              <tr><td>Telugu</td><td><code>Vishnu</code></td><td><code>Lakshmi</code></td></tr>
-              <tr><td>Bengali</td><td><code>Arjun</code></td><td><code>Priyanka</code></td></tr>
-              <tr><td>Marathi</td><td><code>Siddharth</code></td><td><code>Ananya</code></td></tr>
-              <tr><td>Gujarati</td><td><code>Rakesh</code></td><td><code>Pooja</code></td></tr>
-              <tr><td>Kannada</td><td><code>Kiran</code></td><td><code>Shreya</code></td></tr>
-              <tr><td>Malayalam</td><td><code>Krishnan</code></td><td><code>Deepa</code></td></tr>
-              <tr><td>Punjabi</td><td><code>Gurpreet</code></td><td><code>Simran</code></td></tr>
-            </tbody>
-          </table>
-        </div>
-        <p>See the <a href="/web_doc/tts/voices.html">full voice list</a> for all 23 languages × 2 genders = 46 voices, plus details on cross-lingual synthesis (any voice, any language).</p>
+        <h2>Step 5: Response formats</h2>
+        <p>Select the response format required by your integration as supported by the API. Raw PCM output (<code>response_format="pcm"</code>) is useful for streaming and voice-agent pipelines.</p>
 
-        <h2>Step 5: Async + streaming with the OpenAI SDK</h2>
+        <h2>Step 6: Async + streaming with the OpenAI SDK</h2>
 <pre><code>from openai import AsyncOpenAI
 
 client = AsyncOpenAI(
-    api_key="YOUR_SHUNYA_KEY",
-    base_url="https://tts.shunyalabs.ai/v1",
+    api_key="YOUR_TOKEN",
+    base_url="https://ttsv2.shunyalabs.ai/v1",
 )
 
 async with client.audio.speech.with_streaming_response.create(
-    model="zero-indic",
+    model="tts-1",
     input="Hello, how are you today?",
-    voice="Sunita",
+    voice="Meera",
     response_format="pcm",
 ) as response:
     async for chunk in response.iter_bytes():
-        play(chunk)   # bytes arrive as the model generates them</code></pre>
+        play(chunk)   # PCM bytes arrive as they are generated</code></pre>
 
-        <h2>Step 6: Pipeline: GPT-4 → Shunya TTS</h2>
-        <p>Use one OpenAI client for the LLM, a second OpenAI client (pointed at Shunya) for TTS. Stream tokens, flush at sentence boundaries:</p>
+        <h2>Step 7: Pipeline: GPT-4 → ShunyaLabs TTS</h2>
+        <p>Use one OpenAI client for the LLM, a second OpenAI client (pointed at ShunyaLabs) for TTS. Stream tokens, flush at sentence boundaries:</p>
 <pre><code>from openai import AsyncOpenAI
 
 oai     = AsyncOpenAI()                                      # default OpenAI base_url
-shunya  = AsyncOpenAI(base_url="https://tts.shunyalabs.ai/v1",
-                      api_key="YOUR_SHUNYA_KEY")
+shunya  = AsyncOpenAI(base_url="https://ttsv2.shunyalabs.ai/v1",
+                      api_key="YOUR_TOKEN")
 
 buffer = ""
 stream = await oai.chat.completions.create(
@@ -141,35 +130,35 @@ async for chunk in stream:
     buffer += token
     if token in (".", "!", "?", ";") and len(buffer) > 15:
         async with shunya.audio.speech.with_streaming_response.create(
-            model="zero-indic", input=buffer, voice="Sunita", response_format="pcm",
+            model="tts-1", input=buffer, voice="Meera", response_format="pcm",
         ) as resp:
             async for audio in resp.iter_bytes():
                 play(audio)
         buffer = ""</code></pre>
 
-        <h2>Step 7: Why teams choose this path</h2>
+        <h2>Step 8: Why teams choose this path</h2>
         <div class="grid grid-2">
           <div class="card">
             <div class="card-title">Zero migration cost</div>
-            <p class="card-desc">If your codebase already uses the OpenAI SDK, the swap is two lines. No new dependencies, no rewrites, no team retraining.</p>
+            <p class="card-desc">If your codebase already uses the OpenAI SDK, the swap is a few lines. No new dependencies, no rewrites, no team retraining.</p>
           </div>
           <div class="card">
-            <div class="card-title">Indic voices, sovereign deployment</div>
-            <p class="card-desc">Same SDK ergonomics, but with 23 Indic languages, on-prem deployment, and HIPAA / DPDP / GDPR compliance baked in.</p>
+            <div class="card-title">Voice-agent ready</div>
+            <p class="card-desc">The endpoint is designed for real-time voice-agent frameworks and Pipecat-style integrations, with raw PCM output for streaming pipelines.</p>
           </div>
           <div class="card">
             <div class="card-title">Multi-vendor without multi-codebase</div>
-            <p class="card-desc">Keep OpenAI for English-only paths, route Indic and regulated traffic to Shunya, both via the same client class.</p>
+            <p class="card-desc">Keep OpenAI for other paths and route TTS traffic to ShunyaLabs, both via the same client class.</p>
           </div>
           <div class="card">
-            <div class="card-title">Cost &amp; control</div>
-            <p class="card-desc">Predictable per-minute pricing vs. variable token billing. CPU-only inference for air-gapped environments.</p>
+            <div class="card-title">Pipecat support</div>
+            <p class="card-desc">Configure <code>OpenAITTSService</code> with <code>base_url="https://ttsv2.shunyalabs.ai/v1"</code> and your Bearer token; see the <a href="/web_doc/tts/api-reference.html#pipecat">Pipecat example</a>.</p>
           </div>
         </div>
 
         <div class="callout callout-success">
-          <div class="callout-title">Need richer features?</div>
-          The native <a href="/web_doc/personas/sdk.html">Shunya Python SDK</a> exposes additional knobs, voice cloning (<code>reference_wav</code>), background audio mixing, word-level timestamps, that aren't in the OpenAI surface.
+          <div class="callout-title">Full reference</div>
+          See <a href="/web_doc/tts/api-reference.html">TTS API reference</a> for the endpoint fields, examples, the client integration checklist, and the interactive API documentation.
         </div>
 
         <div class="pager">

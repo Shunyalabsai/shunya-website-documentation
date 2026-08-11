@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>FAQs | Shunya Labs Docs</title>
-  <meta name="description" content="Frequently asked questions about Shunya Labs: STT, TTS, APIs, deployment, billing, and troubleshooting common issues.">
+  <meta name="description" content="Frequently asked questions about Shunya Labs: STT, TTS, APIs, deployment, and troubleshooting common issues.">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@1,500;1,600;1,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/web_doc/assets/css/main.css?v=39">
   <script src="/web_doc/assets/js/theme.js"></script>
@@ -52,7 +52,7 @@
           <a href="/web_doc/index.html">Docs</a><span class="sep">/</span><span>Get Started</span><span class="sep">/</span><span>FAQs</span>
         </div>
         <h1>Frequently asked <span class="accent-italic">questions</span></h1>
-        <p class="lead">Quick answers to the most common questions about Shunya Labs - from getting started and API usage to deployment and billing. Click any question to reveal the answer.</p>
+        <p class="lead">Quick answers to the most common questions about Shunya Labs - from getting started and API usage to deployment and troubleshooting. Click any question to reveal the answer.</p>
         <div class="faq-cat-grid">
           <a href="#getting-started" class="faq-cat-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg> Getting Started</a>
           <a href="#stt" class="faq-cat-link"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="23"/></svg> Speech-to-Text</a>
@@ -72,8 +72,8 @@
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>Sign up at <a href="https://accounts.shunyalabs.ai" target="_blank" rel="noopener">accounts.shunyalabs.ai</a> to get your free API key. Once logged in, navigate to the <strong>API Keys</strong> section of your dashboard. You can create a new key with a single click. Each key comes with a free tier quota so you can start building immediately.</p>
-                <p>Your API key is a bearer token. Include it in every request via the <code>Authorization: Bearer &lt;your-key&gt;</code> header. Keep it secure - do not expose it in client-side code or public repositories.</p>
+                <p>Visit <a href="https://shunyalabs.ai" target="_blank" rel="noopener">shunyalabs.ai</a> and sign up or log in. Complete the onboarding flow, which adds testing credits to your account, then generate an API key from your ShunyaLabs account.</p>
+                <p>The API key is not sent to the transcription or synthesis endpoints. Exchange it for a short-lived Bearer token via the Auth API and send that token on every request. Keep the API key on the server side; do not expose it in browser code, mobile app bundles, public repositories, or logs.</p>
               </div>
             </details>
 
@@ -84,9 +84,12 @@
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>A <code>401</code> error means your API key is missing, invalid, or expired. Check the following:</p>
-                <ul><li>You are sending the <code>Authorization: Bearer &lt;key&gt;</code> header</li><li>The key has not been revoked from your dashboard</li><li>Your key has not expired (trial keys have a validity period)</li><li>There are no extra spaces or newlines in the header value</li></ul>
-                <p>If the problem persists, generate a new key from your dashboard and try again.</p>
+                <p>A <code>401</code> means the token is missing, invalid, or expired. The ASR guide returns <code>401</code> for a missing, invalid, or expired token. Mint a fresh token at <code>POST /auth/token</code> (ASR) or <code>POST https://app.shunyalabs.ai/api/auth/token</code> (TTS) and retry.</p>
+                <ul>
+                  <li>You are sending <code>Authorization: Bearer &lt;token&gt;</code>, not the raw API key</li>
+                  <li>The token has not expired; cache and reuse it until shortly before expiry, then re-mint on expiry or a <code>401</code></li>
+                  <li>There are no extra spaces or newlines in the header value</li>
+                </ul>
               </div>
             </details>
 
@@ -97,8 +100,8 @@
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>Yes! Every new account gets a <strong>free tier</strong> with monthly credits for STT, TTS, and Translation. The free tier is designed for prototyping, testing, and small-scale production use. Check the <a href="/web_doc/get-started/quickstart.html">Quickstart guide</a> for current free-tier limits.</p>
-                <p>When you outgrow the free tier, you can upgrade to a paid plan from your dashboard. There are no surprise charges - you set the budget.</p>
+                <p>Testing credits are added to your account when you complete the onboarding flow. Confirm that testing credits are available before integrating.</p>
+                <p>Production credit or commercial plan is confirmed per client. Before production rollout, confirm the credit or billing plan relevant to your implementation with Shunya Labs.</p>
               </div>
             </details>
 
@@ -109,8 +112,8 @@
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>Shunya Labs covers <strong>23 languages with 46 voices</strong> for TTS, <strong>2,970 translation pairs</strong> through Vāķ Translate, and a speech-to-text stack with models tuned for Indic, international, medical, and code-switched audio.</p>
-                <p>See the <a href="/web_doc/get-started/supported-languages.html">Supported languages</a> page for the full list. All languages are available on both cloud and on-prem deployments.</p>
+                <p>Shunya Labs covers speech-to-text with models tuned for Indic, international, medical, and code-switched audio, TTS with voice and language support confirmed per client plan, and <strong>2,970 translation pairs</strong> through Vāķ Translate.</p>
+                <p>See the <a href="/web_doc/get-started/supported-languages.html">Supported languages</a> page for the full list.</p>
               </div>
             </details>
 
@@ -121,8 +124,8 @@
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>Signing up for a Shunya Labs account is straightforward. Visit <a href="https://accounts.shunyalabs.ai" target="_blank" rel="noopener">accounts.shunyalabs.ai</a> and click the <strong>Create Account</strong> button. You can register using your email address or sign in with Google or GitHub for a faster setup.</p>
-                <p>After submitting the registration form, you will receive a verification email. Click the verification link to activate your account. Once verified, you can log in and immediately access the dashboard, where you will find your free API key already generated for you. The free tier includes monthly credits for STT, TTS, and Translation, so you can start experimenting right away without adding a payment method.</p>
+                <p>Visit <a href="https://shunyalabs.ai" target="_blank" rel="noopener">shunyalabs.ai</a> and sign up or log in. Complete the onboarding flow, which adds testing credits to your account, then generate an API key from your ShunyaLabs account.</p>
+                <p>From there, exchange the API key for a Bearer token using the Auth API and call the endpoints. See the <a href="/web_doc/get-started/quickstart.html">Quickstart guide</a> for the full setup.</p>
               </div>
             </details>
 
@@ -133,8 +136,8 @@
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>If you did not receive the verification email, first check your <strong>spam</strong> or <strong>promotions</strong> folder, as the email may have been filtered. Add <code>noreply@shunyalabs.ai</code> to your address book or safe senders list to prevent future emails from being blocked.</p>
-                <p>If the email is not in your spam folder, you can request a new verification link by logging into your account at <a href="https://accounts.shunyalabs.ai" target="_blank" rel="noopener">accounts.shunyalabs.ai</a> and clicking <strong>Resend verification email</strong>. If you still do not receive it, contact support through the dashboard chat or by visiting the <a href="https://www.shunyalabs.ai/contact" target="_blank" rel="noopener">contact page</a>. Make sure you entered the correct email address during registration.</p>
+                <p>First check your <strong>spam</strong> or <strong>promotions</strong> folder, as the email may have been filtered.</p>
+                <p>If it is not there, contact support through the <a href="https://www.shunyalabs.ai/contact" target="_blank" rel="noopener">contact page</a> and confirm the email address entered during registration.</p>
               </div>
             </details>
 
@@ -145,8 +148,8 @@
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>Yes, you can create multiple API keys from your dashboard. Navigate to the <strong>API Keys</strong> section and click <strong>Create New Key</strong>. Each key can be given a descriptive name so you can track which application or environment it is used for - for example, <code>production-app</code>, <code>staging-server</code>, or <code>local-dev</code>.</p>
-                <p>Having multiple keys makes it easier to rotate credentials without downtime. If a key is compromised, you can revoke it individually without affecting your other keys. You can also set per-key rate limits and usage quotas in the dashboard for finer-grained control over your API consumption.</p>
+                <p>Yes, you can create multiple API keys from your ShunyaLabs account and give each a descriptive name so you can track which application or environment it is used for, for example <code>production-app</code>, <code>staging-server</code>, or <code>local-dev</code>.</p>
+                <p>If a key is compromised, revoke it individually without affecting your other keys. The <a href="/web_doc/security/compliance.html">Compliance page</a> notes that keys are hashed at rest and revocation takes effect in under 60 seconds.</p>
               </div>
             </details>
 
@@ -157,8 +160,8 @@
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>To reset your password, go to the login page at <a href="https://accounts.shunyalabs.ai" target="_blank" rel="noopener">accounts.shunyalabs.ai</a> and click <strong>Forgot Password</strong>. Enter the email address associated with your account and click <strong>Send Reset Link</strong>. You will receive an email with a password reset link that expires within one hour.</p>
-                <p>Click the link and enter your new password. Choose a strong password with at least eight characters, including uppercase and lowercase letters, numbers, and special characters. If you did not receive the reset email, check your spam folder or contact support for assistance.</p>
+                <p>Use the <strong>forgot password</strong> option on the sign-in page and enter the email address associated with your account.</p>
+                <p>If you do not receive the reset email, check your spam folder or contact support through the <a href="https://www.shunyalabs.ai/contact" target="_blank" rel="noopener">contact page</a>.</p>
               </div>
             </details>
 
@@ -169,8 +172,8 @@
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>A <code>403 Forbidden</code> error indicates that your API key is valid but does not have permission to access the requested resource. This can happen if your plan does not include access to a specific model or endpoint. For example, a free-tier key cannot access enterprise-only models or on-prem management endpoints.</p>
-                <p>Check the <a href="/web_doc/api-reference/errors.html">Error codes reference</a> for details on what each status code means. If you believe you should have access, verify that you are using the correct endpoint URL and that your API key has not been restricted to specific IP addresses or referrer domains. Contact support if the issue persists.</p>
+                <p>A <code>403</code> means the token is not authorized for this endpoint. The ASR guide returns <code>403</code> when the token is not permitted for the endpoint.</p>
+                <p>Check that you are using the correct endpoint URL and a freshly minted token. See the <a href="/web_doc/api-reference/errors.html">Error codes reference</a> for what each status code means.</p>
               </div>
             </details>
 
@@ -181,8 +184,7 @@
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>Your usage and quota information is available in the <strong>Dashboard</strong> under the <strong>Usage</strong> tab. Here you can see a real-time breakdown of your consumption across STT, TTS, and Translation services, including the number of API calls made, audio seconds processed, and characters synthesized for the current billing period.</p>
-                <p>The dashboard also displays your remaining quota for the free tier or your paid plan limits. You can set monthly budget caps and receive email notifications when you reach 50%, 80%, and 100% of your budget. For programmatic access, the <code>GET /v1/usage</code> endpoint returns your current usage data in JSON format, which you can integrate into your own monitoring systems.</p>
+                <p>Your usage is shown in the Shunya Labs dashboard. The integration guides do not document a usage endpoint; confirm credit or billing details with Shunya Labs.</p>
               </div>
             </details>
 
@@ -193,8 +195,7 @@
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>The Shunya Labs dashboard is organized into several key sections accessible from the left sidebar. The <strong>Overview</strong> page shows a summary of your recent API activity, quota usage, and quick links to documentation. The <strong>API Keys</strong> section lets you create, name, and revoke keys, while the <strong>Usage</strong> tab provides detailed billing and consumption metrics.</p>
-                <p>The <strong>Playground</strong> section allows you to test STT, TTS, and Translation endpoints interactively without writing any code. You can upload audio files, adjust parameters, and see live results. The <strong>Settings</strong> page lets you manage your profile, notification preferences, and billing information. If you need help at any point, click the <strong>Help</strong> icon in the top-right corner to access the documentation or start a support chat.</p>
+                <p>The dashboard provides account management, API key generation, and usage views. For API setup and examples, follow the <a href="/web_doc/get-started/quickstart.html">Quickstart guide</a>.</p>
               </div>
             </details>
 
@@ -205,8 +206,7 @@
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>The playground is available to all authenticated users with an active account. If you cannot access it, first ensure that you are logged in and that your account has been verified. Some free-tier accounts may have restricted playground access if the account was flagged for unusual activity or if the free-trial period has ended without upgrading.</p>
-                <p>Try clearing your browser cache and cookies, then log in again. If the issue persists, check that your browser supports modern JavaScript and WebSocket connections. The playground requires a stable internet connection. For enterprise or on-prem deployments, the playground may be disabled by your administrator for security reasons - contact your IT team in that case.</p>
+                <p>Make sure you are logged in and that your account is verified. If you still cannot access it, contact support through the <a href="https://www.shunyalabs.ai/contact" target="_blank" rel="noopener">contact page</a>.</p>
               </div>
             </details>
 
@@ -218,7 +218,7 @@
               </summary>
               <div class="faq-answer">
                 <p>Shunya Labs offers several model categories optimized for different use cases. For STT, use <code>zero-universal</code> for English and international content, <code>zero-indic</code> for Indian languages, <code>zero-med</code> for healthcare-domain transcription with medical terminology support, and <code>zero-codeswitch</code> for Hinglish and Tanglish. Each model works over both the batch and streaming transports.</p>
-                <p>For TTS, <strong>shunya-multilingual-1</strong> supports 23 languages with natural prosody, while <strong>shunya-indic-1</strong> provides the highest quality for Indian languages. The <strong>Express</strong> variants offer lower latency for real-time applications. Review the <a href="/web_doc/get-started/capability-matrix.html">Capability matrix</a> page for a complete comparison of accuracy, latency, and pricing across all available models.</p>
+                <p>For TTS, the integration guide documents the standard <code>omni-voice/synthesize</code> endpoint, the education (LaTeX) variant, and the OpenAI-compatible <code>audio/speech</code> endpoint. Voice and language support is confirmed per client plan. Review the <a href="/web_doc/get-started/capability-matrix.html">Capability matrix</a> page for the TTS capabilities and endpoints.</p>
               </div>
             </details>
 
@@ -229,11 +229,8 @@
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>Setting up your development environment is quick. Install the Shunya Labs Python SDK with <code>pip install shunyalabs</code>. For Node.js or TypeScript, use <code>npm install shunyalabs</code>. If you prefer to use the REST API directly, any HTTP client like <code>curl</code>, Python <code>requests</code>, or <code>fetch</code> in JavaScript will work.</p>
-                <p>Store your API key as an environment variable for security: <code>export SHUNYA_API_KEY="your-key"</code>. Then create a client instance:</p>
-                <pre><code>from shunyalabs import Shunya
-client = Shunya()  # reads SHUNYA_API_KEY from env</code></pre>
-                <p>See the <a href="/web_doc/get-started/quickstart.html">Quickstart guide</a> for step-by-step setup instructions in Python, Node.js, and cURL.</p>
+                <p>Use the REST APIs directly with any HTTP client, such as <code>curl</code>, Python <code>requests</code>, or <code>fetch</code> in JavaScript. For TTS, mint a short-lived Bearer token from your API key at <code>POST https://app.shunyalabs.ai/api/auth/token</code> and send it on every call.</p>
+                <p>For the OpenAI-compatible TTS endpoint, point the OpenAI SDK at <code>https://ttsv2.shunyalabs.ai/v1</code>. See the <a href="/web_doc/get-started/quickstart.html">Quickstart guide</a> for step-by-step setup instructions in Python, Node.js, and cURL.</p>
               </div>
             </details>
 
@@ -244,8 +241,7 @@ client = Shunya()  # reads SHUNYA_API_KEY from env</code></pre>
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>Two-factor authentication (2FA) adds an extra layer of security to your Shunya Labs account. To enable it, go to <strong>Settings &gt; Security &gt; Two-Factor Authentication</strong> in the dashboard. You can choose between an authenticator app (like Google Authenticator or Authy) or SMS-based codes.</p>
-                <p>Once enabled, you will be prompted for a one-time code from your authenticator app each time you log in, in addition to your password. We recommend using an authenticator app for the highest security. If you lose access to your 2FA device, you can use the backup codes provided during setup to regain access. Store these codes in a secure location. Contact support if you need to disable 2FA without access to your authenticator.</p>
+                <p>The integration guides do not document dashboard two-factor authentication. For account security, follow the API key hygiene guidance on the <a href="/web_doc/security/compliance.html">Compliance page</a>: hashed keys at rest, separate keys per environment, quarterly rotation, and immediate revocation on suspected compromise.</p>
               </div>
             </details>
 
@@ -256,8 +252,7 @@ client = Shunya()  # reads SHUNYA_API_KEY from env</code></pre>
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>The Shunya Labs dashboard supports the latest two major versions of the following browsers: <strong>Google Chrome</strong>, <strong>Mozilla Firefox</strong>, <strong>Apple Safari</strong>, and <strong>Microsoft Edge</strong>. Chrome and Firefox provide the best experience, especially for the Playground and real-time features that use WebSocket connections.</p>
-                <p>For the best experience, ensure your browser is up to date and that JavaScript is enabled. The dashboard uses modern CSS features like CSS Grid, custom properties, and <code>color-mix()</code>, which require a recent browser version. Internet Explorer is not supported. If you encounter display issues, try clearing your browser cache or disabling extensions that might interfere with page rendering.</p>
+                <p>The integration guides do not document a browser support matrix. Use a current version of a modern browser to access the dashboard.</p>
               </div>
             </details>
 
@@ -268,8 +263,7 @@ client = Shunya()  # reads SHUNYA_API_KEY from env</code></pre>
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>Team management is available on paid and Enterprise plans. To add team members, go to <strong>Settings &gt; Team</strong> in the dashboard. You can invite members by email address. Each member can be assigned a role: <strong>Admin</strong> (full access to all settings and billing), <strong>Developer</strong> (can create and manage API keys, view usage), or <strong>Viewer</strong> (read-only access to usage and settings).</p>
-                <p>Invited members receive an email with a link to join. You can also manage API key access per team member, set per-member usage quotas, and view each member's API activity in the audit log. For Enterprise plans, you can integrate with your organization's SAML/SSO provider for centralized identity management. Team members consume from the same billing account - usage is aggregated under your plan.</p>
+                <p>The integration guides do not document team management. The <a href="/web_doc/security/compliance.html">Compliance page</a> notes role-based access control on the management plane with least-privilege defaults, and SCIM/SSO for Enterprise key lifecycle automation.</p>
               </div>
             </details>
 
@@ -280,8 +274,7 @@ client = Shunya()  # reads SHUNYA_API_KEY from env</code></pre>
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>To update your profile information, log in to the dashboard and navigate to <strong>Settings &gt; Profile</strong>. Here you can change your display name, email address, timezone, and notification preferences. If you change your email address, you will need to verify the new email by clicking a confirmation link sent to the new address.</p>
-                <p>Your profile settings also include options for preferred language for the dashboard interface and default API parameters. Changes to your profile take effect immediately. If you are using SSO (Enterprise plans), profile information is synchronized from your identity provider and cannot be edited directly in the dashboard. Contact your IT administrator to update SSO-managed profile fields.</p>
+                <p>Profile settings are managed in the Shunya Labs dashboard. The integration guides do not cover profile management.</p>
               </div>
             </details>
 
@@ -292,8 +285,8 @@ client = Shunya()  # reads SHUNYA_API_KEY from env</code></pre>
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>A <strong>model</strong> is the underlying AI engine that performs the task - for example, <code>zero-indic</code> for STT or <code>shunya-multilingual-1</code> for TTS. Each model has specific capabilities and supported languages. An <strong>endpoint</strong> is the API URL through which you access the model, such as <code>/v1/audio/transcriptions</code> for batch STT or <code>/v1/audio/synthesize</code> for TTS.</p>
-                <p>Multiple models can be accessed through the same endpoint by changing the <code>model</code> parameter. Similarly, the same model may be accessible through different endpoints (batch vs. streaming). When selecting a model for your use case, consider factors like accuracy, latency, language support, and pricing. The <a href="/web_doc/get-started/capability-matrix.html">Capability matrix</a> page provides a comparison of all available models and their characteristics.</p>
+                <p>A <strong>model</strong> is the underlying AI engine that performs the task, for example <code>zero-indic</code> for STT. Each model has specific capabilities and supported languages. An <strong>endpoint</strong> is the API URL through which you access the capability, such as <code>/v1/audio/transcriptions</code> for batch STT, <code>/v1/omni-voice/synthesize</code> for TTS, or <code>/v1/audio/speech</code> for the OpenAI-compatible TTS endpoint.</p>
+                <p>Multiple models can be accessed through the same endpoint by changing the <code>model</code> parameter. Similarly, the same model may be accessible through different endpoints (batch vs. streaming). The <a href="/web_doc/get-started/capability-matrix.html">Capability matrix</a> page provides a comparison of the available models and their characteristics.</p>
               </div>
             </details>
 
@@ -304,7 +297,7 @@ client = Shunya()  # reads SHUNYA_API_KEY from env</code></pre>
           </a>
         </section>
 
-                <section class="faq-section" id="stt">
+        <section class="faq-section" id="stt">
           <h2 class="faq-heading">Speech-to-Text <span class="accent-italic">(STT)</span></h2>
           <p class="lead">Issues with transcription accuracy, audio formats, streaming, and batch processing.</p>
           <div class="faq-list">
@@ -316,7 +309,7 @@ client = Shunya()  # reads SHUNYA_API_KEY from env</code></pre>
               </summary>
               <div class="faq-answer">
                 <p>Transcription accuracy depends on several factors. Here are the most common fixes:</p>
-                <ul><li><strong>Audio quality:</strong> Ensure the recording is clear, with minimal background noise. For streaming, send 16-bit signed PCM at <strong>16 kHz</strong> (the default sample rate); 8 kHz is also supported.</li><li><strong>Language selection:</strong> Set the correct <code>language_code</code> on batch requests (it defaults to <code>auto</code>). On streaming, <code>language</code> is <strong>required</strong>: there is no auto-detect, and omitting it or sending <code>"auto"</code> produces wrong output.</li><li><strong>Model selection:</strong> Pick a model tuned for your audio: <code>zero-indic</code> for Indian languages, <code>zero-universal</code> for English and international content, <code>zero-med</code> for healthcare, <code>zero-codeswitch</code> for Hinglish/Tanglish.</li><li><strong>Audio length:</strong> Very short clips (&lt; 1 second) may not produce reliable results. Aim for 3+ seconds of speech per utterance.</li></ul>
+                <ul><li><strong>Audio quality:</strong> Ensure the recording is clear, with minimal background noise. For streaming, send 16-bit signed PCM at <strong>16 kHz</strong> (the default sample rate); 8 kHz is also supported.</li><li><strong>Language selection:</strong> Set the correct <code>language_code</code> on batch requests (it defaults to <code>auto</code>). On streaming, <code>language</code> is <strong>required</strong>: there is no auto-detect, and omitting it or sending <code>"auto"</code> produces wrong output.</li><li><strong>Model selection:</strong> Pick a model tuned for your audio: <code>zero-indic</code> for Indian languages, <code>zero-universal</code> for English and international content, <code>zero-med</code> for healthcare, <code>zero-codeswitch</code> for Hinglish/Tanglish.</li></ul>
                 <p>See <a href="/web_doc/asr/overview.html">the ASR overview</a> for the full set of request fields.</p>
               </div>
             </details>
@@ -353,7 +346,7 @@ client = Shunya()  # reads SHUNYA_API_KEY from env</code></pre>
               </summary>
               <div class="faq-answer">
                 <p>Streaming STT uses a <strong>WebSocket</strong> connection. Common issues include:</p>
-                <ul><li><strong>Wrong endpoint:</strong> Use <code>wss://asrv2prod.shunyalabs.ai/v1/realtime</code> (<code>wss://asrv2prod.shunyalabs.ai/ws</code> behaves the same), not the HTTP URL</li><li><strong>Auth:</strong> Send the short-lived <strong>access token</strong> (from <code>POST /auth/token</code>) as the <code>token</code> field of your first message, as a <code>?token=</code> query parameter, or as <code>Authorization: Bearer</code> on the upgrade; not the raw API key</li><li><strong>Missing language:</strong> <code>language</code> is required in the init message. There is no auto-detect on streaming; omitting it or sending <code>"auto"</code> gives wrong output</li><li><strong>Audio format mismatch:</strong> Send 16-bit signed PCM, little-endian, mono, at the sample rate you declared (default 16000). Check your microphone and encoder settings</li><li><strong>Connection closed early:</strong> Pace your frames roughly in real time (20–320 ms per frame) and finish by sending the text message <code>end</code></li></ul>
+                <ul><li><strong>Wrong endpoint:</strong> Use <code>wss://asrv2prod.shunyalabs.ai/v1/realtime</code> (<code>wss://asrv2prod.shunyalabs.ai/ws</code> behaves the same), not the HTTP URL</li><li><strong>Auth:</strong> Send the short-lived <strong>access token</strong> (from <code>POST /auth/token</code>) as the <code>token</code> field of your first message, as a <code>?token=</code> query parameter, or as <code>Authorization: Bearer</code> on the upgrade; not the raw API key</li><li><strong>Missing language:</strong> <code>language</code> is required in the init message. There is no auto-detect on streaming; omitting it or sending <code>"auto"</code> gives wrong output</li><li><strong>Audio format mismatch:</strong> Send 16-bit signed PCM, little-endian, mono, at the sample rate you declared (default 16000). Check your microphone and encoder settings</li><li><strong>Connection closed early:</strong> Pace your frames roughly in real time (20-320 ms per frame) and finish by sending the text message <code>end</code></li></ul>
                 <p>Refer to the <a href="/web_doc/asr/streaming.html">Streaming guide</a> for code examples in Python and Node.js.</p>
               </div>
             </details>
@@ -458,7 +451,7 @@ client = Shunya()  # reads SHUNYA_API_KEY from env</code></pre>
   -F "diarize=true" \
   -F "num_speakers=4" \
   -F "response_format=verbose_json"</code></pre>
-                <p>The response's <code>speakers</code> array lists the detected speakers, each <code>segment</code> carries a <code>speaker</code>, and <code>speaker_turns</code> gives the chronological turns. For the best results, use a good-quality microphone and minimize overlapping speech.</p>
+                <p>The response's <code>speakers</code> array lists the detected speakers, each <code>segment</code> carries a <code>speaker</code>, and <code>speaker_turns</code> gives the chronological turns. Use a good-quality microphone and minimize overlapping speech for the best results.</p>
               </div>
             </details>
 
@@ -594,288 +587,160 @@ asyncio.run(stream_microphone())</code></pre>
           </a>
         </section>
 
-<section class="faq-section" id="tts">
+        <section class="faq-section" id="tts">
           <h2 class="faq-heading">Text-to-Speech <span class="accent-italic">(TTS)</span></h2>
-          <p class="lead">Voice quality, expression styles, cloning, and supported output formats.</p>
+          <p class="lead">Authentication, the omni-voice synthesize endpoint (standard and education), the OpenAI-compatible endpoint, and Pipecat.</p>
           <div class="faq-list">
             <details class="faq-item">
               <summary class="faq-question">
                 <span class="faq-q-icon">?</span>
-                Why does the generated speech sound robotic?
+                How does TTS authentication work?
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>Robotic-sounding speech is usually caused by one of the following:</p>
-                <ul><li><strong>Missing expression style:</strong> Add an <code>&lt;expression&gt;</code> tag like <code>&lt;Conversational&gt;</code> or <code>&lt;Happy&gt;</code></li><li><strong>Wrong voice selection:</strong> Try <code>shunya-indic-1</code> or <code>shunya-multilingual-1</code></li><li><strong>Very short text:</strong> Single words or very short phrases may sound clipped</li><li><strong>Unusual characters:</strong> URLs, email addresses, and mixed-script text can cause pronunciation issues</li></ul>
+                <p>Exchange your API key once for a short-lived Bearer token at <code>POST https://app.shunyalabs.ai/api/auth/token</code>. Send the API key in the <code>api-key</code> header and a token lifetime in seconds in the body, for example <code>{"expires_in": 86400}</code>. Use the returned token as <code>Authorization: Bearer &lt;token&gt;</code> on every TTS call.</p>
+                <pre><code>curl -X POST 'https://app.shunyalabs.ai/api/auth/token' \
+  -H 'api-key: YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{"expires_in": 86400}'</code></pre>
+                <p>Keep API keys and auth tokens on the server side. Do not expose them in browser code, mobile app bundles, public repositories, or logs. Store the API key in a backend or secret manager, mint the token from the backend, reuse it until near expiry, then refresh.</p>
               </div>
             </details>
 
             <details class="faq-item">
               <summary class="faq-question">
                 <span class="faq-q-icon">?</span>
-                How do I use expression styles?
+                How do I synthesize speech from text?
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>Wrap the text with an expression tag: <code>&lt;Happy&gt;This is great!&lt;/Happy&gt;</code>. Available styles include:</p>
-                <ul><li><code>&lt;Conversational&gt;</code> - natural, everyday speech</li><li><code>&lt;Happy&gt;</code> - upbeat and cheerful</li><li><code>&lt;News&gt;</code> - broadcast-style delivery</li><li><code>&lt;Sad&gt;</code> - softer, slower tone</li><li><code>&lt;Whisper&gt;</code> - hushed voice</li></ul>
-                <p>Tags are applied per sentence and are not spoken aloud. See the <a href="/web_doc/tts/expression-styles.html">Expression styles guide</a> for the complete list.</p>
+                <p>Call <code>POST https://ttsv2.shunyalabs.ai/v1/omni-voice/synthesize</code> with the text and the requested voice:</p>
+                <pre><code>curl -X POST 'https://ttsv2.shunyalabs.ai/v1/omni-voice/synthesize' \
+  -H "Authorization: Bearer $YOUR_TOKEN" \
+  -H 'Content-Type: application/json' \
+  -d '{"text": "If Modi is prime minister who is Amit Shah?", "voice": "Meera"}' \
+  --output hello.wav</code></pre>
+                <p>The key fields are <code>text</code> (content to synthesize) and <code>voice</code> (the requested ShunyaLabs voice).</p>
               </div>
             </details>
 
             <details class="faq-item">
               <summary class="faq-question">
                 <span class="faq-q-icon">?</span>
-                How does voice cloning work?
+                How do I synthesize LaTeX (education) content?
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>Voice cloning creates a custom voice from a short audio sample (<strong>3–6 seconds</strong>). Upload a clean recording of the target speaker's voice, and the API can generate new speech in that same voice.</p>
-                <p>For best results, use a sample with clear speech, minimal background noise, and consistent volume. The cloning endpoint is available via <code>POST /v1/audio/clone</code>. Cloned voices are ephemeral by default but can be persisted for your account.</p>
-                <p>Refer to the <a href="/web_doc/tts/voice-cloning.html">Voice cloning guide</a> for step-by-step instructions.</p>
+                <p>Use the same <code>omni-voice/synthesize</code> endpoint with <code>"latex": true</code> when the input contains LaTeX expressions, and set <code>language</code> to identify the content language:</p>
+                <pre><code>curl -X POST 'https://ttsv2.shunyalabs.ai/v1/omni-voice/synthesize' \
+  -H "Authorization: Bearer $YOUR_TOKEN" \
+  -H 'Content-Type: application/json' \
+  -d '{"text": "If $x^2 = 49$, what is the value of x?", "voice": "Meera", "latex": true, "language": "en"}' \
+  --output answer.wav</code></pre>
               </div>
             </details>
 
             <details class="faq-item">
               <summary class="faq-question">
                 <span class="faq-q-icon">?</span>
-                What audio formats are supported for TTS output?
+                How do I use the OpenAI-compatible endpoint?
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>Set the <code>response_format</code> parameter to choose your output format:</p>
-                <ul><li><code>mp3</code> - compressed, widely compatible (default)</li><li><code>wav</code> - uncompressed PCM, highest quality</li><li><code>opus</code> - streaming-optimized</li><li><code>mulaw</code> - μ-law, for telephony at 8 kHz</li><li><code>alaw</code> - A-law, for telephony at 8 kHz</li><li><code>flac</code> - lossless compression</li><li><code>pcm</code> - raw PCM data</li></ul>
-                <p>All formats are available for both batch and streaming TTS. See the <a href="/web_doc/tts/audio-formats.html">Audio formats reference</a> for details.</p>
+                <p>Use <code>POST https://ttsv2.shunyalabs.ai/v1/audio/speech</code> with the OpenAI request shape:</p>
+                <pre><code>curl -X POST 'https://ttsv2.shunyalabs.ai/v1/audio/speech' \
+  -H "Authorization: Bearer $YOUR_TOKEN" \
+  -H 'Content-Type: application/json' \
+  -d '{"model": "tts-1", "input": "Hello, how are you today?", "voice": "Meera", "response_format": "pcm"}' \
+  --output speech.pcm</code></pre>
+                <p>Raw PCM output is useful for streaming and voice-agent pipelines. Select the response format required by your integration as supported by the API.</p>
               </div>
             </details>
 
             <details class="faq-item">
               <summary class="faq-question">
                 <span class="faq-q-icon">?</span>
-                How do I list all available voices?
+                How do I use TTS with Pipecat?
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>You can list all available voices by calling the <code>GET /v1/audio/voices</code> endpoint. The response returns an array of voice objects, each containing the voice ID, name, supported languages, gender, and available expression styles.</p>
-                <pre><code>curl -H "Authorization: Bearer $SHUNYA_API_KEY" \
-  "https://api.shunyalabs.ai/v1/audio/voices"</code></pre>
-                <p>The response includes details for all pre-built voices and any custom cloned voices associated with your account. Refer to the <a href="/web_doc/tts/voices.html">Voices reference</a> page for the latest list.</p>
+                <p>Configure the Pipecat TTS service with the ShunyaLabs token and base URL, and use an OpenAI-compatible voice name such as <code>nova</code>:</p>
+                <pre><code>from pipecat.services.openai import OpenAITTSService
+
+tts = OpenAITTSService(
+    api_key="YOUR_TOKEN",
+    base_url="https://ttsv2.shunyalabs.ai/v1",
+    voice="nova",
+)</code></pre>
+                <p><code>api_key</code> is Pipecat's field name; pass the ShunyaLabs auth token as its value.</p>
               </div>
             </details>
 
             <details class="faq-item">
               <summary class="faq-question">
                 <span class="faq-q-icon">?</span>
-                Can I use SSML tags in my TTS input?
+                Which voices and languages are available?
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>Yes, Shunya Labs TTS supports a subset of SSML (Speech Synthesis Markup Language) tags for fine-grained control over speech output. You can use tags like <code>&lt;break&gt;</code> for pauses, <code>&lt;prosody&gt;</code> for rate and pitch, <code>&lt;say-as&gt;</code> for number and date interpretation, and <code>&lt;phoneme&gt;</code> for custom pronunciation.</p>
-                <pre><code>&lt;speak&gt;
-  &lt;prosody rate="slow" pitch="+2st"&gt;
-    Welcome to Shunya Labs.
-    &lt;break time="500ms"/&gt;
-  &lt;/prosody&gt;
-&lt;/speak&gt;</code></pre>
-                <p>To use SSML, set the <code>input_type</code> parameter to <code>ssml</code> in your request. SSML is supported when <code>input_type</code> is set to <code>ssml</code>. Refer to the <a href="/web_doc/tts/expression-styles.html">Expression styles guide</a> for available speech controls.</p>
+                <p>Voice and language support is confirmed per client plan. The integration guide intentionally does not hard-code a catalogue because it may vary by product version or client plan. The guide's examples use the voice <code>Meera</code> for the standard and OpenAI-compatible endpoints, and <code>nova</code> for Pipecat. Confirm the voices and languages you require with ShunyaLabs before production rollout.</p>
               </div>
             </details>
 
             <details class="faq-item">
               <summary class="faq-question">
                 <span class="faq-q-icon">?</span>
-                How do I generate speech in multiple languages with the same voice?
+                What output formats are supported?
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>Multilingual voices can synthesize speech in multiple languages using the same voice identity. <code>shunya-multilingual-1</code> supports all 23 TTS languages.</p>
-                <pre><code>{
-  "text": "Hello, how are you?",
-  "voice": "shunya-multilingual-1",
-  "language": "en"
-}</code></pre>
-                <p>The voice maintains consistent timbre and quality across languages. For Indian languages, <code>shunya-indic-1</code> offers the best cross-lingual performance.</p>
+                <p>Select the response format required by your integration, as supported by the API. The guide names raw PCM (<code>response_format="pcm"</code>) as useful for streaming and voice-agent pipelines.</p>
               </div>
             </details>
 
             <details class="faq-item">
               <summary class="faq-question">
                 <span class="faq-q-icon">?</span>
-                Why is my cloned voice not sounding like the original speaker?
+                What latency should I expect for TTS?
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>The quality of the source audio sample is critical. Use a sample that is 3–6 seconds long, recorded in a quiet environment with minimal background noise, at a sample rate of at least 16 kHz. The speaker should be speaking clearly and at a consistent volume.</p>
-                <p>Try these improvements: provide multiple samples of the same speaker, ensure the sample covers a range of phonemes, and avoid samples with background music, reverb, or echo. Refer to the <a href="/web_doc/tts/voice-cloning.html#best-practices">Voice cloning best practices</a> for detailed guidance.</p>
+                <p>Latency is intentionally not hard-coded in the integration guide because it may vary by product version or client plan. Before production rollout, confirm the latency you require for your implementation (including expected traffic, required voices and languages, and output or streaming format) with ShunyaLabs.</p>
               </div>
             </details>
 
             <details class="faq-item">
               <summary class="faq-question">
                 <span class="faq-q-icon">?</span>
-                What is the latency for streaming TTS?
+                Is there a text length limit per request?
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>Streaming TTS delivers audio with very low latency, typically <strong>200–500 ms</strong> from the time the text is sent to the first audio chunk being received. Pre-built voices generally have the lowest latency, while cloned voices may add 100–200 ms of additional processing time.</p>
-                <p>For real-time applications, use the <strong>Express</strong> model variants and the streaming WebSocket endpoint (<code>wss://api.shunyalabs.ai/v1/audio/synthesize</code>). This enables <strong>time-to-first-audio</strong> as low as 150 ms under optimal conditions.</p>
+                <p>The integration guide does not hard-code a text length limit; limits may vary by product version or client plan. Use the latest API documentation at <a href="https://ttsv2.shunyalabs.ai/docs" target="_blank" rel="noopener">ttsv2.shunyalabs.ai/docs</a> for supported request fields.</p>
               </div>
             </details>
 
             <details class="faq-item">
               <summary class="faq-question">
                 <span class="faq-q-icon">?</span>
-                How long can the generated audio be?
+                How do I generate speech for a voice agent or streaming pipeline?
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>For batch TTS requests, the maximum input text length is <strong>5,000 characters</strong>, which typically produces between 25–40 minutes of audio. For streaming TTS, there is no hard text limit per session, but each individual synthesis request has the same 5,000-character limit.</p>
-                <p>If you need to synthesize very long content, split your text into segments of 5,000 characters or fewer and process them sequentially or in parallel. Use the batch async endpoint for large-scale TTS workloads.</p>
+                <p>Use the OpenAI-compatible endpoint (<code>POST /v1/audio/speech</code>) with <code>response_format="pcm"</code>; the raw PCM output is useful for streaming and voice-agent pipelines. For the sentence-by-sentence pattern, see the <a href="/web_doc/tts/llm-to-tts.html">LLM → TTS pipeline</a>.</p>
               </div>
             </details>
 
             <details class="faq-item">
               <summary class="faq-question">
                 <span class="faq-q-icon">?</span>
-                How do I control speech rate and pitch?
+                What is the client integration checklist?
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>Use the SSML <code>&lt;prosody&gt;</code> tag. The <code>rate</code> attribute accepts values like <code>x-slow</code>, <code>slow</code>, <code>medium</code>, <code>fast</code>, <code>x-fast</code>, or a percentage. The <code>pitch</code> attribute accepts values like <code>low</code>, <code>medium</code>, <code>high</code>, or relative semitones.</p>
-                <pre><code>&lt;speak&gt;
-  &lt;prosody rate="85%" pitch="+1st"&gt;
-    This text will be spoken slightly slower and with a higher pitch.
-  &lt;/prosody&gt;
-&lt;/speak&gt;</code></pre>
-                <p>Alternatively, use the <code>speed</code> parameter in the API request for simpler rate control without SSML (0.25 to 4.0, where 1.0 is normal).</p>
+                <p>Sign up or log in at shunyalabs.ai, complete onboarding and confirm testing credits, generate an API key, exchange it for a Bearer token via the Auth API, integrate the standard, education, or OpenAI-compatible TTS endpoint, store credentials securely and refresh tokens before expiry, and use the latest API docs for supported request fields. See <a href="/web_doc/tts/api-reference.html#client-checklist">Client checklist</a> in the TTS API reference.</p>
               </div>
             </details>
-
-            <details class="faq-item">
-              <summary class="faq-question">
-                <span class="faq-q-icon">?</span>
-                How do I insert pauses or silence in the speech?
-                <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </summary>
-              <div class="faq-answer">
-                <p>Use the SSML <code>&lt;break&gt;</code> tag to insert pauses. The <code>time</code> attribute accepts values in milliseconds (e.g., <code>500ms</code>) or seconds (e.g., <code>2s</code>). Use the <code>strength</code> attribute for relative pause lengths.</p>
-                <pre><code>&lt;speak&gt;
-  First sentence.&lt;break time="1s"/&gt;
-  Second sentence after a pause.
-  &lt;break strength="strong"/&gt;
-  Third sentence after a strong break.
-&lt;/speak&gt;</code></pre>
-                <p>Remember to set <code>input_type: "ssml"</code> in your API request.</p>
-              </div>
-            </details>
-
-            <details class="faq-item">
-              <summary class="faq-question">
-                <span class="faq-q-icon">?</span>
-                What is cross-lingual voice support?
-                <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </summary>
-              <div class="faq-answer">
-                <p>Cross-lingual voice support allows a voice trained primarily on one language to synthesize speech in another language while maintaining the same voice identity. For example, a voice trained on English data can generate speech in Hindi while sounding like the same speaker.</p>
-                <p>To use cross-lingual synthesis, select a multilingual voice like <code>shunya-multilingual-1</code> and set the <code>language</code> parameter to your desired target language. Cloned voices also support cross-lingual synthesis.</p>
-              </div>
-            </details>
-
-            <details class="faq-item">
-              <summary class="faq-question">
-                <span class="faq-q-icon">?</span>
-                Can I batch process multiple texts for TTS?
-                <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </summary>
-              <div class="faq-answer">
-                <p>Yes, use the async batch endpoint to process multiple texts. Send an array of text items, each with its own voice, language, and format settings. The endpoint returns a job ID for tracking.</p>
-                <pre><code>{
-  "inputs": [
-    {"text": "Hello world", "voice": "shunya-multilingual-1", "language": "en"},
-    {"text": "नमस्ते दुनिया", "voice": "shunya-indic-1", "language": "hi"}
-  ]
-}</code></pre>
-                <p>Batch processing supports up to 100 items per request. See the <a href="/web_doc/tts/overview.html">TTS overview</a> for batch processing details.</p>
-              </div>
-            </details>
-
-            <details class="faq-item">
-              <summary class="faq-question">
-                <span class="faq-q-icon">?</span>
-                How do I create custom pronunciation for specific words?
-                <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </summary>
-              <div class="faq-answer">
-                <p>Use the SSML <code>&lt;phoneme&gt;</code> tag to specify custom pronunciation. The tag accepts an <code>alphabet</code> attribute (set to <code>ipa</code> or <code>xsampa</code>) and a <code>ph</code> attribute with the desired pronunciation.</p>
-                <pre><code>&lt;speak&gt;
-  The drug is pronounced
-  &lt;phoneme alphabet="ipa" ph="ˈpaɪrəfɛnɪb"&gt;Pyrafenib&lt;/phoneme&gt;.
-&lt;/speak&gt;</code></pre>
-                <p>You can also use the <code>&lt;sub&gt;</code> tag to replace text with alternative pronunciation. Use the SSML <code>&lt;phoneme&gt;</code> tag for custom pronunciation. Refer to the <a href="/web_doc/tts/expression-styles.html">Expression styles guide</a> for more speech controls.</p>
-              </div>
-            </details>
-
-            <details class="faq-item">
-              <summary class="faq-question">
-                <span class="faq-q-icon">?</span>
-                How do I stream TTS audio to a telephone system?
-                <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </summary>
-              <div class="faq-answer">
-                <p>Use the <code>mulaw</code> or <code>alaw</code> output format with an 8 kHz sample rate, which are standard for telephony systems. Set <code>response_format: "mulaw"</code> in your TTS request.</p>
-                <pre><code>{
-  "text": "Welcome to our automated service.",
-  "voice": "shunya-multilingual-1",
-  "response_format": "mulaw",
-  "sample_rate": 8000
-}</code></pre>
-                <p>The mu-law format at 8 kHz is compatible with Asterisk, FreeSWITCH, Twilio, and most SIP-based telephony platforms. Use the <code>mulaw</code> or <code>alaw</code> response formats for telephony integration with Asterisk, FreeSWITCH, or Twilio.</p>
-              </div>
-            </details>
-
-            <details class="faq-item">
-              <summary class="faq-question">
-                <span class="faq-q-icon">?</span>
-                What are the supported sample rates for TTS output?
-                <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </summary>
-              <div class="faq-answer">
-                <p>Shunya Labs TTS supports the following output sample rates:</p>
-                <ul><li><strong>24 kHz</strong> - Default for <code>wav</code>, <code>mp3</code>, <code>flac</code>, and <code>pcm</code> formats</li><li><strong>16 kHz</strong> - Available for all formats. Recommended for most applications</li><li><strong>8 kHz</strong> - Required for <code>mulaw</code> and <code>alaw</code> telephony formats</li><li><strong>48 kHz</strong> - Available for <code>wav</code> format on request</li></ul>
-                <p>Specify the desired sample rate using the <code>sample_rate</code> parameter. For streaming applications, 16 kHz is recommended.</p>
-              </div>
-            </details>
-
-            <details class="faq-item">
-              <summary class="faq-question">
-                <span class="faq-q-icon">?</span>
-                How do I use the TTS endpoint for notifications and alerts?
-                <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </summary>
-              <div class="faq-answer">
-                <p>Use the batch TTS endpoint with short, templated text. The low latency of batch TTS (typically under 1 second for short texts) makes it suitable for real-time alerts.</p>
-                <pre><code>{
-  "text": "Alert: Server CPU usage has exceeded 90%.",
-  "voice": "shunya-multilingual-1",
-  "language": "en",
-  "response_format": "mp3"
-}</code></pre>
-                <p>For high-volume notification systems, use the async batch endpoint to process multiple alerts in a single request. Cache generated audio files for commonly used notifications to reduce API calls.</p>
-              </div>
-            </details>
-
-            <details class="faq-item">
-              <summary class="faq-question">
-                <span class="faq-q-icon">?</span>
-                How does Shunya handle numbers, dates, and abbreviations?
-                <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </summary>
-              <div class="faq-answer">
-                <p>Shunya Labs TTS automatically handles common formatting. By default, numbers are spoken as cardinal values, dates are expanded, and common abbreviations are expanded.</p>
-                <p>For finer control, use the SSML <code>&lt;say-as&gt;</code> tag. For example, <code>&lt;say-as interpret-as="cardinal"&gt;1234&lt;/say-as&gt;</code> says "one thousand two hundred thirty-four". Use the <code>&lt;say-as interpret-as="cardinal"&gt;1234&lt;/say-as&gt;</code> tag to control how numbers and dates are spoken. See the <a href="/web_doc/tts/expression-styles.html">Expression styles guide</a> for more details.</p>
-              </div>
-            </details>
-
           </div>
           <a class="faq-top-link" href="#">
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
@@ -885,7 +750,7 @@ asyncio.run(stream_microphone())</code></pre>
 
         <section class="faq-section" id="api">
           <h2 class="faq-heading">API &amp; <span class="accent-italic">Integration</span></h2>
-          <p class="lead">Authentication, error codes, rate limits, SDKs, and WebSocket connections.</p>
+          <p class="lead">Authentication, error codes, rate limits, and WebSocket connections.</p>
           <div class="faq-list">
             <details class="faq-item">
               <summary class="faq-question">
@@ -894,9 +759,8 @@ asyncio.run(stream_microphone())</code></pre>
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>Rate limits vary by plan and endpoint. For the free tier:</p>
-                <ul><li><strong>Batch STT:</strong> 100 requests per minute</li><li><strong>Streaming STT:</strong> 10 concurrent WebSocket connections</li><li><strong>Batch TTS:</strong> 200 requests per minute</li><li><strong>Streaming TTS:</strong> 10 concurrent WebSocket connections</li><li><strong>Translation:</strong> 50 requests per minute</li></ul>
-                <p>Paid plans have higher limits. Check the <a href="/web_doc/api-reference/rate-limits.html">Rate limits page</a> for current information.</p>
+                <p>Both guides document a <code>429</code> (rate limit) error. The TTS guide intentionally does not hard-code rate or concurrency limits because they may vary by product version or client plan; confirm your required traffic with ShunyaLabs before production rollout.</p>
+                <p>For batch STT, the documented limit is the 50 MB file size; files larger than that return <code>413</code>. See the <a href="/web_doc/api-reference/rate-limits.html">Rate limits page</a> for what is documented.</p>
               </div>
             </details>
 
@@ -907,27 +771,38 @@ asyncio.run(stream_microphone())</code></pre>
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>The <code>429</code> status code means you have exceeded the rate limit for your plan. Here's what to do:</p>
-                <ul><li><strong>Wait and retry:</strong> The <code>Retry-After</code> response header tells you how long to wait</li><li><strong>Reduce concurrency:</strong> Throttle parallel requests</li><li><strong>Upgrade your plan:</strong> Paid plans offer higher limits</li><li><strong>Use batch endpoints:</strong> Batch requests into fewer larger ones</li></ul>
-                <p>Implement exponential backoff in your client code to handle 429s gracefully.</p>
+                <p>The <code>429</code> status code means you have exceeded the rate limit. Both the ASR and TTS guides list <code>429</code> in their error tables.</p>
+                <ul><li><strong>Wait and retry</strong> with exponential backoff</li><li><strong>Reduce concurrency:</strong> throttle parallel requests</li><li><strong>Confirm your plan:</strong> rate limits may vary by product version or client plan</li></ul>
               </div>
             </details>
 
             <details class="faq-item">
               <summary class="faq-question">
                 <span class="faq-q-icon">?</span>
-                How do I integrate using the Python SDK?
+                How do I call TTS from Python?
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>Install the Python SDK with <code>pip install shunyalabs</code>. Here's a quick example:</p>
-                <pre><code>from shunyalabs import Shunya
+                <p>Mint a short-lived Bearer token with Python <code>requests</code>, then call the omni-voice synthesize endpoint:</p>
+                <pre><code>import requests
 
-client = Shunya(api_key="your-key")
+# 1. Mint a Bearer token
+token = requests.post(
+    "https://app.shunyalabs.ai/api/auth/token",
+    headers={"api-key": "YOUR_API_KEY"},
+    json={"expires_in": 86400},
+).json()["token"]
 
-transcript = client.stt.transcribe(audio="audio.wav", language="hi")
-audio = client.tts.synthesize(text="नमस्ते", voice="shunya-indic-1")</code></pre>
-                <p>The SDK supports async/await, streaming generators, and typed configuration. See the <a href="/web_doc/integrations/python-sdk.html">Python SDK guide</a> for full documentation.</p>
+# 2. Synthesize with the token
+r = requests.post(
+    "https://ttsv2.shunyalabs.ai/v1/omni-voice/synthesize",
+    headers={"Authorization": f"Bearer {token}"},
+    json={"text": "Hello, how are you today?", "voice": "Meera"},
+)
+r.raise_for_status()
+with open("hello.wav", "wb") as f:
+    f.write(r.content)</code></pre>
+                <p>For the OpenAI-compatible endpoint, point the OpenAI SDK at <code>https://ttsv2.shunyalabs.ai/v1</code>. See the <a href="/web_doc/integrations/python-sdk.html">Python integration guide</a> for full examples.</p>
               </div>
             </details>
 
@@ -938,14 +813,21 @@ audio = client.tts.synthesize(text="नमस्ते", voice="shunya-indic-1")
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>Yes! Shunya is <strong>OpenAI-compatible</strong>. Point the OpenAI SDK's <code>base_url</code> to our endpoint:</p>
+                <p>Yes, the TTS endpoint is <strong>OpenAI-compatible</strong>. Point the OpenAI SDK's <code>base_url</code> to the TTS base URL and use your Bearer token:</p>
                 <pre><code>from openai import OpenAI
 
 client = OpenAI(
-    api_key="your-shunya-key",
-    base_url="https://api.shunyalabs.ai/v1"
-)</code></pre>
-                <p>All standard parameters work - <code>model</code>, <code>language</code>, <code>response_format</code>, etc. See the <a href="/web_doc/personas/openai-compatible.html">OpenAI compatibility guide</a>.</p>
+    api_key="YOUR_TOKEN",
+    base_url="https://ttsv2.shunyalabs.ai/v1",
+)
+resp = client.audio.speech.create(
+    model="tts-1",
+    input="Hello, how are you today?",
+    voice="Meera",
+    response_format="pcm",
+)
+resp.stream_to_file("hello.pcm")</code></pre>
+                <p>Standard parameters like <code>model</code>, <code>input</code>, <code>voice</code>, and <code>response_format</code> work as documented in the guide. See the <a href="/web_doc/personas/openai-compatible.html">OpenAI compatibility guide</a>.</p>
               </div>
             </details>
 
@@ -957,8 +839,8 @@ client = OpenAI(
               </summary>
               <div class="faq-answer">
                 <p>Implement reconnection logic with exponential backoff for production WebSocket clients:</p>
-                <ul><li>Listen for the <code>close</code> event and attempt to reconnect</li><li>Start with a 1-second delay and double up to a maximum (e.g., 30 seconds)</li><li>Add jitter to avoid thundering herd on reconnection</li><li>On reconnect, re-send the <code>StartTranscription</code> or <code>StartSynthesis</code> message</li></ul>
-                <p>Our WebSocket endpoints support graceful reconnection with a <code>session_id</code> in the initial response.</p>
+                <ul><li>Listen for the <code>close</code> event and attempt to reconnect</li><li>Start with a short delay and double it up to a maximum</li><li>Add jitter to avoid thundering herd on reconnection</li><li>On reconnect, re-send the streaming init message with your access token and language</li></ul>
+                <p>The ASR realtime WebSocket endpoint (<code>wss://asrv2prod.shunyalabs.ai/v1/realtime</code>) supports reconnection; re-establish the connection and resume streaming audio. Transcript already received via <code>final</code> events stays valid.</p>
               </div>
             </details>
 
@@ -969,8 +851,8 @@ client = OpenAI(
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>Shunya Labs APIs use standard HTTP status codes:</p>
-                <ul><li><strong>200 OK</strong> - Request succeeded</li><li><strong>201 Created</strong> - Resource created successfully</li><li><strong>400 Bad Request</strong> - Malformed request. Check JSON and required parameters</li><li><strong>401 Unauthorized</strong> - Missing or invalid API key</li><li><strong>403 Forbidden</strong> - Valid key but insufficient permissions</li><li><strong>404 Not Found</strong> - Endpoint or resource does not exist</li><li><strong>413 Payload Too Large</strong> - Request body exceeds maximum size</li><li><strong>429 Too Many Requests</strong> - Rate limit exceeded</li><li><strong>500 Internal Server Error</strong> - Unexpected server error</li></ul>
+                <p>The ASR guide documents these error status codes for its endpoints:</p>
+                <ul><li><strong>400</strong> - Bad request (missing/invalid input, or audio exceeds your plan limit)</li><li><strong>401</strong> - Missing, invalid, or expired token; re-mint at <code>/auth/token</code></li><li><strong>402</strong> - Insufficient balance (at <code>/auth/token</code>)</li><li><strong>403</strong> - Token not authorized for this endpoint</li><li><strong>413</strong> - Upload too large (limit 50 MB)</li><li><strong>415</strong> - Unsupported audio format</li><li><strong>429</strong> - Rate limit exceeded</li><li><strong>504</strong> - Request timed out</li></ul>
                 <p>See the <a href="/web_doc/api-reference/errors.html">Error codes reference</a> for complete details.</p>
               </div>
             </details>
@@ -982,9 +864,7 @@ client = OpenAI(
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>Shunya Labs API enforces the following timeouts:</p>
-                <ul><li><strong>HTTP requests:</strong> 60 seconds for synchronous endpoints</li><li><strong>WebSocket connections:</strong> 30 minutes maximum. Idle connections (30s no data) are closed</li><li><strong>Batch/async jobs:</strong> 30 minutes for STT, 15 minutes for TTS</li><li><strong>File uploads:</strong> Must complete within 5 minutes</li></ul>
-                <p>For long-running operations, always use the async batch endpoint. Configure your HTTP client with appropriate timeout values.</p>
+                <p>The integration guides do not hard-code timeout values. The ASR guide documents a <code>504</code> (request timed out) error for the batch endpoint. Configure your HTTP client with sensible timeout values for your use case.</p>
               </div>
             </details>
 
@@ -995,7 +875,7 @@ client = OpenAI(
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>Implement retry logic with <strong>exponential backoff</strong>. Only retry on <code>429</code> (rate limited) and <code>5xx</code> (server error) status codes.</p>
+                <p>Implement retry logic with <strong>exponential backoff</strong> in your HTTP client. Only retry on <code>429</code> (rate limited) and <code>5xx</code> (server error) status codes. For ASR, re-mint the access token on expiry or a <code>401</code>.</p>
                 <pre><code>import time
 import random
 
@@ -1008,7 +888,6 @@ def retry_with_backoff(fn, max_retries=5, base_delay=1.0):
                 raise
             delay = base_delay * (2 ** attempt) + random.uniform(0, 0.5)
             time.sleep(delay)</code></pre>
-                <p>The Shunya Labs Python SDK includes built-in retry logic. Configure via <code>Shunya(max_retries=3)</code>.</p>
               </div>
             </details>
 
@@ -1020,7 +899,7 @@ def retry_with_backoff(fn, max_retries=5, base_delay=1.0):
               </summary>
               <div class="faq-answer">
                 <p>WebSocket handshake failures are usually caused by:</p>
-                <ul><li><strong>Incorrect URL scheme:</strong> Use <code>wss://</code> for secure connections</li><li><strong>Missing authentication:</strong> Include the short-lived access token (from <code>POST /auth/token</code>) as the <code>token</code> field of your first message, the <code>?token=</code> query parameter, or <code>Authorization: Bearer</code> on the upgrade</li><li><strong>Firewall blocking:</strong> Ensure WebSocket connections on port 443 are allowed</li><li><strong>TLS/SSL issues:</strong> Configure your client to accept your CA certificate for on-prem</li></ul>
+                <ul><li><strong>Incorrect URL scheme:</strong> Use <code>wss://asrv2prod.shunyalabs.ai/v1/realtime</code> for secure connections</li><li><strong>Missing authentication:</strong> Include the short-lived access token (from <code>POST /auth/token</code>) as the <code>token</code> field of your first message, the <code>?token=</code> query parameter, or <code>Authorization: Bearer</code> on the upgrade</li><li><strong>Firewall blocking:</strong> Ensure WebSocket connections on port 443 are allowed</li></ul>
                 <p>Refer to the <a href="/web_doc/asr/streaming.html">Streaming guide</a> for WebSocket connection examples.</p>
               </div>
             </details>
@@ -1028,24 +907,12 @@ def retry_with_backoff(fn, max_retries=5, base_delay=1.0):
             <details class="faq-item">
               <summary class="faq-question">
                 <span class="faq-q-icon">?</span>
-                How do I upgrade or downgrade my SDK version?
+                Is the batch API synchronous or asynchronous?
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>To upgrade the Python SDK, run <code>pip install --upgrade shunyalabs</code>. To install a specific version, use <code>pip install shunyalabs==1.2.3</code>. For Node.js, use <code>npm update shunyalabs</code> or <code>npm install shunyalabs@1.2.3</code>.</p>
-                <p>Check <a href="https://pypi.org/project/shunyalabs/" target="_blank" rel="noopener">PyPI</a> or <a href="https://www.npmjs.com/package/shunyalabs" target="_blank" rel="noopener">npm</a> for the latest versions. We follow <strong>semantic versioning</strong>.</p>
-              </div>
-            </details>
-
-            <details class="faq-item">
-              <summary class="faq-question">
-                <span class="faq-q-icon">?</span>
-                What is the difference between synchronous and asynchronous APIs?
-                <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </summary>
-              <div class="faq-answer">
-                <p><strong>Synchronous APIs</strong> process your request in real time and return the result in the same HTTP response. Best for short operations where you need immediate results.</p>
-                <p><strong>Asynchronous (batch) APIs</strong> accept your request, return a job ID immediately, and process the work in the background. Poll for status or receive a webhook notification when complete. Ideal for long audio files and large batch TTS jobs.</p>
+                <p>Batch transcription (<code>POST /v1/audio/transcriptions</code>) is <strong>synchronous</strong>: it uploads a pre-recorded file and returns the full transcript in a single response. There is no job queue or webhook.</p>
+                <p>Streaming (<code>WS /v1/realtime</code>) is a live WebSocket session that emits <code>partial</code> and <code>final</code> events as audio arrives. TTS endpoints (<code>omni-voice/synthesize</code> and <code>audio/speech</code>) are synchronous HTTP calls that return the audio bytes.</p>
               </div>
             </details>
 
@@ -1056,8 +923,8 @@ def retry_with_backoff(fn, max_retries=5, base_delay=1.0):
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>Start by checking the HTTP status code and response body. Most errors include a JSON body with <code>error.code</code>, <code>error.message</code>, and <code>error.details</code> fields.</p>
-                <p>Enable debug logging in the Python SDK by setting <code>Shunya(debug=True)</code>. This logs all request URLs, headers, response status codes, and error bodies. Include the <code>X-Request-Id</code> from response headers when contacting support.</p>
+                <p>Start by checking the HTTP status code and response body. Most errors return a status code and a message describing the problem, for example <code>400</code> for a malformed request or <code>401</code> for an invalid token.</p>
+                <p>Log request URLs, headers, and response status codes in your client, and redact credentials before storing logs. The batch transcription response includes a <code>request_id</code> field (visible with <code>response_format=verbose_json</code>); quote it when contacting support.</p>
               </div>
             </details>
 
@@ -1068,12 +935,8 @@ def retry_with_backoff(fn, max_retries=5, base_delay=1.0):
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <pre><code>from shunyalabs import Shunya
-import logging
-
-logging.basicConfig(level=logging.DEBUG)
-client = Shunya(debug=True)</code></pre>
-                <p>For the Node.js SDK, set the <code>DEBUG=shunyalabs:*</code> environment variable. In production, log to a file and ensure API keys are redacted from logs.</p>
+                <p>Log the request URL, status code, and response body from your HTTP client. Keep API keys and auth tokens out of logs; store them on the server side in a secret manager.</p>
+                <p>The integration guides state that API keys and authentication tokens must not be exposed in logs.</p>
               </div>
             </details>
 
@@ -1084,7 +947,7 @@ client = Shunya(debug=True)</code></pre>
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>Yes, but <strong>never expose your API key in client-side code</strong>. Route API calls through a backend proxy server that attaches the API key server-side.</p>
+                <p>Yes, but <strong>never expose your API key in client-side code</strong>. Route API calls through a backend proxy server that mints the token and attaches it server-side.</p>
                 <pre><code>const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 const mediaRecorder = new MediaRecorder(stream);
 // Send chunks to wss://asrv2prod.shunyalabs.ai/v1/realtime</code></pre>
@@ -1099,19 +962,18 @@ const mediaRecorder = new MediaRecorder(stream);
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>Shunya Labs cloud API supports CORS. Configure allowed origins in your dashboard under <strong>Settings &gt; CORS</strong>. Specify a comma-separated list of allowed origins for production use.</p>
-                <p>For on-prem deployments, CORS configuration is managed in the deployment's <code>config.yaml</code> file under the <code>cors</code> section. Wildcard origins are supported but not recommended for production.</p>
+                <p>The integration guides do not document CORS configuration. For web applications, keep API keys and tokens on the server side and route API calls through a backend proxy; do not expose them in browser code.</p>
               </div>
             </details>
 
             <details class="faq-item">
               <summary class="faq-question">
                 <span class="faq-q-icon">?</span>
-                How do I set up webhooks for async job completion?
+                How do I set up webhooks for job completion?
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>Batch transcription (<code>POST /v1/audio/transcriptions</code>) is synchronous; it returns the full transcript in a single response, so no webhook is needed.</p>
+                <p>No webhook is needed. Batch transcription (<code>POST /v1/audio/transcriptions</code>) is synchronous and returns the full transcript in a single response:</p>
                 <pre><code>curl -X POST https://asrv2prod.shunyalabs.ai/v1/audio/transcriptions \
   -H "Authorization: Bearer $ACCESS_TOKEN" \
   -F "file=@long_meeting.wav" \
@@ -1140,12 +1002,19 @@ curl -X POST https://asrv2prod.shunyalabs.ai/v1/audio/transcriptions \
   -F "file=@speech.wav" \
   -F "model=zero-indic" \
   -F "language_code=en"</code></pre>
-                <p>For TTS:</p>
-                <pre><code>curl -X POST "https://api.shunyalabs.ai/v1/audio/synthesize" \
-  -H "Authorization: Bearer $SHUNYA_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{"text": "Hello world", "voice": "shunya-multilingual-1", "language": "en"}' \
-  --output speech.mp3</code></pre>
+                <p>For TTS, mint a Bearer token, then call the omni-voice synthesize endpoint:</p>
+                <pre><code># 1. Mint a Bearer token
+curl -X POST 'https://app.shunyalabs.ai/api/auth/token' \
+  -H 'api-key: YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{"expires_in": 86400}'
+
+# 2. Synthesize with the token
+curl -X POST 'https://ttsv2.shunyalabs.ai/v1/omni-voice/synthesize' \
+  -H "Authorization: Bearer $YOUR_TOKEN" \
+  -H 'Content-Type: application/json' \
+  -d '{"text": "Hello world", "voice": "Meera"}' \
+  --output hello.wav</code></pre>
                 <p>All API endpoints are documented in the <a href="/web_doc/api-reference/index.html">API Reference</a>.</p>
               </div>
             </details>
@@ -1157,8 +1026,8 @@ curl -X POST https://asrv2prod.shunyalabs.ai/v1/audio/transcriptions \
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>Create a <strong>new API key</strong> in the dashboard while keeping your existing key active. Update your application to use the new key, deploy to staging first for testing, then update production.</p>
-                <p>After confirming production is stable with the new key, <strong>revoke the old key</strong>. Maintain multiple keys during rotation. Supports up to 100 active API keys per account.</p>
+                <p>Create a <strong>new API key</strong> in the dashboard while keeping your existing key active. Update your application to use the new key, test in staging, then update production.</p>
+                <p>After confirming production is stable with the new key, <strong>revoke the old key</strong>. The <a href="/web_doc/security/compliance.html">Compliance page</a> recommends rotating on a quarterly schedule or immediately on suspected compromise, and notes that revocation takes effect in under 60 seconds.</p>
               </div>
             </details>
 
@@ -1169,8 +1038,7 @@ curl -X POST https://asrv2prod.shunyalabs.ai/v1/audio/transcriptions \
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>Shunya Labs APIs support custom headers like <code>X-Request-Id</code> for tracking, <code>X-Api-Version</code> for API versioning, and <code>X-Request-Timeout</code> for timeout overrides.</p>
-                <p>Custom headers must be prefixed with <code>X-</code>. Include the <code>X-Request-Id</code> from response headers when contacting support.</p>
+                <p>The integration guides do not document custom request headers. The batch transcription response includes a <code>request_id</code> field in the body (visible with <code>response_format=verbose_json</code>); quote it when contacting support.</p>
               </div>
             </details>
 
@@ -1181,7 +1049,7 @@ curl -X POST https://asrv2prod.shunyalabs.ai/v1/audio/transcriptions \
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>Since Shunya is OpenAI-compatible, you only need to change the <code>base_url</code> and <code>api_key</code> in existing OpenAI integration code. For other providers, update your code to use Shunya's API format.</p>
+                <p>Since Shunya is OpenAI-compatible for TTS, you only need to change the <code>base_url</code> and <code>api_key</code> in existing OpenAI integration code. For other providers, update your code to use Shunya's API format.</p>
                 <p>The <a href="/web_doc/personas/openai-compatible.html">OpenAI compatibility guide</a> provides a side-by-side comparison if migrating from OpenAI Speech Services.</p>
               </div>
             </details>
@@ -1204,8 +1072,8 @@ curl -X POST https://asrv2prod.shunyalabs.ai/v1/audio/transcriptions \
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>Yes. Shunya Labs supports <strong>on-premises deployment</strong> for organizations that need data sovereignty, low latency, or air-gapped operation. You can deploy on your own data center, private cloud, or edge devices.</p>
-                <p>The same API surface works everywhere - cloud and on-prem. Contact <a href="https://www.shunyalabs.ai/contact">sales</a> for a deployment evaluation.</p>
+                <p>Yes. Shunya Labs supports <strong>on-prem / VPC deployment</strong> for organizations that need data residency, low latency, or air-gapped operation. You deploy the same Triton containers that power the cloud inside your network, with REST and WebSocket edge services exposing the same API contract.</p>
+                <p>See the <a href="/web_doc/deployment/overview.html">Deployment guide</a> for the two deployment shapes and contact <a href="https://www.shunyalabs.ai/contact" target="_blank" rel="noopener">Shunya Labs</a> for a deployment evaluation.</p>
               </div>
             </details>
 
@@ -1216,9 +1084,8 @@ curl -X POST https://asrv2prod.shunyalabs.ai/v1/audio/transcriptions \
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>Minimum recommendations:</p>
-                <ul><li><strong>CPU-only:</strong> 8+ cores, 32 GB RAM, 100 GB SSD</li><li><strong>GPU-accelerated:</strong> NVIDIA T4 / A10G / A100 with 16+ GB VRAM</li><li><strong>Air-gapped:</strong> Same as above, no internet required after installation</li></ul>
-                <p>All models are <strong>CPU-compatible</strong>. See the <a href="/web_doc/deployment/overview.html">Deployment guide</a> for detailed sizing.</p>
+                <p>Shunya does not publish a sizing matrix. Hardware requirements depend on concurrency, codec, audio length, NLP add-ons, and Triton configuration.</p>
+                <p><a href="https://www.shunyalabs.ai/contact" target="_blank" rel="noopener">Contact Shunya Labs</a> for a sizing exercise before specifying hardware.</p>
               </div>
             </details>
 
@@ -1229,8 +1096,14 @@ curl -X POST https://asrv2prod.shunyalabs.ai/v1/audio/transcriptions \
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>The system runs with <strong>no connection to the public internet</strong>. Models are packaged as Docker images and transferred via physical media or private network. Triton Inference Server handles model serving locally.</p>
-                <p>No telemetry, no external API calls - everything runs inside your network. Updates are delivered as encrypted bundles. Common in defense, government, and regulated healthcare environments.</p>
+                <p>For environments with no internet connectivity, pull the open model weights once on an internet-connected machine, then transfer them across:</p>
+                <ol>
+                  <li>Run <code>huggingface-cli download</code> for the models you need on a connected workstation</li>
+                  <li>Package the models directory as a signed tarball</li>
+                  <li>Verify checksums and transfer via signed media to the secure zone</li>
+                  <li>Load the model from the local path; no further network calls are needed</li>
+                </ol>
+                <p>For production-quality serving in an air-gapped zone (multi-tenant, streaming, horizontally scaled), the on-prem package is easier than rolling your own Triton configuration. See the <a href="/web_doc/deployment/overview.html">Deployment guide</a> or <a href="https://www.shunyalabs.ai/contact" target="_blank" rel="noopener">contact Shunya Labs</a>.</p>
               </div>
             </details>
 
@@ -1242,58 +1115,20 @@ curl -X POST https://asrv2prod.shunyalabs.ai/v1/audio/transcriptions \
               </summary>
               <div class="faq-answer">
                 <p>Yes. Shunya Labs follows industry-standard security practices:</p>
-                <ul><li><strong>In transit:</strong> TLS 1.3 for all API and WebSocket connections</li><li><strong>At rest:</strong> AES-256 encryption for all stored data</li><li><strong>Audio retention:</strong> Audio files are deleted immediately after processing</li></ul>
-                <p>We are <strong>SOC 2 Type II</strong> and <strong>ISO 27001:2022</strong> certified, and comply with HIPAA, GDPR, and CCPA. See the <a href="/web_doc/security/compliance.html">Compliance page</a> for details.</p>
+                <ul><li><strong>In transit:</strong> TLS 1.3 for all API and WebSocket connections</li><li><strong>At rest:</strong> AES-256-GCM with envelope encryption</li><li><strong>Audio:</strong> encrypted during processing and deleted on transcription completion; transcripts are not retained in the default configuration</li></ul>
+                <p>Shunya is <strong>SOC 2 Type II</strong>, <strong>ISO/IEC 27001:2022</strong>, <strong>HIPAA</strong>, <strong>GDPR</strong>, and <strong>CCPA</strong> aligned. See the <a href="/web_doc/security/compliance.html">Compliance page</a> for details.</p>
               </div>
             </details>
 
             <details class="faq-item">
               <summary class="faq-question">
                 <span class="faq-q-icon">?</span>
-                How do I deploy using Docker?
+                How do I deploy using Docker or Kubernetes?
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>Pull the image from our private registry:</p>
-                <pre><code>docker pull shunyalabs/inference-server:latest
-docker run --gpus all -p 8000:8000 -p 8001:8001 \
-  -v /path/to/models:/models \
-  -e SHUNYA_LICENSE_KEY="your-license" \
-  shunyalabs/inference-server:latest</code></pre>
-                <p>The container exposes the API on port 8000 and health checks on port 8001. See the <a href="/web_doc/deployment/overview.html">Deployment guide</a> for environment variables and volume mounts.</p>
-              </div>
-            </details>
-
-            <details class="faq-item">
-              <summary class="faq-question">
-                <span class="faq-q-icon">?</span>
-                Does Shunya support Kubernetes?
-                <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </summary>
-              <div class="faq-answer">
-                <p>Yes, with official Helm charts. The charts configure deployments, services, ingress, horizontal pod autoscaling, and persistent volume claims. GPU nodes supported via NVIDIA device plugin.</p>
-                <pre><code>helm repo add shunyalabs https://helm.shunyalabs.ai
-helm install shunya-inference shunyalabs/inference-server \
-  --set licenseKey="your-license" \
-  --set gpu.enabled=true</code></pre>
-                <p>See the <a href="/web_doc/deployment/overview.html">Deployment guide</a> for Kubernetes production best practices.</p>
-              </div>
-            </details>
-
-            <details class="faq-item">
-              <summary class="faq-question">
-                <span class="faq-q-icon">?</span>
-                How do I configure GPU passthrough for Docker?
-                <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </summary>
-              <div class="faq-answer">
-                <p>Install the NVIDIA Container Toolkit on your host, then run containers with the <code>--gpus all</code> flag. For Kubernetes, install the NVIDIA device plugin daemonset.</p>
-                <pre><code>distribution=$(. /etc/os-release;echo $ID$VERSION_ID)
-curl -s -L https://nvidia.github.io/nvidia-docker/gpgkey | sudo apt-key add -
-curl -s -L https://nvidia.github.io/nvidia-docker/$distribution/nvidia-docker.list | sudo tee /etc/apt/sources.list.d/nvidia-docker.list
-sudo apt-get update && sudo apt-get install -y nvidia-container-toolkit
-sudo systemctl restart docker</code></pre>
-                <p>Verify GPU access with <code>nvidia-smi</code> inside the container.</p>
+                <p>The on-prem package ships as Triton Inference Server containers with a REST and WebSocket edge service and a management plane for API keys, quotas, and monitoring. It includes <strong>Helm charts</strong> (Kubernetes) or <code>docker-compose</code> for smaller setups.</p>
+                <p>Contact <a href="https://www.shunyalabs.ai/contact" target="_blank" rel="noopener">Shunya Labs</a> to obtain the deployment package. See the <a href="/web_doc/deployment/overview.html">Deployment guide</a> for details.</p>
               </div>
             </details>
 
@@ -1304,136 +1139,19 @@ sudo systemctl restart docker</code></pre>
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>Model updates are delivered as encrypted bundles. Download and install using the CLI:</p>
-                <pre><code>wget https://models.shunyalabs.ai/updates/indic-stt-v2.1.bundle
-shunya-cli models install indic-stt-v2.1.bundle
-shunya-cli models reload indic-stt</code></pre>
-                <p>For air-gapped environments, transfer bundles via physical media. The CLI supports rollback to previous versions. The CLI supports rollback to previous versions for easy model management.</p>
+                <p>The on-prem package includes an update channel whose cadence you control. Updates are delivered by Shunya Labs; contact support or your account manager for the update procedure.</p>
               </div>
             </details>
 
             <details class="faq-item">
               <summary class="faq-question">
                 <span class="faq-q-icon">?</span>
-                How do I scale the deployment for high throughput?
+                How do I monitor or scale an on-prem deployment?
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p><strong>Horizontal scaling</strong> - deploy multiple instances behind a load balancer. For Kubernetes, configure HPA based on GPU utilization.</p>
-                <p><strong>Vertical scaling</strong> - use more powerful GPUs.</p>
-                <p><strong>Model parallelism</strong> - distribute different models across separate instances. Use the <code>/v1/health</code> endpoint to monitor instance load. See the <a href="/web_doc/deployment/overview.html">Deployment guide</a> for scaling benchmarks.</p>
-              </div>
-            </details>
-
-            <details class="faq-item">
-              <summary class="faq-question">
-                <span class="faq-q-icon">?</span>
-                How do I monitor the health of my deployment?
-                <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </summary>
-              <div class="faq-answer">
-                <p>Health check endpoints on port 8001: <code>GET /v1/health</code> returns service status including model load states and GPU utilization. Prometheus metrics at <code>/v1/metrics</code> expose latency, error rates, and GPU memory usage.</p>
-                <p>Configure alerts for critical thresholds. The Helm chart includes a pre-configured ServiceMonitor for Prometheus Operator. The Helm chart includes a pre-configured ServiceMonitor for Prometheus Operator.</p>
-              </div>
-            </details>
-
-            <details class="faq-item">
-              <summary class="faq-question">
-                <span class="faq-q-icon">?</span>
-                Where can I find deployment logs?
-                <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </summary>
-              <div class="faq-answer">
-                <p>Logs are written to stdout/stderr. For Docker, use <code>docker logs &lt;container-id&gt;</code>. For Kubernetes, use <code>kubectl logs &lt;pod-name&gt;</code>. Set log verbosity via <code>SHUNYA_LOG_LEVEL</code> environment variable.</p>
-                <p>For production, configure a log shipper to forward logs to a centralized system like Elasticsearch, CloudWatch, or Splunk. Forward logs using standard Docker logging drivers or a log shipper like Filebeat.</p>
-              </div>
-            </details>
-
-            <details class="faq-item">
-              <summary class="faq-question">
-                <span class="faq-q-icon">?</span>
-                How do I back up and restore my deployment?
-                <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </summary>
-              <div class="faq-answer">
-                <p>Back up configuration files (<code>config.yaml</code>, <code>.env</code>), model files (<code>/var/lib/shunya/models</code>), license keys, and TLS certificates.</p>
-                <p>For Docker: <code>docker run --rm -v shunya-models:/models -v /backup:/backup ubuntu tar czf /backup/models-backup.tar.gz /models</code>. For Kubernetes, use Velero. Always test backup/restore in a non-production environment first.</p>
-              </div>
-            </details>
-
-            <details class="faq-item">
-              <summary class="faq-question">
-                <span class="faq-q-icon">?</span>
-                What network ports and protocols are required?
-                <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </summary>
-              <div class="faq-answer">
-                <p>Required ports:</p>
-                <ul><li><strong>8000 (TCP)</strong> - REST API endpoint</li><li><strong>8001 (TCP)</strong> - Health check and metrics endpoint</li><li><strong>8002 (TCP)</strong> - WebSocket endpoint for streaming</li><li><strong>22 (TCP)</strong> - SSH access for maintenance (optional)</li></ul>
-                <p>All communication uses TLS 1.3 encryption. In air-gapped environments, no outbound connections are required. In air-gapped environments, no outbound connections are required.</p>
-              </div>
-            </details>
-
-            <details class="faq-item">
-              <summary class="faq-question">
-                <span class="faq-q-icon">?</span>
-                How do I configure TLS certificates for on-prem deployment?
-                <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </summary>
-              <div class="faq-answer">
-                <p>Provide TLS certificates via environment variables:</p>
-                <pre><code>docker run --gpus all -p 443:8000 \
-  -v /etc/ssl/certs:/certs \
-  -e SHUNYA_TLS_CERT=/certs/server.crt \
-  -e SHUNYA_TLS_KEY=/certs/server.key \
-  shunyalabs/inference-server:latest</code></pre>
-                <p>For Kubernetes, configure TLS via Ingress with cert-manager. For Kubernetes, configure TLS via Ingress with cert-manager.</p>
-              </div>
-            </details>
-
-            <details class="faq-item">
-              <summary class="faq-question">
-                <span class="faq-q-icon">?</span>
-                Can I use Shunya with a reverse proxy?
-                <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </summary>
-              <div class="faq-answer">
-                <p>Yes. Works with Nginx, HAProxy, or Traefik. The reverse proxy handles TLS termination and load balancing. Configure it to forward requests to port 8000 (HTTP) or 8002 (WebSocket).</p>
-                <pre><code># Nginx example
-server {
-    listen 443 ssl;
-    location / {
-        proxy_pass http://inference-server:8000;
-        proxy_http_version 1.1;
-        proxy_set_header Upgrade $http_upgrade;
-        proxy_set_header Connection "upgrade";
-    }
-}</code></pre>
-                <p>Ensure timeouts are configured for streaming connections. Use health checks on port 8001 for high-availability setups.</p>
-              </div>
-            </details>
-
-            <details class="faq-item">
-              <summary class="faq-question">
-                <span class="faq-q-icon">?</span>
-                How do I perform a rolling update?
-                <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </summary>
-              <div class="faq-answer">
-                <p>For Kubernetes: <code>helm upgrade shunya-inference shunyalabs/inference-server --set image.tag=v2.1.0 --reuse-values</code>. Kubernetes performs a rolling update with zero downtime.</p>
-                <p>For Docker Compose: scale up a new instance, verify health, then scale down the old one. Use a blue-green strategy for manual Docker deployments.</p>
-              </div>
-            </details>
-
-            <details class="faq-item">
-              <summary class="faq-question">
-                <span class="faq-q-icon">?</span>
-                How do I set up logging and monitoring for on-prem deployment?
-                <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </summary>
-              <div class="faq-answer">
-                <p>Deployment outputs structured JSON logs to stdout/stderr. Configure a log shipper (Filebeat, Fluentd) to forward logs to your centralized platform. Prometheus metrics are exposed at <code>/v1/metrics</code> on port 8001.</p>
-                <p>Key metrics include request count, latency histogram, GPU memory usage, and model health. Create a Grafana dashboard with alerts. See the <a href="/web_doc/deployment/overview.html">Deployment guide</a> for monitoring recommendations.</p>
+                <p>The on-prem package includes a management plane for API keys, quotas, and monitoring. Sizing and scaling guidance depends on your expected traffic and concurrency, which Shunya does not publish as a fixed matrix.</p>
+                <p><a href="https://www.shunyalabs.ai/contact" target="_blank" rel="noopener">Contact Shunya Labs</a> for a sizing exercise and scaling recommendations.</p>
               </div>
             </details>
 
@@ -1446,7 +1164,7 @@ server {
 
         <section class="faq-section" id="billing">
           <h2 class="faq-heading">Billing <span class="accent-italic">&amp; Support</span></h2>
-          <p class="lead">Pricing plans, support channels, and account management.</p>
+          <p class="lead">Credits, plans, and how to get help.</p>
           <div class="faq-list">
             <details class="faq-item">
               <summary class="faq-question">
@@ -1455,21 +1173,8 @@ server {
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>Shunya Labs uses a <strong>pay-as-you-go</strong> pricing model:</p>
-                <ul><li><strong>Free tier:</strong> Monthly credits for STT, TTS, and Translation - no credit card required</li><li><strong>Usage-based:</strong> Pay per audio second (STT) or per character (TTS)</li><li><strong>Enterprise:</strong> Custom pricing for on-prem deployments and dedicated throughput</li></ul>
-                <p>Set a monthly budget cap in your dashboard. You'll never be charged more than your budget. Alerts at 50%, 80%, and 100% usage.</p>
-              </div>
-            </details>
-
-            <details class="faq-item">
-              <summary class="faq-question">
-                <span class="faq-q-icon">?</span>
-                What support plans are available?
-                <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </summary>
-              <div class="faq-answer">
-                <ul><li><strong>Community:</strong> Free - documentation, GitHub issues, community Discord</li><li><strong>Standard:</strong> Email support with 8-hour response (included with paid plans)</li><li><strong>Enterprise:</strong> Dedicated Slack, 1-hour SLA, quarterly reviews, priority features</li></ul>
-                <p>All paid plans include Standard support. Enterprise requires an annual contract.</p>
+                <p>Testing credits are added to your account when you complete onboarding. Production credit or commercial plan is confirmed per client; the integration guide intentionally does not hard-code billing details because they may vary by product version or client plan.</p>
+                <p>Before production rollout, confirm the credit or commercial plan relevant to your implementation with Shunya Labs.</p>
               </div>
             </details>
 
@@ -1480,399 +1185,33 @@ server {
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>You can reach us through any of these channels:</p>
-                <ul><li><strong>Documentation:</strong> Start here for most questions</li><li><strong>GitHub:</strong> Issues on the <a href="https://huggingface.co/shunyalabs" target="_blank" rel="noopener">Hugging Face organization</a></li><li><strong>Website:</strong> Contact form at <a href="https://www.shunyalabs.ai/contact" target="_blank" rel="noopener">shunyalabs.ai/contact</a></li><li><strong>Dashboard:</strong> In-app chat (available on paid plans)</li></ul>
+                <p>Use the contact form at <a href="https://www.shunyalabs.ai/contact" target="_blank" rel="noopener">shunyalabs.ai/contact</a>.</p>
+                <p>When reporting an issue, include the <code>request_id</code> from the batch transcription response body (visible with <code>response_format=verbose_json</code>). For a streaming session, quote the UTC time, language, and approximate call duration.</p>
               </div>
             </details>
 
             <details class="faq-item">
               <summary class="faq-question">
                 <span class="faq-q-icon">?</span>
-                How do I track my usage in real time?
+                What happens if I run out of credits or exceed my plan?
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>Real-time usage is in the dashboard under the <strong>Usage</strong> tab. Displays current billing period consumption for STT, TTS, and Translation with updates within 60 seconds.</p>
-                <p>For programmatic access, use <code>GET /v1/usage</code> to retrieve usage data as JSON. Set up email notifications for custom usage thresholds.</p>
+                <p>The ASR guide documents <code>402</code> (insufficient balance) at the <code>/auth/token</code> endpoint. Exceeding a rate limit returns <code>429</code>.</p>
+                <p>Confirm your credit or commercial plan with Shunya Labs before production rollout so the right plan is in place for your expected traffic.</p>
               </div>
             </details>
 
-            <details class="faq-item">
-              <summary class="faq-question">
-                <span class="faq-q-icon">?</span>
-                How do I set up billing alerts?
-                <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </summary>
-              <div class="faq-answer">
-                <p>Go to <strong>Settings &gt; Billing &gt; Alerts</strong>. Create alerts at specific usage percentages (50%, 75%, 90%) or absolute thresholds. Alerts can be delivered via email, webhook, or Slack.</p>
-                <p>Set a <strong>monthly budget cap</strong> that automatically stops API access when reached. Budget caps can be set globally or per API key.</p>
-              </div>
-            </details>
-
-            <details class="faq-item">
-              <summary class="faq-question">
-                <span class="faq-q-icon">?</span>
-                How do I download invoices?
-                <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </summary>
-              <div class="faq-answer">
-                <p>Go to <strong>Settings &gt; Billing &gt; Invoices</strong>. View all past invoices with billing period, amount, payment status, and PDF download link.</p>
-                <p>Invoices include line-item breakdown by service. Set up automatic email delivery to your finance team. Enterprise invoices are also available via API.</p>
-              </div>
-            </details>
-
-            <details class="faq-item">
-              <summary class="faq-question">
-                <span class="faq-q-icon">?</span>
-                How do I upgrade or downgrade my plan?
-                <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </summary>
-              <div class="faq-answer">
-                <p>Go to <strong>Settings &gt; Billing &gt; Plan</strong>. Upgrades take effect immediately with prorated charges. Downgrades take effect at the next billing cycle.</p>
-                <p>Check usage will fit within new plan limits before downgrading. Free tier credits are not forfeited when upgrading. Contact your account manager for Enterprise plan changes.</p>
-              </div>
-            </details>
-
-            <details class="faq-item">
-              <summary class="faq-question">
-                <span class="faq-q-icon">?</span>
-                What payment methods are accepted?
-                <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </summary>
-              <div class="faq-answer">
-                <ul><li><strong>Credit/Debit cards:</strong> Visa, Mastercard, American Express, Discover</li><li><strong>Wire transfer:</strong> Available for annual Enterprise contracts</li><li><strong>ACH direct debit:</strong> For US customers on annual plans</li><li><strong>UPI:</strong> Unified Payments Interface for Indian customers</li><li><strong>Net banking:</strong> Available for select Indian banks</li></ul>
-                <p>All payments processed securely through our PCI-compliant payment gateway. We do not store full card numbers.</p>
-              </div>
-            </details>
-
-            <details class="faq-item">
-              <summary class="faq-question">
-                <span class="faq-q-icon">?</span>
-                How do I change my billing information?
-                <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </summary>
-              <div class="faq-answer">
-                <p>Go to <strong>Settings &gt; Billing &gt; Payment Methods</strong>. Update credit card details, billing address, tax/VAT ID, and company name. Changes take effect immediately for future charges.</p>
-                <p>For legal entity or tax registration changes, update before the next invoice is generated. Enterprise customers may require a contract amendment.</p>
-              </div>
-            </details>
-
-            <details class="faq-item">
-              <summary class="faq-question">
-                <span class="faq-q-icon">?</span>
-                Can I get a refund?
-                <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </summary>
-              <div class="faq-answer">
-                <p>Contact the billing team at <a href="mailto:billing@shunyalabs.ai">billing@shunyalabs.ai</a> within 30 days of the charge. Refunds for usage-based charges are generally not issued for consumed services, but overcharges will be corrected.</p>
-                <p>Annual Enterprise contract refunds follow your agreement terms. Prepaid annual plan customers may receive prorated refunds for unused portions. All refunds processed within 10 business days.</p>
-              </div>
-            </details>
-
-            <details class="faq-item">
-              <summary class="faq-question">
-                <span class="faq-q-icon">?</span>
-                How do I cancel my account?
-                <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </summary>
-              <div class="faq-answer">
-                <p>Go to <strong>Settings &gt; Account &gt; Cancel Account</strong>. API access is deactivated immediately. Data is retained for 90 days in case of reactivation, then permanently deleted.</p>
-                <p>Download invoices and usage data before cancellation. Enterprise cancellation follows your contract terms.</p>
-              </div>
-            </details>
-
-            <details class="faq-item">
-              <summary class="faq-question">
-                <span class="faq-q-icon">?</span>
-                What is the SLA for Enterprise plans?
-                <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </summary>
-              <div class="faq-answer">
-                <p>Enterprise plans include a <strong>99.95% uptime SLA</strong> for API endpoints, measured monthly. Scheduled maintenance (48-hour notice) is excluded.</p>
-                <p>Service credits: 5% of monthly fee for each 30 minutes below 99.95%, up to 100% of monthly fee. Claims must be submitted within 30 days. Includes 1-hour response time for critical (P1) tickets.</p>
-              </div>
-            </details>
-
-            <details class="faq-item">
-              <summary class="faq-question">
-                <span class="faq-q-icon">?</span>
-                How do I add team members to my billing account?
-                <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </summary>
-              <div class="faq-answer">
-                <p>Go to <strong>Settings &gt; Team</strong>. Click <strong>Invite Member</strong> and enter their email. Assign roles: Admin, Developer, or Viewer. Usage from all members aggregates under the same billing account.</p>
-                <p>Enterprise plans support SAML/SSO integration. View per-member usage breakdown in the Usage tab. Remove members from the Team settings.</p>
-              </div>
-            </details>
-
-            <details class="faq-item">
-              <summary class="faq-question">
-                <span class="faq-q-icon">?</span>
-                How do I get a VAT or GST invoice?
-                <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </summary>
-              <div class="faq-answer">
-                <p>Update your billing information in <strong>Settings &gt; Billing &gt; Tax Information</strong>. Enter your VAT/GST registration number and company address. Future invoices will include these details automatically.</p>
-                <p>For corrected invoices, contact <a href="mailto:billing@shunyalabs.ai">billing@shunyalabs.ai</a> with your invoice number. Enterprise invoices can include purchase order numbers.</p>
-              </div>
-            </details>
-
-            <details class="faq-item">
-              <summary class="faq-question">
-                <span class="faq-q-icon">?</span>
-                What happens if I exceed my monthly budget cap?
-                <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </summary>
-              <div class="faq-answer">
-                <p>API access is automatically paused for the remainder of the billing cycle. You receive a notification email and dashboard banner. Existing WebSocket sessions are allowed to complete.</p>
-                <p>To resume service, increase the budget cap in the dashboard or wait for the next billing cycle. Set per-key budget caps for finer-grained control.</p>
-              </div>
-            </details>
-
-            <details class="faq-item">
-              <summary class="faq-question">
-                <span class="faq-q-icon">?</span>
-                How do I set up a payment method for the first time?
-                <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </summary>
-              <div class="faq-answer">
-                <p>Go to <strong>Settings &gt; Billing &gt; Payment Methods</strong>. Click <strong>Add Payment Method</strong> and enter your card details. A temporary $1.00 authorization hold is released immediately.</p>
-                <p>Indian customers can use UPI or net banking. Multiple cards can be added. All payment info is processed by our PCI-compliant payment processor.</p>
-              </div>
-            </details>
-
-            <details class="faq-item">
-              <summary class="faq-question">
-                <span class="faq-q-icon">?</span>
-                How do I integrate Shunya with my existing application?
-                <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </summary>
-              <div class="faq-answer">
-                <p>Integrating Shunya Labs with your existing application depends on your tech stack. For Python applications, install the SDK with <code>pip install shunyalabs</code> and create a client instance using your API key. For Node.js, use <code>npm install shunyalabs</code>. For other languages, use direct HTTP requests to the REST API endpoints.</p>
-                <p>The integration typically involves replacing existing speech processing calls with Shunya API calls. If you are migrating from another provider, the <a href="/web_doc/personas/openai-compatible.html">OpenAI compatibility guide</a> provides code comparisons. For web applications, route API calls through a backend proxy to keep your API key secure.</p>
-              </div>
-            </details>
-
-            <details class="faq-item">
-              <summary class="faq-question">
-                <span class="faq-q-icon">?</span>
-                What are the best practices for API key security?
-                <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </summary>
-              <div class="faq-answer">
-                <p>API key security is critical to prevent unauthorized usage. Follow these best practices:</p>
-                <ul><li>Never hardcode API keys in source code, configuration files, or client-side applications</li><li>Use environment variables or a secure secrets manager (like AWS Secrets Manager, HashiCorp Vault, or Kubernetes Secrets)</li><li>Rotate keys regularly - at least every 90 days for production keys</li><li>Use separate keys for development, staging, and production environments</li><li>Set IP address restrictions on your API keys if your infrastructure has static IPs</li></ul>
-                <p>If you suspect a key has been compromised, revoke it immediately from the dashboard and generate a new one. Check the <a href="/web_doc/security/compliance.html">Security & compliance page</a> for more detailed recommendations.</p>
-              </div>
-            </details>
-
-            <details class="faq-item">
-              <summary class="faq-question">
-                <span class="faq-q-icon">?</span>
-                How do I test the API without using my quota?
-                <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </summary>
-              <div class="faq-answer">
-                <p>Shunya Labs provides a <strong>free tier</strong> with monthly credits that allow you to test the API without incurring charges. The free tier includes a limited number of audio seconds for STT and characters for TTS each month. Additionally, the <strong>Playground</strong> in the dashboard lets you test endpoints interactively without writing code.</p>
-                <p>For development and testing, create a separate API key with lower rate limits and use it exclusively in your development environment. You can monitor your test usage in the dashboard under the Usage tab. If you need additional testing capacity, contact support to discuss trial credit extensions.</p>
-              </div>
-            </details>
-
-            <details class="faq-item">
-              <summary class="faq-question">
-                <span class="faq-q-icon">?</span>
-                How do I transcribe audio from a video file?
-                <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </summary>
-              <div class="faq-answer">
-                <p>To transcribe audio from a video file, first extract the audio track using a tool like <code>ffmpeg</code>, then send the extracted audio to the STT API. Here's how to extract audio:</p>
-                <pre><code>ffmpeg -i video.mp4 -vn -ar 16000 -ac 1 -f wav audio.wav</code></pre>
-                <p>This extracts a 16 kHz mono WAV file, which is the optimal format for STT. You can then upload the WAV file to the batch transcription endpoint. For long videos, split the audio into segments and process them in parallel for faster results.</p>
-              </div>
-            </details>
-
-            <details class="faq-item">
-              <summary class="faq-question">
-                <span class="faq-q-icon">?</span>
-                What is the maximum file size for streaming STT?
-                <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </summary>
-              <div class="faq-answer">
-                <p>Streaming STT does not upload files; you open a WebSocket to <code>WS /v1/realtime</code> and stream raw 16-bit PCM frames in real time, so there is no file-size limit. The file-size limit (50 MB) applies only to <strong>batch</strong> uploads.</p>
-                <p>For a pre-recorded audio file, use the batch transcription endpoint (<code>POST /v1/audio/transcriptions</code>) instead.</p>
-              </div>
-            </details>
-
-            <details class="faq-item">
-              <summary class="faq-question">
-                <span class="faq-q-icon">?</span>
-                How do I get a confidence score for each word?
-                <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </summary>
-              <div class="faq-answer">
-                <p>The STT API does not return per-word confidence scores. With <code>response_format=verbose_json</code> on the batch endpoint, each word carries <code>word</code>, <code>start</code>, and <code>end</code> fields; no confidence value.</p>
-                <pre><code>curl -X POST https://asrv2prod.shunyalabs.ai/v1/audio/transcriptions \
-  -H "Authorization: Bearer $ACCESS_TOKEN" \
-  -F "file=@speech.wav" \
-  -F "model=zero-indic" \
-  -F "response_format=verbose_json"</code></pre>
-                <p>If you need to flag uncertain sections for human review, use the segment timing from the verbose response.</p>
-              </div>
-            </details>
-
-            <details class="faq-item">
-              <summary class="faq-question">
-                <span class="faq-q-icon">?</span>
-                How do I adjust the speaking rate for different languages?
-                <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </summary>
-              <div class="faq-answer">
-                <p>Speaking rate can be adjusted using the <code>speed</code> parameter or the SSML <code>&lt;prosody rate&gt;</code> tag. The optimal speaking rate varies by language - for example, a rate of 1.0 for English may sound faster than the same rate for Hindi.</p>
-                <p>When using multilingual voices, you may need to adjust the rate per language for the most natural output. As a starting point, use 0.9 for Hindi and other Indian languages, 1.0 for English, and 1.1 for shorter-form content. The <code>speed</code> parameter accepts values from 0.25 to 4.0.</p>
-              </div>
-            </details>
-
-            <details class="faq-item">
-              <summary class="faq-question">
-                <span class="faq-q-icon">?</span>
-                What is the difference between a neural and a standard voice?
-                <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </summary>
-              <div class="faq-answer">
-                <p>Shunya Labs uses <strong>neural TTS</strong> technology for all its voices, which means they are based on deep neural networks that produce natural, human-like speech with appropriate intonation, stress, and rhythm. There are no "standard" or "legacy" voices - all voices use the latest neural architecture.</p>
-                <p>Within neural voices, <strong>shunya-multilingual-1</strong> is optimized for broad language coverage, <strong>shunya-indic-1</strong> for Indian language authenticity, and <strong>Express</strong> variants for minimal latency. All variants produce neural-quality speech with different trade-offs.</p>
-              </div>
-            </details>
-
-            <details class="faq-item">
-              <summary class="faq-question">
-                <span class="faq-q-icon">?</span>
-                How do I synthesize speech in a female or male voice?
-                <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </summary>
-              <div class="faq-answer">
-                <p>Each voice in Shunya Labs TTS has an associated gender. List available voices using <code>GET /v1/audio/voices</code>, which includes a <code>gender</code> field for each voice. Then select the desired voice ID in your synthesis request.</p>
-                <p>Female voices include <code>shunya-voice-f1</code> and <code>shunya-voice-f2</code>, while male voices include <code>shunya-voice-m1</code> and <code>shunya-voice-m2</code>. Some multilingual voices support both gender variants. For cloned voices, the gender matches the source speaker.</p>
-              </div>
-            </details>
-
-            <details class="faq-item">
-              <summary class="faq-question">
-                <span class="faq-q-icon">?</span>
-                How do I use pagination with list endpoints?
-                <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </summary>
-              <div class="faq-answer">
-                <p>List endpoints like <code>GET /v1/audio/voices</code> and <code>GET /v1/usage</code> support pagination. Use the <code>limit</code> parameter (default 20, max 100) and <code>offset</code> parameter to navigate pages. The response includes a <code>total</code> field and a <code>next_offset</code> field for the next page.</p>
-                <p>Implement a loop that increments the offset by the limit value until all pages are retrieved. Example: <code>GET /v1/usage?limit=50&offset=100</code> retrieves items 101–150.</p>
-              </div>
-            </details>
-
-            <details class="faq-item">
-              <summary class="faq-question">
-                <span class="faq-q-icon">?</span>
-                How do I handle rate limits in a multi-threaded application?
-                <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </summary>
-              <div class="faq-answer">
-                <p>In a multi-threaded application, rate limits apply across all threads. Implement a <strong>centralized rate limiter</strong> that tracks request counts before dispatching requests. For Python, use <code>shunyalabs.RateLimiter</code>. For distributed systems, use a shared Redis counter.</p>
-                <p>Set your local rate limit to 80% of the API limit for headroom. On 429 responses, implement exponential backoff. Consider separate API keys for different services to isolate rate limit impacts.</p>
-              </div>
-            </details>
-
-            <details class="faq-item">
-              <summary class="faq-question">
-                <span class="faq-q-icon">?</span>
-                How do I get the request ID for troubleshooting?
-                <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </summary>
-              <div class="faq-answer">
-                <p>Batch responses include a <code>request_id</code> field in the response body (visible with <code>response_format=verbose_json</code>). Quote this ID when contacting support so the exact request can be looked up in server logs.</p>
-                <p>For streaming (<code>WS /v1/realtime</code>), there is no session ID. When contacting support about a streaming session, quote the UTC time of the session, the language, and the approximate audio duration.</p>
-              </div>
-            </details>
-
-            <details class="faq-item">
-              <summary class="faq-question">
-                <span class="faq-q-icon">?</span>
-                How do I set up high availability for on-prem deployment?
-                <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </summary>
-              <div class="faq-answer">
-                <p>Deploy multiple inference server instances behind a load balancer. Each instance runs independently. If one fails, the load balancer routes traffic to healthy instances. For Kubernetes, configure multiple replicas with pod anti-affinity across nodes.</p>
-                <p>Use <code>GET /v1/health</code> on port 8001 for health probes. Configure readiness probes that check model load status. Use highly available storage. Test HA setup by simulating failures in a staging environment before production.</p>
-              </div>
-            </details>
-
-            <details class="faq-item">
-              <summary class="faq-question">
-                <span class="faq-q-icon">?</span>
-                How do I configure resource limits for Docker containers?
-                <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </summary>
-              <div class="faq-answer">
-                <p>Use Docker's <code>--cpus</code> and <code>--memory</code> flags:</p>
-                <pre><code>docker run --gpus all \
-  --cpus="16" \
-  --memory="64g" \
-  -p 8000:8000 \
-  shunyalabs/inference-server:latest</code></pre>
-                <p>Assign specific GPUs with <code>--gpus '"device=0,1"'</code>. Reserve at least 32 GB memory for STT models, 16 GB for TTS. Monitor with <code>docker stats</code> and adjust based on observed consumption.</p>
-              </div>
-            </details>
-
-            <details class="faq-item">
-              <summary class="faq-question">
-                <span class="faq-q-icon">?</span>
-                How do I migrate from cloud to on-prem deployment?
-                <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </summary>
-              <div class="faq-answer">
-                <p>Contact Shunya Labs sales to set up an on-prem license and obtain the deployment package. Install using Docker or Kubernetes as described in the <a href="/web_doc/deployment/overview.html">Deployment guide</a>.</p>
-                <p>Ensure hardware meets minimum requirements, configure TLS, set up monitoring, and update your application's <code>base_url</code> to your on-prem server. Test with a subset of traffic before full cutover. Model versions and API behavior are consistent between cloud and on-prem.</p>
-              </div>
-            </details>
-
-            <details class="faq-item">
-              <summary class="faq-question">
-                <span class="faq-q-icon">?</span>
-                How do I compare pricing across different plans?
-                <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </summary>
-              <div class="faq-answer">
-                <p>A pricing comparison is available on the Shunya Labs website. Plans differ by rate limits, included features, and support levels. The free tier suits prototyping, while paid plans offer higher limits and lower per-unit pricing.</p>
-                <p>In the dashboard, go to <strong>Settings &gt; Billing &gt; Plan</strong> for a side-by-side comparison with your current usage. Contact sales for help choosing the right plan based on your expected usage.</p>
-              </div>
-            </details>
-
-            <details class="faq-item">
-              <summary class="faq-question">
-                <span class="faq-q-icon">?</span>
-                How do I export my usage data?
-                <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </summary>
-              <div class="faq-answer">
-                <p>Export usage data from the <strong>Usage</strong> tab in the dashboard as CSV. Select date range and granularity (daily, weekly, monthly). The CSV includes date, service, quantity, and estimated cost columns.</p>
-                <p>For programmatic export, use <code>GET /v1/usage</code> with <code>start_date</code> and <code>end_date</code> parameters to retrieve JSON data. Enterprise customers can access team member and API key breakdowns.</p>
-              </div>
-            </details>
-
-            <details class="faq-item">
-              <summary class="faq-question">
-                <span class="faq-q-icon">?</span>
-                How do I handle disputed charges?
-                <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </summary>
-              <div class="faq-answer">
-                <p>Contact <a href="mailto:billing@shunyalabs.ai">billing@shunyalabs.ai</a> within 30 days of the charge with your invoice number and dispute reason. The billing team investigates and responds within 5 business days.</p>
-                <p>Common disputes include duplicate charges, incorrect pricing, or unauthorized usage. During investigation, your account remains active. If resolved in your favor, the amount is credited or refunded. Enterprise dispute terms follow your contract.</p>
-              </div>
-            </details>
           </div>
+          <a class="faq-top-link" href="#">
+            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+            Back to top
+          </a>
         </section>
+
         <section class="faq-section" id="additional-questions">
           <h2 class="faq-heading">Additional <span class="accent-italic">&amp; questions</span></h2>
-          <p class="lead">Latency, Vocabulary, and account management.</p>
+          <p class="lead">Latency, data residency, security, and vocabulary topics.</p>
           <div class="faq-list">
             <details class="faq-item">
               <summary class="faq-question">
@@ -1881,25 +1220,8 @@ server {
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>Real-time transcription latency depends on the audio length, model size, and your region. Typical latency for real-time streaming transcription is under 300ms for short utterances when using the lightweight <strong>Nano</strong> model. Larger models like <strong>Universal</strong> may have 500-800ms latency.</p>
-                <p>For the lowest possible latency, use the <strong>Nano</strong> model with streaming mode and keep audio chunks under 2 seconds. Network latency to the nearest server region also affects overall response time. For on-premise deployments, latency is typically under 100ms since the network hop is eliminated.</p>
-              </div>
-            </details>
-
-            <details class="faq-item">
-              <summary class="faq-question">
-                <span class="faq-q-icon">?</span>
-                Can I use SSML to add pauses and emphasis?
-                <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </summary>
-              <div class="faq-answer">
-                <p>Yes, Shunya Labs TTS fully supports the <strong>Speech Synthesis Markup Language (SSML)</strong>. You can use <code>&lt;break&gt;</code> tags to add pauses, <code>&lt;prosody&gt;</code> tags to control rate, pitch, and volume, and <code>&lt;emphasis&gt;</code> tags to add vocal emphasis to specific words or phrases.</p>
-                <pre><code><speak>
-  Welcome to <emphasis level="strong">Shunya Labs</emphasis>.
-  <break time="500ms"/>
-  Your audio solution provider.
-</speak></code></pre>
-                <p>All SSML elements are supported as per the W3C SSML 1.1 specification. When using SSML, set the <code>input_type</code> parameter to <code>ssml</code> in your API request.</p>
+                <p>During a streaming session the ASR endpoint emits <code>partial</code> events roughly every 640 ms with the in-progress text for the current segment. Latency depends on network, audio, and model and is not hard-coded in the guides.</p>
+                <p>Pace audio roughly in real time and reconnect on unexpected close to keep the session healthy. Confirm the latency you require before production rollout.</p>
               </div>
             </details>
 
@@ -1910,8 +1232,8 @@ server {
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>Your data residency information is displayed in the dashboard under <strong>Settings &gt; Account &gt; Data Residency</strong>. Shunya Labs cloud services are hosted in multiple regions including US East (Virginia), EU West (Frankfurt), and Asia South (Mumbai). The default region is determined by your account's registered location.</p>
-                <p>For Enterprise and on-prem deployments, data residency is entirely under your control since the inference server runs within your infrastructure. If you need data to be processed in a specific cloud region for compliance reasons, contact sales to have your account configured for a specific region.</p>
+                <p>The cloud API default region is Asia (Mumbai). Enterprise customers can request US or EU endpoints.</p>
+                <p>For on-prem / VPC deployments, data residency is entirely under your control since the inference servers run within your infrastructure. See the <a href="/web_doc/deployment/overview.html">Deployment guide</a>.</p>
               </div>
             </details>
 
@@ -1922,8 +1244,8 @@ server {
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>Audit logging records all API activity, configuration changes, and user actions for security and compliance purposes. To enable audit logging, go to <strong>Settings &gt; Security &gt; Audit Log</strong> in the dashboard. Audit logs are available on paid and Enterprise plans with 90-day retention, and 365 days on Enterprise.</p>
-                <p>The audit log captures who performed what action, when, and from which IP address. Events include API key creation and revocation, plan changes, team member additions, and settings modifications. Export audit logs in CSV or JSON format for integration with your SIEM system.</p>
+                <p>Audit logging is a documented control on the management plane: audit logging on every privileged action with logs shipped to an immutable store, and role-based access control with least-privilege defaults.</p>
+                <p>See the <a href="/web_doc/security/compliance.html">Compliance page</a> for the documented security and access controls.</p>
               </div>
             </details>
 
@@ -1947,23 +1269,6 @@ server {
             <details class="faq-item">
               <summary class="faq-question">
                 <span class="faq-q-icon">?</span>
-                Can I use SSML to add pauses and emphasis?
-                <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
-              </summary>
-              <div class="faq-answer">
-                <p>Yes, Shunya Labs TTS fully supports SSML 1.1. Use <code>&lt;break&gt;</code> tags for pauses, <code>&lt;prosody&gt;</code> for rate/pitch/volume control, and <code>&lt;emphasis&gt;</code> for vocal emphasis on specific words.</p>
-                <pre><code><speak>
-  Welcome to <emphasis level="strong">Shunya Labs</emphasis>.
-  <break time="500ms"/>
-  Your audio solution provider.
-</speak></code></pre>
-                <p>Set <code>input_type</code> to <code>ssml</code> in your TTS API request when using SSML input.</p>
-              </div>
-            </details>
-
-            <details class="faq-item">
-              <summary class="faq-question">
-                <span class="faq-q-icon">?</span>
                 How do I transcribe audio with background noise?
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
@@ -1975,12 +1280,11 @@ server {
             <details class="faq-item">
               <summary class="faq-question">
                 <span class="faq-q-icon">?</span>
-                How do I customize voice tone for my brand?
+                How do I customize the voice for my brand?
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>Use expression styles like <code>&lt;Conversational&gt;</code> and <code>&lt;News&gt;</code> for preset tonal characteristics. For fine control, use SSML <code>&lt;prosody&gt;</code> tags to adjust rate, pitch, and volume to match your brand voice.</p>
-                <p>Enterprise customers can work with Shunya Labs to create a custom voice that embodies their brand identity.</p>
+                <p>Request the voice you want in the <code>voice</code> field of the synthesize request. Voice and language support is confirmed per client plan. Before production rollout, confirm the voices and languages you require with ShunyaLabs.</p>
               </div>
             </details>
           </div>

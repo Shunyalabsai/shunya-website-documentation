@@ -28,7 +28,7 @@
               <tr><td><a class="hf-model-link" href="https://huggingface.co/spaces/shunyalabs/Zero-STT-Shunya-Labs" target="_blank" rel="noopener" title="View on Hugging Face"><strong>zero-indic</strong></a></td><td>Indian languages</td><td>Indian languages</td><td>Handles code-switching</td></tr>
               <tr><td><a class="hf-model-link" href="https://huggingface.co/shunyalabs/zero-stt-hinglish" target="_blank" rel="noopener" title="View on Hugging Face"><strong>zero-codeswitch</strong></a></td><td>Hinglish, Tanglish, mixed Indic + English</td><td>Indic + English</td><td>Restores English tokens to Latin script</td></tr>
               <tr><td><a class="hf-model-link" href="https://huggingface.co/spaces/shunyalabs/Zero_STT_Med_Shunya_Labs" target="_blank" rel="noopener" title="View on Hugging Face"><strong>zero-med</strong></a></td><td>Clinical / medical speech</td><td>English + Indic</td><td>Auto medical-terminology correction</td></tr>
-              <tr><td><a class="hf-model-link" href="https://huggingface.co/spaces/shunyalabs/TTS-Indic" target="_blank" rel="noopener" title="View on Hugging Face"><strong>zero-indic</strong></a></td><td>Zero TTS, speech synthesis, voice agents, IVR</td><td>23 Indic + English</td><td>46 voices, 11 styles</td></tr>
+              <tr><td>Zero TTS</td><td>Speech synthesis, voice agents, IVR</td><td>Per client plan</td><td>Standard, education (LaTeX), OpenAI-compatible</td></tr>
               <tr><td><a class="hf-model-link" href="https://huggingface.co/shunyalabs/vak-translate-1.3b-ct2" target="_blank" rel="noopener" title="View on Hugging Face"><strong>vak-translate-1.3b-ct2</strong></a></td><td>Vāķ Translate, Indic ↔ Indic text</td><td>2,970 pairs</td><td>BLEU 38.5 weighted</td></tr>
             </tbody>
           </table>
@@ -39,7 +39,7 @@
         <h2>Language coverage</h2>
 
         <h3>Indic languages (Zero STT Indic)</h3>
-        <p>Zero STT natively handles Indian languages (Hindi, Tamil, Telugu, Kannada, Marathi, Bengali, Gujarati, Punjabi, Malayalam, Odia, Urdu, Assamese, Maithili, and more) plus English. The table below lists the <strong>23 Indic languages plus English</strong> that overlap with Zero TTS. See <a href="/web_doc/asr/overview.html">ASR overview</a> for the endpoint reference.</p>
+        <p>Zero STT natively handles Indian languages (Hindi, Tamil, Telugu, Kannada, Marathi, Bengali, Gujarati, Punjabi, Malayalam, Odia, Urdu, Assamese, Maithili, and more) plus English. The table below lists the Indic-language coverage for Zero STT Indic. See <a href="/web_doc/asr/overview.html">ASR overview</a> for the endpoint reference.</p>
         <div class="table-wrap">
           <table>
             <thead><tr><th>Language</th><th>ISO</th><th>Script</th></tr></thead>
@@ -89,89 +89,29 @@
 
         <div class="callout callout-info">
           <div class="callout-title">Hugging Face</div>
-          <p>Zero TTS runs on the cloud API (<a class="hf-model-link" href="https://huggingface.co/spaces/shunyalabs/Zero-STT-Shunya-Labs" target="_blank" rel="noopener" title="View on Hugging Face"><code>zero-indic</code></a>). Shunya Labs does not publish open TTS weights as a downloadable model repo on Hugging Face (unlike <a class="hf-model-link" href="https://huggingface.co/shunyalabs/pingala-v1-universal" target="_blank" rel="noopener" title="View on Hugging Face"><code>pingala-v1-universal</code></a> for STT). You can try synthesis in the browser via the <a class="hf-model-link" href="https://huggingface.co/spaces/shunyalabs/TTS-Indic" target="_blank" rel="noopener">Vāķ Text to Speech</a> Space, or browse the org at <a class="hf-model-link" href="https://huggingface.co/shunyalabs" target="_blank" rel="noopener">huggingface.co/shunyalabs</a>.</p>
+          <p>Shunya Labs does not publish open TTS weights as a downloadable model repo on Hugging Face (unlike <a class="hf-model-link" href="https://huggingface.co/shunyalabs/pingala-v1-universal" target="_blank" rel="noopener" title="View on Hugging Face"><code>pingala-v1-universal</code></a> for STT). You can browse the org at <a class="hf-model-link" href="https://huggingface.co/shunyalabs" target="_blank" rel="noopener">huggingface.co/shunyalabs</a>.</p>
         </div>
 
-        <h2>Language coverage</h2>
-
-        <h3>Indic languages (Zero TTS)</h3>
-        <p>All <strong>23 Indic languages and English</strong> supported by model <a class="hf-model-link" href="https://huggingface.co/spaces/shunyalabs/Zero-STT-Shunya-Labs" target="_blank" rel="noopener" title="View on Hugging Face"><code>zero-indic</code></a>. Pass the matching <code>language</code> code in <code>TTSConfig</code> to hint the text preprocessor. Voice names on <a href="/web_doc/tts/voices.html">Voices &amp; languages</a>.</p>
+        <h2>Capabilities</h2>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Language</th><th>ISO</th><th>Script</th></tr></thead>
+            <thead><tr><th>Capability</th><th>Endpoint / interface</th></tr></thead>
             <tbody>
-              <tr><td>Assamese</td><td>as</td><td>Assamese</td></tr>
-              <tr><td>Bengali</td><td>bn</td><td>Bengali</td></tr>
-              <tr><td>Bodo</td><td>brx</td><td>Devanagari</td></tr>
-              <tr><td>Dogri</td><td>doi</td><td>Devanagari</td></tr>
-              <tr><td>English</td><td>en</td><td>Latin</td></tr>
-              <tr><td>Gujarati</td><td>gu</td><td>Gujarati</td></tr>
-              <tr><td>Hindi</td><td>hi</td><td>Devanagari</td></tr>
-              <tr><td>Kannada</td><td>kn</td><td>Kannada</td></tr>
-              <tr><td>Kashmiri</td><td>ks</td><td>Perso-Arabic</td></tr>
-              <tr><td>Konkani</td><td>gom</td><td>Devanagari</td></tr>
-              <tr><td>Maithili</td><td>mai</td><td>Devanagari</td></tr>
-              <tr><td>Malayalam</td><td>ml</td><td>Malayalam</td></tr>
-              <tr><td>Manipuri</td><td>mni</td><td>Meitei</td></tr>
-              <tr><td>Marathi</td><td>mr</td><td>Devanagari</td></tr>
-              <tr><td>Nepali</td><td>ne</td><td>Devanagari</td></tr>
-              <tr><td>Odia</td><td>or</td><td>Odia</td></tr>
-              <tr><td>Punjabi</td><td>pa</td><td>Gurmukhi</td></tr>
-              <tr><td>Sanskrit</td><td>sa</td><td>Devanagari</td></tr>
-              <tr><td>Santali</td><td>sat</td><td>Ol Chiki</td></tr>
-              <tr><td>Sindhi</td><td>sd</td><td>Perso-Arabic</td></tr>
-              <tr><td>Tamil</td><td>ta</td><td>Tamil</td></tr>
-              <tr><td>Telugu</td><td>te</td><td>Telugu</td></tr>
-              <tr><td>Urdu</td><td>ur</td><td>Perso-Arabic</td></tr>
+              <tr><td>Standard TTS</td><td><code>POST /v1/omni-voice/synthesize</code></td></tr>
+              <tr><td>Education TTS (LaTeX)</td><td><code>POST /v1/omni-voice/synthesize</code> with <code>latex: true</code></td></tr>
+              <tr><td>Voice Agent / Pipecat</td><td><code>POST /v1/audio/speech</code> (OpenAI-compatible)</td></tr>
             </tbody>
           </table>
         </div>
 
-        <h2>Voices</h2>
+        <h2>Languages and voices</h2>
+        <p>Supported voices and languages are confirmed per client plan and are intentionally not hard-coded in the integration guide; they may vary by product version or client plan. The guide's examples use the voice <code>Meera</code> for the standard and OpenAI-compatible endpoints, and <code>nova</code> for Pipecat.</p>
 
-        <h3>Voice catalogue (Zero TTS)</h3>
-        <p>46 speaker voices, one male and one female per language. The <code>voice</code> parameter controls vocal character; the input text controls the language spoken. Any voice can speak any supported language.</p>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Language</th><th>ISO</th><th>Male</th><th>Female</th></tr></thead>
-            <tbody>
-              <tr><td>Assamese</td><td>as</td><td><code>Bimal</code></td><td><code>Anjana</code></td></tr>
-              <tr><td>Bengali</td><td>bn</td><td><code>Arjun</code></td><td><code>Priyanka</code></td></tr>
-              <tr><td>Bodo</td><td>brx</td><td><code>Daimalu</code></td><td><code>Hasina</code></td></tr>
-              <tr><td>Dogri</td><td>doi</td><td><code>Vishal</code></td><td><code>Neelam</code></td></tr>
-              <tr><td>English</td><td>en</td><td><code>Varun</code></td><td><code>Nisha</code></td></tr>
-              <tr><td>Gujarati</td><td>gu</td><td><code>Rakesh</code></td><td><code>Pooja</code></td></tr>
-              <tr><td>Hindi</td><td>hi</td><td><code>Rajesh</code></td><td><code>Sunita</code></td></tr>
-              <tr><td>Kannada</td><td>kn</td><td><code>Kiran</code></td><td><code>Shreya</code></td></tr>
-              <tr><td>Kashmiri</td><td>ks</td><td><code>Farooq</code></td><td><code>Habba</code></td></tr>
-              <tr><td>Konkani</td><td>gom</td><td><code>Mohan</code></td><td><code>Sarita</code></td></tr>
-              <tr><td>Maithili</td><td>mai</td><td><code>Suresh</code></td><td><code>Meera</code></td></tr>
-              <tr><td>Malayalam</td><td>ml</td><td><code>Krishnan</code></td><td><code>Deepa</code></td></tr>
-              <tr><td>Manipuri</td><td>mni</td><td><code>Tomba</code></td><td><code>Ibemhal</code></td></tr>
-              <tr><td>Marathi</td><td>mr</td><td><code>Siddharth</code></td><td><code>Ananya</code></td></tr>
-              <tr><td>Nepali</td><td>ne</td><td><code>Bikash</code></td><td><code>Sapana</code></td></tr>
-              <tr><td>Odia</td><td>or</td><td><code>Bijay</code></td><td><code>Sujata</code></td></tr>
-              <tr><td>Punjabi</td><td>pa</td><td><code>Gurpreet</code></td><td><code>Simran</code></td></tr>
-              <tr><td>Sanskrit</td><td>sa</td><td><code>Vedant</code></td><td><code>Gayatri</code></td></tr>
-              <tr><td>Santali</td><td>sat</td><td><code>Chandu</code></td><td><code>Roshni</code></td></tr>
-              <tr><td>Sindhi</td><td>sd</td><td><code>Amjad</code></td><td><code>Kavita</code></td></tr>
-              <tr><td>Tamil</td><td>ta</td><td><code>Murugan</code></td><td><code>Thangam</code></td></tr>
-              <tr><td>Telugu</td><td>te</td><td><code>Vishnu</code></td><td><code>Lakshmi</code></td></tr>
-              <tr><td>Urdu</td><td>ur</td><td><code>Salman</code></td><td><code>Fatima</code></td></tr>
-            </tbody>
-          </table>
-        </div>
+        <h2>Response formats</h2>
+        <p>Select the response format required by your integration as supported by the API. Raw PCM output (<code>response_format="pcm"</code>) is useful for streaming and voice-agent pipelines.</p>
 
         <h2>Latency expectations</h2>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Path</th><th>First audio / partial</th><th>End-to-end</th></tr></thead>
-            <tbody>
-              <tr><td>Streaming TTS (text in → first audio)</td><td>&lt; 350 ms</td><td>Real-time</td></tr>
-              <tr><td>LLM → TTS pipeline</td><td>~350 ms (sentence-first)</td><td>Saves 200-400 ms vs full-text</td></tr>
-            </tbody>
-          </table>
-        </div>
+        <p>Latency depends on the implementation (expected traffic, required voices and languages, output or streaming format). Confirm production requirements before rollout; the guide intentionally does not hard-code latency figures.</p>
 
         <h2>Pricing tiers</h2>
         <div class="grid grid-3">

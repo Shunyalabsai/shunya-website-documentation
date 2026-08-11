@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>TTS quickstart | Shunya Labs Docs</title>
-  <meta name="description" content="Synthesize your first audio in five minutes: SDK, REST, and OpenAI-compatible clients.">
+  <meta name="description" content="Mint a token and synthesize your first audio with ShunyaLabs TTS: standard, education LaTeX, and OpenAI-compatible examples.">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@1,500;1,600;1,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/web_doc/assets/css/main.css?v=37">
   <script src="/web_doc/assets/js/theme.js"></script>
@@ -17,164 +17,124 @@
           <a href="/web_doc/index.html">Docs</a><span class="sep">/</span><span>Text-to-Speech</span><span class="sep">/</span><span>Quickstart</span>
         </div>
         <h1>TTS <span class="accent-italic">quickstart</span></h1>
-        <p class="lead">Install, authenticate, synthesize. By the end of this page you'll have an MP3 on disk and know how to switch voice, language, speed, and format.</p>
+        <p class="lead">Sign up, generate an API key, exchange it for a Bearer token, then synthesize. By the end of this page you'll have a <code>speech.wav</code> on disk and know how to use the education LaTeX and OpenAI-compatible endpoints too.</p>
 
-        <h2>1. Install the SDK (optional)</h2>
-<pre><code>pip install "shunyalabs[TTS]"         # TTS only
-pip install "shunyalabs[all]"         # TTS + ASR + everything
-pip install "shunyalabs[extras]"      # + audio playback helpers (sounddevice)</code></pre>
+        <h2>1. Sign up and generate an API key</h2>
+        <p>Visit <a href="https://shunyalabs.ai" target="_blank" rel="noopener">shunyalabs.ai</a> and sign up or log in. Complete the onboarding flow; testing credits are added to your account. Generate an API key from your ShunyaLabs account.</p>
 
-        <p>You can also call the REST API directly with <code>requests</code> or any HTTP client, the SDK is just a thin wrapper.</p>
+        <div class="callout callout-warn">
+          <div class="callout-title">Security</div>
+          Keep API keys and authentication tokens on the server side. Do not expose them in browser code, mobile app bundles, public repositories, or logs.
+        </div>
 
-        <h2>2. Configure authentication</h2>
-<pre><code>export SHUNYALABS_API_KEY="sk-your-key"</code></pre>
+        <h2>2. Exchange the API key for a Bearer token</h2>
+        <p>ShunyaLabs TTS APIs use a short-lived Bearer token. Exchange your API key for a token at the authentication endpoint. <code>expires_in</code> specifies the requested token lifetime in seconds (86,400 in the example is 24 hours).</p>
 
-        <p>Or pass it in code:</p>
-<pre><code>client = AsyncShunyaClient(api_key="sk-your-key")</code></pre>
+<pre><code>curl -X POST 'https://app.shunyalabs.ai/api/auth/token' \
+  -H 'api-key: YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{"expires_in": 86400}'</code></pre>
 
-        <h2>3. First synthesis</h2>
+        <p>Use the returned token as <code>Authorization: Bearer YOUR_TOKEN</code> on every TTS request. Store the API key securely in your backend or secret manager, reuse the token until it approaches expiry, then obtain a fresh token. Never send your API key directly to end-user clients.</p>
+
+        <h2>3. Standard TTS</h2>
+        <p>Call the Omni Voice synthesis endpoint with <code>text</code> and <code>voice</code>.</p>
 
         <div class="code-group">
           <div class="code-tabs" role="tablist">
             <button class="code-tab active">cURL</button>
-            <button class="code-tab">Python SDK (recommended)</button>
             <button class="code-tab">Python (<code>requests</code>)</button>
-            <button class="code-tab">OpenAI SDK</button>
           </div>
 
           <div class="code-panel active">
             <div class="code-header"><span>shell</span><button class="copy-btn">Copy</button></div>
-<pre><code class="language-bash">curl -X POST https://tts.shunyalabs.ai/v1/audio/speech \
-  -H "Authorization: Bearer $SHUNYALABS_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{"model": "zero-indic", "input": "Hello, how are you today?", "voice": "Varun"}' \
-  --output output.mp3</code></pre>
-          </div>
-
-          <div class="code-panel">
-            <div class="code-header"><span>python</span><button class="copy-btn">Copy</button></div>
-<pre><code class="language-python">import asyncio
-from shunyalabs import AsyncShunyaClient
-from shunyalabs.tts import TTSConfig
-
-async def main():
-    async with AsyncShunyaClient() as client:
-        result = await client.tts.synthesize(
-            "Hello, how are you today?",
-            config=TTSConfig(model="zero-indic", voice="Varun"),
-        )
-        result.save("output.mp3")
-        print(f"{len(result.audio_data)} bytes saved, {result.sample_rate} Hz")
-
-asyncio.run(main())</code></pre>
+<pre><code class="language-bash">curl -X POST 'https://ttsv2.shunyalabs.ai/v1/omni-voice/synthesize' \
+  -H 'Authorization: Bearer YOUR_TOKEN' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "text": "If Modi is prime minister who is Amit Shah?",
+    "voice": "Meera"
+  }' \
+  --output speech.wav</code></pre>
           </div>
 
           <div class="code-panel">
             <div class="code-header"><span>python</span><button class="copy-btn">Copy</button></div>
 <pre><code class="language-python">import requests
 
-response = requests.post(
-    "https://tts.shunyalabs.ai/v1/audio/speech",
-    headers={"Authorization": f"Bearer {API_KEY}"},
-    json={"model": "zero-indic", "input": "Hello!", "voice": "Varun"},
-    timeout=120,
+resp = requests.post(
+    "https://ttsv2.shunyalabs.ai/v1/omni-voice/synthesize",
+    headers={"Authorization": f"Bearer {TOKEN}"},
+    json={
+        "text": "If Modi is prime minister who is Amit Shah?",
+        "voice": "Meera",
+    },
 )
-response.raise_for_status()
-with open("output.mp3", "wb") as f:
-    f.write(response.content)</code></pre>
-          </div>
-
-          <div class="code-panel">
-            <div class="code-header"><span>openai SDK</span><button class="copy-btn">Copy</button></div>
-<pre><code class="language-python">from openai import OpenAI
-
-client = OpenAI(api_key=API_KEY, base_url="https://tts.shunyalabs.ai/v1")
-response = client.audio.speech.create(
-    model="zero-indic",
-    input="Hello!",
-    voice="Varun",
-    response_format="mp3",
-)
-response.stream_to_file("output.mp3")</code></pre>
+resp.raise_for_status()
+with open("speech.wav", "wb") as f:
+    f.write(resp.content)</code></pre>
           </div>
         </div>
 
-        <h2>4. Switch voice, language, speed, format</h2>
+        <h2>4. Education TTS with LaTeX</h2>
+        <p>For educational content containing mathematical expressions, enable LaTeX processing and provide the content language on the same Omni Voice endpoint.</p>
 
-        <h3>Pick a different voice</h3>
-<pre><code># Hindi female
-TTSConfig(model="zero-indic", voice="Sunita")
+<pre><code>curl -X POST 'https://ttsv2.shunyalabs.ai/v1/omni-voice/synthesize' \
+  -H 'Authorization: Bearer YOUR_TOKEN' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "text": "If $x^2 = 49$, what is the value of x?",
+    "voice": "Meera",
+    "latex": true,
+    "language": "en"
+  }' \
+  --output math.wav</code></pre>
 
-# Tamil male
-TTSConfig(model="zero-indic", voice="Murugan")
+        <p>Set <code>latex</code> to <code>true</code> when the input contains LaTeX expressions, and use <code>language</code> to identify the content language.</p>
 
-# English female
-TTSConfig(model="zero-indic", voice="Nisha")</code></pre>
+        <h2>5. Voice Agent / OpenAI-compatible</h2>
+        <p>For real-time voice-agent frameworks expecting an OpenAI-compatible speech interface, use the <code>/v1/audio/speech</code> endpoint. Raw PCM output is useful for streaming and voice-agent pipelines; select the response format required by your integration as supported by the API.</p>
 
-        <p>46 voices total. See <a href="/web_doc/tts/voices.html">Voices & languages</a> for the full catalogue.</p>
+<pre><code>curl -X POST 'https://ttsv2.shunyalabs.ai/v1/audio/speech' \
+  -H 'Authorization: Bearer YOUR_TOKEN' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "model": "tts-1",
+    "input": "Hello, how are you today?",
+    "voice": "Meera",
+    "response_format": "pcm"
+  }' \
+  --output speech.pcm</code></pre>
 
-        <h3>Change speed</h3>
-<pre><code>TTSConfig(model="zero-indic", voice="Nisha", speed=1.3)   # fast notifications
-TTSConfig(model="zero-indic", voice="Nisha", speed=0.85)  # slower dictation</code></pre>
+        <h3>Pipecat</h3>
+<pre><code>from pipecat.services.openai import OpenAITTSService
 
-        <h3>Change output format</h3>
-<pre><code>TTSConfig(model="zero-indic", voice="Varun", response_format="pcm")    # real-time playback
-TTSConfig(model="zero-indic", voice="Varun", response_format="mulaw")  # telephony
-TTSConfig(model="zero-indic", voice="Varun", response_format="wav")    # editing</code></pre>
-
-        <p>Full format list at <a href="/web_doc/tts/audio-formats.html">Audio formats</a>.</p>
-
-        <h3>Add an expression style</h3>
-<pre><code>await client.tts.synthesize(
-    "&lt;Happy&gt; Welcome aboard!",
-    config=TTSConfig(model="zero-indic", voice="Sunita"),
+tts = OpenAITTSService(
+    api_key="YOUR_TOKEN",
+    base_url="https://ttsv2.shunyalabs.ai/v1",
+    voice="nova",
 )</code></pre>
 
-        <p>11 styles: Happy, Sad, Angry, Fearful, Surprised, Disgust, News, Conversational, Narrative, Enthusiastic, Neutral. See <a href="/web_doc/tts/expression-styles.html">Expression styles</a>.</p>
-
-        <h2>5. Stream it</h2>
-        <p>For real-time use (voice agents, IVR), stream audio as it synthesizes instead of waiting for the full file:</p>
-
-<pre><code>config = TTSConfig(model="zero-indic", voice="Varun", response_format="pcm")
-
-async for chunk in await client.tts.stream("Hello!", config=config):
-    # play chunk bytes as they arrive
-    speaker.write(chunk)</code></pre>
-
-        <p>Full streaming details at <a href="/web_doc/tts/streaming.html">Streaming</a>.</p>
-
-        <h2>6. Handle errors</h2>
-<pre><code>from shunyalabs.exceptions import (
-    AuthenticationError, RateLimitError,
-    SynthesisError, ServerError, ShunyalabsError,
-)
-
-try:
-    result = await client.tts.synthesize("Hello!", config=config)
-except AuthenticationError:
-    print("Invalid API key")
-except RateLimitError:
-    print("Rate limited, back off and retry")
-except SynthesisError as e:
-    print(f"Bad input: {e}")
-except ServerError:
-    print("Server error, safe to retry")
-except ShunyalabsError as e:
-    print(f"SDK error: {e}")</code></pre>
-
-        <div class="callout callout-success">
-          <div class="callout-title">You're done</div>
-          You now have text → audio working. Next, skim <a href="/web_doc/tts/voices.html">voices</a> and <a href="/web_doc/tts/audio-formats.html">audio formats</a> to pick the right ones for your use case.
+        <div class="callout callout-info">
+          <div class="callout-title">Pipecat note</div>
+          The <code>api_key</code> field name comes from Pipecat's OpenAI-compatible service interface; pass the ShunyaLabs auth token as its value. For Pipecat, use an OpenAI-compatible voice name such as <code>nova</code> in the client configuration.
         </div>
+
+        <h2>6. Next steps</h2>
+        <ul>
+          <li>Confirm the <a href="/web_doc/tts/api-reference.html#client-checklist">client integration checklist</a> before production.</li>
+          <li>Browse the interactive API documentation at <a href="https://ttsv2.shunyalabs.ai/docs" target="_blank" rel="noopener"><code>ttsv2.shunyalabs.ai/docs</code></a>.</li>
+          <li>See <a href="/web_doc/tts/llm-to-tts.html">LLM → TTS pipeline</a> for voice-agent patterns built on the OpenAI-compatible endpoint.</li>
+        </ul>
 
         <div class="pager">
           <a class="pager-link" href="/web_doc/tts/overview.html">
             <div class="pager-label">← Previous</div>
             <div class="pager-title">TTS overview</div>
           </a>
-          <a class="pager-link pager-right" href="/web_doc/tts/voices.html">
+          <a class="pager-link pager-right" href="/web_doc/tts/api-reference.html">
             <div class="pager-label">Next →</div>
-            <div class="pager-title">Voices & languages</div>
+            <div class="pager-title">TTS API reference</div>
           </a>
         </div>
       </div>

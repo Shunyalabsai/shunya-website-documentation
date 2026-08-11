@@ -56,15 +56,15 @@
               </tr>
               <tr>
                 <td>Bot voice / IVR prompts</td>
-                <td>Zero TTS in <code>mulaw</code> 8 kHz with <code>trim_silence=true</code></td>
-                <td>TTS docs §8.2</td>
+                <td>Zero TTS via the OpenAI-compatible endpoint with <code>response_format="pcm"</code>, raw PCM useful for streaming and voice-agent pipelines</td>
+                <td>TTS API Integration Guide</td>
               </tr>
             </tbody>
           </table>
         </div>
 
 
-        <p class="text-subtle">Source: Shunya Labs website (Contact Centers vertical), Shunya Labs ASR Gateway API Reference, Shunyalabs TTS Developer Documentation §8.2. Named CCaaS integration patterns (Genesys, NICE, Five9, Avaya) are not officially documented by Shunya, for example architectures see the <a href="/web_doc/enterprise/hands-on-evaluation.html">Hands-on evaluation</a> page, where they are clearly marked as illustrative.</p>
+        <p class="text-subtle">Source: Shunya Labs website (Contact Centers vertical), Shunya Labs ASR Gateway API Reference, ShunyaLabs TTS API Integration Guide. Named CCaaS integration patterns (Genesys, NICE, Five9, Avaya) are not officially documented by Shunya, for example architectures see the <a href="/web_doc/enterprise/hands-on-evaluation.html">Hands-on evaluation</a> page, where they are clearly marked as illustrative.</p>
 
         <div class="pager">
           <a class="pager-link" href="/web_doc/solutions/healthcare.html">

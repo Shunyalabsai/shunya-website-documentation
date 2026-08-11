@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>TTS API reference | Shunya Labs Docs</title>
-  <meta name="description" content="Complete TTS API reference: endpoints, fields, response schema, error codes, rate limits.">
+  <meta name="description" content="Complete API reference for ShunyaLabs TTS: authentication, standard omni-voice synthesis, education LaTeX TTS, and the OpenAI-compatible voice-agent endpoint.">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@1,500;1,600;1,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/web_doc/assets/css/main.css?v=37">
   <script src="/web_doc/assets/js/theme.js"></script>
@@ -17,288 +17,162 @@
           <a href="/web_doc/index.html">Docs</a><span class="sep">/</span><a href="/web_doc/api-reference/index.html">API Reference</a><span class="sep">/</span><span>Text-to-Speech</span><span class="sep">/</span><span>API reference</span>
         </div>
         <h1>TTS API <span class="accent-italic">reference</span></h1>
-        <p class="lead">Every endpoint under <code>tts.shunyalabs.ai</code>, every field, every error code.</p>
+        <p class="lead">Every endpoint in the ShunyaLabs Text-to-Speech API: authentication, standard omni-voice synthesis, education LaTeX TTS, and the OpenAI-compatible voice-agent endpoint, with request fields and examples.</p>
 
-        <h2 id="base-urls">Base URLs</h2>
+        <div class="callout callout-info">
+          <div class="callout-title">New endpoints</div>
+          These endpoints are the recommended integration path for new client implementations and provide an improved experience over the previous TTS endpoints.
+        </div>
+
+        <div class="callout callout-info">
+          <div class="callout-title">Base URLs</div>
+          Authentication: <code>https://app.shunyalabs.ai</code><br>
+          TTS: <code>https://ttsv2.shunyalabs.ai</code>
+        </div>
+
+        <h2 id="authentication">1. Authentication: <code>POST /api/auth/token</code></h2>
+        <p>ShunyaLabs TTS APIs use a <strong>short-lived Bearer token</strong>. Generate your API key from your ShunyaLabs account, then exchange it for a token using the authentication endpoint. Use the returned token as <code>Authorization: Bearer YOUR_TOKEN</code> on every TTS request.</p>
+
+        <p><strong>Example (cURL):</strong></p>
+<pre><code class="language-bash">curl -X POST 'https://app.shunyalabs.ai/api/auth/token' \
+  -H 'api-key: YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{"expires_in": 86400}'</code></pre>
+
+        <p><code>expires_in</code> specifies the requested token lifetime in seconds. In the example above, the token is requested for 86,400 seconds (24 hours). Use the token returned by this API as <code>Authorization: Bearer YOUR_TOKEN</code> in subsequent requests.</p>
+
+        <h3>Recommended flow</h3>
+        <ul>
+          <li>Store the API key securely in your backend or secret manager.</li>
+          <li>Request an auth token from your backend when required.</li>
+          <li>Reuse the token until it approaches expiry, then obtain a fresh token.</li>
+          <li>Never send your ShunyaLabs API key directly to end-user clients.</li>
+        </ul>
+
+        <div class="callout callout-warn">
+          <div class="callout-title">Security</div>
+          Keep API keys and authentication tokens on the server side. Do not expose them in browser code, mobile app bundles, public repositories, or logs.
+        </div>
+
+        <h2 id="post-synthesize">2. Standard TTS: <code>POST /v1/omni-voice/synthesize</code></h2>
+        <p>Use the Omni Voice synthesis endpoint for standard text-to-speech generation.</p>
+
+        <p><strong>Example (cURL):</strong></p>
+<pre><code class="language-bash">curl -X POST 'https://ttsv2.shunyalabs.ai/v1/omni-voice/synthesize' \
+  -H 'Authorization: Bearer YOUR_TOKEN' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "text": "If Modi is prime minister who is Amit Shah?",
+    "voice": "Meera"
+  }' \
+  --output speech.wav</code></pre>
+
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Interface</th><th>URL</th></tr></thead>
+            <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
             <tbody>
-              <tr><td>Batch</td><td><code>https://tts.shunyalabs.ai</code></td></tr>
-              <tr><td>Streaming</td><td><code>wss://tts.shunyalabs.ai/ws</code></td></tr>
-              <tr><td>Health</td><td><code>https://tts.shunyalabs.ai/health</code></td></tr>
+              <tr><td><code>text</code></td><td>string</td><td>The content to synthesize.</td></tr>
+              <tr><td><code>voice</code></td><td>string</td><td>The requested ShunyaLabs voice (for example, <code>Meera</code>).</td></tr>
             </tbody>
           </table>
         </div>
 
-        <h2 id="authentication">Authentication</h2>
-        <p>Same API key works for both transports. Pick the tab for the protocol you're using.</p>
+        <h2 id="education-tts">3. Education TTS with LaTeX</h2>
+        <p>For educational content containing mathematical expressions, enable LaTeX processing and provide the language. Math-oriented content is handled through the same Omni Voice synthesis endpoint.</p>
 
-        <div class="code-group">
-          <div class="code-tabs" role="tablist">
-            <button class="code-tab active">HTTP (Bearer header)</button>
-            <button class="code-tab">WebSocket (header or query param)</button>
-          </div>
+        <p><strong>Example (cURL):</strong></p>
+<pre><code class="language-bash">curl -X POST 'https://ttsv2.shunyalabs.ai/v1/omni-voice/synthesize' \
+  -H 'Authorization: Bearer YOUR_TOKEN' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "text": "If $x^2 = 49$, what is the value of x?",
+    "voice": "Meera",
+    "latex": true,
+    "language": "en"
+  }' \
+  --output math.wav</code></pre>
 
-          <div class="code-panel active">
-            <div class="code-header"><span>http</span><button class="copy-btn">Copy</button></div>
-<pre><code class="language-http">Authorization: Bearer sk-your-api-key</code></pre>
-          </div>
-
-          <div class="code-panel">
-            <div class="code-header"><span>shell</span><button class="copy-btn">Copy</button></div>
-            <p style="margin:0 0 0.75rem; padding:0 0.25rem;">Send the key as an <code>Authorization</code> header on the WebSocket upgrade. If your client can't set headers, fall back to a <code>token</code> query parameter:</p>
-<pre><code class="language-bash">wss://tts.shunyalabs.ai/ws?token=sk-your-api-key</code></pre>
-          </div>
-        </div>
-
-        <h2 id="post-speech">POST /v1/audio/speech</h2>
-        <p>Batch synthesis. Returns audio bytes in the requested format.</p>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Property</th><th>Value</th></tr></thead>
+            <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
             <tbody>
-              <tr><td>Method</td><td>POST</td></tr>
-              <tr><td>URL</td><td><code>https://tts.shunyalabs.ai/v1/audio/speech</code> (also <code>/tts</code>, <code>/</code>)</td></tr>
-              <tr><td>Content-Type</td><td>application/json</td></tr>
-              <tr><td>Response body</td><td>Audio bytes in requested format</td></tr>
+              <tr><td><code>text</code></td><td>string</td><td>The content to synthesize, including any LaTeX expressions.</td></tr>
+              <tr><td><code>voice</code></td><td>string</td><td>The requested ShunyaLabs voice (for example, <code>Meera</code>).</td></tr>
+              <tr><td><code>latex</code></td><td>boolean</td><td>Set to <code>true</code> when the input contains LaTeX expressions.</td></tr>
+              <tr><td><code>language</code></td><td>string</td><td>Identifies the content language (for example, <code>en</code>).</td></tr>
             </tbody>
           </table>
         </div>
 
-        <h3>Request fields</h3>
+        <h2 id="post-speech">4. Voice Agent / OpenAI-compatible: <code>POST /v1/audio/speech</code></h2>
+        <p>For real-time voice-agent frameworks and integrations expecting an OpenAI-compatible speech interface, use the <code>/v1/audio/speech</code> endpoint.</p>
+
+        <p><strong>Example (cURL):</strong></p>
+<pre><code class="language-bash">curl -X POST 'https://ttsv2.shunyalabs.ai/v1/audio/speech' \
+  -H 'Authorization: Bearer YOUR_TOKEN' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "model": "tts-1",
+    "input": "Hello, how are you today?",
+    "voice": "Meera",
+    "response_format": "pcm"
+  }' \
+  --output speech.pcm</code></pre>
+
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Field</th><th>Type</th><th>Required</th><th>Default</th><th>Description</th></tr></thead>
+            <thead><tr><th>Field</th><th>Type</th><th>Description</th></tr></thead>
             <tbody>
-              <tr><td><code>model</code></td><td>string</td><td>Yes</td><td>-</td><td>Use <a class="hf-model-link" href="https://huggingface.co/spaces/shunyalabs/TTS-Indic" target="_blank" rel="noopener" title="View on Hugging Face"><code>zero-indic</code></a>.</td></tr>
-              <tr><td><code>input</code></td><td>string</td><td>Yes</td><td>-</td><td>Text to synthesize. Max 10,000 chars.</td></tr>
-              <tr><td><code>voice</code></td><td>string</td><td>Yes</td><td>-</td><td>Speaker name. See Voices & languages.</td></tr>
-              <tr><td><code>response_format</code></td><td>string</td><td>No</td><td><code>mp3</code></td><td><code>pcm</code>, <code>wav</code>, <code>mp3</code>, <code>ogg_opus</code>, <code>flac</code>, <code>mulaw</code>, <code>alaw</code>.</td></tr>
-              <tr><td><code>speed</code></td><td>float</td><td>No</td><td><code>1.0</code></td><td>0.25 (slowest) to 4.0 (fastest).</td></tr>
-              <tr><td><code>language</code></td><td>string</td><td>No</td><td>null</td><td>ISO 639 code for text preprocessing.</td></tr>
-              <tr><td><code>trim_silence</code></td><td>bool</td><td>No</td><td><code>false</code></td><td>Remove leading/trailing silence.</td></tr>
-              <tr><td><code>volume_normalization</code></td><td>string</td><td>No</td><td>null</td><td><code>peak</code> (0 dBFS) or <code>loudness</code> (EBU R128).</td></tr>
-              <tr><td><code>background_audio</code></td><td>string</td><td>No</td><td>null</td><td>Preset name (<code>office</code>, <code>cafe</code>, <code>rain</code>, <code>street</code>) or base64-encoded WAV/MP3.</td></tr>
-              <tr><td><code>background_volume</code></td><td>float</td><td>No</td><td><code>0.1</code></td><td>Background mix ratio, 0.0-1.0.</td></tr>
-              <tr><td><code>reference_wav</code></td><td>string</td><td>No</td><td>null</td><td>Base64 audio for voice cloning. WAV/FLAC/OGG. 1-6 s.</td></tr>
-              <tr><td><code>reference_text</code></td><td>string</td><td>No</td><td>""</td><td>Transcript of reference audio. Max 500 chars.</td></tr>
-              <tr><td><code>word_timestamps</code></td><td>bool</td><td>No</td><td><code>false</code></td><td>Include word-level timestamps (batch only).</td></tr>
-              <tr><td><code>max_tokens</code></td><td>int</td><td>No</td><td><code>2048</code></td><td>Max tokens for internal LLM generation. 1-8192.</td></tr>
+              <tr><td><code>model</code></td><td>string</td><td>The model name (<code>tts-1</code>).</td></tr>
+              <tr><td><code>input</code></td><td>string</td><td>The text to synthesize.</td></tr>
+              <tr><td><code>voice</code></td><td>string</td><td>The requested voice (for example, <code>Meera</code>).</td></tr>
+              <tr><td><code>response_format</code></td><td>string</td><td>The output format (<code>pcm</code> for streaming and voice-agent pipelines).</td></tr>
             </tbody>
           </table>
         </div>
 
-        <h3>Response headers</h3>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Header</th><th>Meaning</th></tr></thead>
-            <tbody>
-              <tr><td><code>Content-Type</code></td><td>MIME type (<code>audio/mpeg</code>, <code>audio/wav</code>, etc.)</td></tr>
-              <tr><td><code>X-Sample-Rate</code></td><td>Sample rate in Hz</td></tr>
-              <tr><td><code>X-Request-Id</code></td><td>Unique identifier, log for support</td></tr>
-            </tbody>
-          </table>
-        </div>
+        <p>The example requests raw PCM output, which is useful for streaming and voice-agent pipelines. Select the response format required by your integration as supported by the API.</p>
 
-        <h2 id="websocket">WebSocket /ws</h2>
-        <p>Full protocol in <a href="/web_doc/tts/streaming.html">Streaming</a>. Summary below.</p>
+        <h2 id="pipecat">5. Pipecat example</h2>
+<pre><code class="language-python">from pipecat.services.openai import OpenAITTSService
 
-        <h3>Handshake</h3>
-        <p>Three equivalent ways to send the synthesis request on connect, pick whichever fits your client.</p>
-
-        <div class="code-group">
-          <div class="code-tabs" role="tablist">
-            <button class="code-tab active">1. Query params on connect</button>
-            <button class="code-tab">2. JSON config message</button>
-            <button class="code-tab">3. Full synthesis request</button>
-          </div>
-
-          <div class="code-panel active">
-            <div class="code-header"><span>shell</span><button class="copy-btn">Copy</button></div>
-            <p style="margin:0 0 0.75rem; padding:0 0.25rem;">Encode parameters in the URL, works in clients that can't easily send post-connect messages.</p>
-<pre><code class="language-bash">wss://tts.shunyalabs.ai/ws?model=zero-indic&amp;voice=Varun&amp;encoding=pcm</code></pre>
-          </div>
-
-          <div class="code-panel">
-            <div class="code-header"><span>json</span><button class="copy-btn">Copy</button></div>
-            <p style="margin:0 0 0.75rem; padding:0 0.25rem;">Connect with no params, then send a config message. Useful when you want to reuse the connection.</p>
-<pre><code class="language-json">{"type": "config", "model": "zero-indic", "voice": "Varun", "response_format": "pcm"}</code></pre>
-          </div>
-
-          <div class="code-panel">
-            <div class="code-header"><span>json</span><button class="copy-btn">Copy</button></div>
-            <p style="margin:0 0 0.75rem; padding:0 0.25rem;">Send the full synthesis request in one message, the server treats it as both config and synthesis trigger.</p>
-<pre><code class="language-json">{"model": "zero-indic", "input": "Hello!", "voice": "Sunita", "response_format": "pcm"}</code></pre>
-          </div>
-        </div>
-
-        <h3>Inbound fields</h3>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Field</th><th>Required</th><th>Description</th></tr></thead>
-            <tbody>
-              <tr><td><code>model</code></td><td>Yes</td><td>Use <a class="hf-model-link" href="https://huggingface.co/spaces/shunyalabs/TTS-Indic" target="_blank" rel="noopener" title="View on Hugging Face"><code>zero-indic</code></a>.</td></tr>
-              <tr><td><code>input</code></td><td>Yes</td><td>Text. Max 10,000 chars.</td></tr>
-              <tr><td><code>voice</code></td><td>Yes</td><td>Speaker name.</td></tr>
-              <tr><td><code>response_format</code></td><td>No</td><td>Default <code>pcm</code> on WebSocket.</td></tr>
-              <tr><td><code>speed</code></td><td>No</td><td>0.25-4.0, default 1.0.</td></tr>
-              <tr><td><code>language</code></td><td>No</td><td>ISO 639 code for preprocessing.</td></tr>
-              <tr><td><code>trim_silence</code></td><td>No</td><td>Remove silence, default false.</td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <h3>Outbound message shape</h3>
-        <p>For each synthesis, the server emits messages in this order: a chunk metadata JSON, then a binary audio frame, repeated for every chunk; then a final completion JSON. If something goes wrong, an error JSON arrives instead of completion.</p>
-
-        <h4>1. Chunk metadata (JSON)</h4>
-        <p>Sent before each binary audio frame.</p>
-<pre><code class="language-json">{
-  "type": "chunk",
-  "request_id": "uuid",
-  "chunk_index": 0,
-  "is_final": false,
-  "format": "pcm",
-  "sample_rate": 16000
-}</code></pre>
-
-        <h4>2. Audio data (binary frame)</h4>
-        <p>Raw audio bytes that immediately follow each chunk JSON. In the SDK, <code>isinstance(msg, bytes)</code> is <code>True</code>.</p>
-
-        <h4>3. Completion (JSON)</h4>
-        <p>Sent once after all audio chunks have been delivered.</p>
-<pre><code class="language-json">{
-  "type": "completion",
-  "request_id": "uuid",
-  "status": "complete",
-  "total_chunks": 3,
-  "total_duration_seconds": 2.48,
-  "format": "pcm",
-  "sample_rate": 16000
-}</code></pre>
-
-        <h4>4. Error (JSON)</h4>
-        <p>Sent instead of completion on failure. The connection closes after this message.</p>
-<pre><code class="language-json">{
-  "type": "error",
-  "request_id": "uuid",
-  "error": "Error description"
-}</code></pre>
-
-        <h2 id="health">GET /health</h2>
-        <p><strong>Request:</strong></p>
-<pre><code class="language-bash">curl https://tts.shunyalabs.ai/health \
-  -H "Authorization: Bearer $SHUNYALABS_API_KEY"</code></pre>
-
-        <p><strong>Response:</strong></p>
-<pre><code class="language-json">{"status": "healthy", "triton_ready": true, "auth_ready": true}</code></pre>
-
-        <h2>SDK exception hierarchy</h2>
-        <p>All SDK exceptions inherit from <code>ShunyalabsError</code>.</p>
-
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Exception</th><th>HTTP</th><th>Description</th></tr></thead>
-            <tbody>
-              <tr><td><code>AuthenticationError</code></td><td>401</td><td>Invalid or missing API key.</td></tr>
-              <tr><td><code>PermissionDeniedError</code></td><td>403</td><td>API key lacks permission.</td></tr>
-              <tr><td><code>RateLimitError</code></td><td>429</td><td>Rate limit exceeded. Back off.</td></tr>
-              <tr><td><code>SynthesisError</code></td><td>422</td><td>Invalid text or config.</td></tr>
-              <tr><td><code>ServerError</code></td><td>5xx</td><td>Transient. Safe to retry.</td></tr>
-              <tr><td><code>TimeoutError</code></td><td>-</td><td>Request exceeded timeout.</td></tr>
-              <tr><td><code>ConnectionError</code></td><td>-</td><td>Network failure.</td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <h2 id="rate-limits">Rate &amp; concurrency limits</h2>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Limit</th><th>Value</th></tr></thead>
-            <tbody>
-              <tr><td>Max text length per request</td><td>10,000 characters</td></tr>
-              <tr><td>Recommended per-request</td><td>Under 500 characters for best quality; split longer text</td></tr>
-              <tr><td>HTTP request timeout</td><td>Set to at least 120 s for long text</td></tr>
-              <tr><td>Concurrent requests (default tier)</td><td>16</td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <h3>Rate-limit retry pattern</h3>
-<pre><code>import asyncio
-from shunyalabs.exceptions import RateLimitError
-
-async def synthesize_with_backoff(client, text, config, retries=3):
-    for attempt in range(retries):
-        try:
-            return await client.tts.synthesize(text, config=config)
-        except RateLimitError:
-            wait = 2 ** attempt    # 1s, 2s, 4s
-            await asyncio.sleep(wait)
-    raise RateLimitError("Max retries exceeded")</code></pre>
-
-        <h3>Concurrency cap pattern</h3>
-<pre><code>import asyncio
-
-sem = asyncio.Semaphore(16)
-
-async def safe_synthesize(client, text, config):
-    async with sem:
-        return await client.tts.synthesize(text, config=config)
-
-tasks = [safe_synthesize(client, s, config) for s in scripts]
-results = await asyncio.gather(*tasks)</code></pre>
-
-        <h2 id="http-error-status-codes">HTTP error status codes</h2>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Status</th><th>Description</th></tr></thead>
-            <tbody>
-              <tr><td>200</td><td>Success. Audio bytes in response body.</td></tr>
-              <tr><td>400</td><td>Missing or malformed fields. Body: <code>{"detail": "..."}</code>.</td></tr>
-              <tr><td>401</td><td>API key invalid or missing.</td></tr>
-              <tr><td>422</td><td>Invalid text or config.</td></tr>
-              <tr><td>429</td><td>Rate limited.</td></tr>
-              <tr><td>500</td><td>Internal server error.</td></tr>
-              <tr><td>503</td><td>Backend (Triton/Redis) temporarily unavailable.</td></tr>
-              <tr><td>504</td><td>Gateway timeout.</td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <h2>SDK configuration reference</h2>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
-            <tbody>
-              <tr><td><code>api_key</code></td><td>string</td><td>None</td><td>Falls back to <code>SHUNYALABS_API_KEY</code> env var.</td></tr>
-              <tr><td><code>timeout</code></td><td>float</td><td>60.0</td><td>Request timeout (seconds).</td></tr>
-              <tr><td><code>max_retries</code></td><td>int</td><td>2</td><td>Retries for 5xx and connection failures.</td></tr>
-              <tr><td><code>tts_url</code></td><td>string</td><td><code>https://tts.shunyalabs.ai</code></td><td>Batch API base URL. Override for self-hosted.</td></tr>
-              <tr><td><code>tts_ws_url</code></td><td>string</td><td><code>wss://tts.shunyalabs.ai/ws/v1/audio/speech</code></td><td>WebSocket URL.</td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <h2>Self-hosted configuration</h2>
-<pre><code>client = AsyncShunyaClient(
-    api_key="your-api-key",
-    tts_url="https://my-tts-server.example.com",
-    tts_ws_url="wss://my-tts-server.example.com/ws",
+tts = OpenAITTSService(
+    api_key="YOUR_TOKEN",
+    base_url="https://ttsv2.shunyalabs.ai/v1",
+    voice="nova",
 )</code></pre>
 
-        <h2>GitHub</h2>
-        <p><a href="https://github.com/Shunyalabsai/shunyalabs-python-sdk" target="_blank" rel="noopener">github.com/Shunyalabsai/shunyalabs-python-sdk</a></p>
+        <div class="callout callout-info">
+          <div class="callout-title">Pipecat note</div>
+          The <code>api_key</code> field name comes from Pipecat's OpenAI-compatible service interface; pass the ShunyaLabs auth token as its value. For Pipecat, use an OpenAI-compatible voice name such as <code>nova</code> in the client configuration.
+        </div>
+
+        <h2 id="client-checklist">6. Client integration checklist</h2>
+        <ul>
+          <li>Create or log in to your ShunyaLabs account at <a href="https://shunyalabs.ai" target="_blank" rel="noopener">shunyalabs.ai</a>.</li>
+          <li>Complete onboarding and confirm that testing credits are available.</li>
+          <li>Generate an API key.</li>
+          <li>Exchange the API key for a Bearer token using the Auth API.</li>
+          <li>Integrate Standard TTS, Education TTS, or the OpenAI-compatible endpoint as required.</li>
+          <li>Store credentials securely and refresh tokens before expiry.</li>
+          <li>Use the latest API documentation for supported request fields and integration details.</li>
+        </ul>
+
+        <h2 id="api-docs">7. API documentation</h2>
+        <p>Interactive API documentation is available at <a href="https://ttsv2.shunyalabs.ai/docs" target="_blank" rel="noopener"><code>https://ttsv2.shunyalabs.ai/docs</code></a>.</p>
+
+        <h3>Before production rollout</h3>
+        <p>The integration examples above are sufficient for initial testing. Before moving a client workload to production, confirm the production requirements relevant to that implementation, including expected traffic, required voices and languages, output or streaming format, latency expectations, and credit or commercial plan.</p>
+        <p>Items worth confirming for each client: supported voices and languages, available response formats, rate or concurrency limits, production credit or billing plan, and the preferred support or escalation channel. These details are intentionally not hard-coded in this guide because they may vary by product version or client plan.</p>
 
         <div class="pager">
-          <a class="pager-link" href="/web_doc/tts/llm-to-tts.html">
+          <a class="pager-link" href="/web_doc/tts/quickstart.html">
             <div class="pager-label">← Previous</div>
-            <div class="pager-title">LLM → TTS pipeline</div>
+            <div class="pager-title">TTS quickstart</div>
           </a>
-          <a class="pager-link pager-right" href="/web_doc/translation/vak-overview.html">
+          <a class="pager-link pager-right" href="/web_doc/tts/llm-to-tts.html">
             <div class="pager-label">Next →</div>
-            <div class="pager-title">Vāķ Translate</div>
+            <div class="pager-title">LLM → TTS pipeline</div>
           </a>
         </div>
       </div>

@@ -55,19 +55,19 @@
         <div class="grid grid-2">
           <div class="card">
             <div class="card-title">Type and hear</div>
-            <p class="card-desc">Paste your text into the input box. Mix Hindi, English, Tamil. The model handles code-switching natively. Hit <strong>Generate</strong> and the audio plays in your browser.</p>
+            <p class="card-desc">Paste your text into the input box, pick a voice, and hit <strong>Generate</strong>. The audio plays in your browser before you write any code.</p>
           </div>
           <div class="card">
-            <div class="card-title">Compare voices side-by-side</div>
-            <p class="card-desc">46 voices across 23 Indic languages. Each language has one male and one female speaker, Rajesh / Sunita for Hindi, Varun / Nisha for English, Murugan / Thangam for Tamil, and so on. Click a voice, hit play.</p>
+            <div class="card-title">Confirm voices and languages</div>
+            <p class="card-desc">Supported voices and languages are confirmed per your client plan and are intentionally not hard-coded in the docs. Use the playground to find the right voice for your content.</p>
           </div>
           <div class="card">
-            <div class="card-title">Adjust speed, format, expression</div>
-            <p class="card-desc">Sliders for speed (0.25× → 4×), volume normalization, and silence trimming. Pick from 11 expression styles, Happy, Sad, News, Narrative, Conversational, and more.</p>
+            <div class="card-title">Response formats</div>
+            <p class="card-desc">Select the response format required by your integration as supported by the API. Raw PCM output (<code>response_format="pcm"</code>) is useful for streaming and voice-agent pipelines.</p>
           </div>
           <div class="card">
-            <div class="card-title">Cross-lingual synthesis</div>
-            <p class="card-desc">Voice controls accent, not language. A Tamil-native voice can speak English; an English-native voice can read Hindi. Try the same text with different voices to find the right vocal character.</p>
+            <div class="card-title">Before production rollout</div>
+            <p class="card-desc">The guide's examples are sufficient for initial testing. Confirm production requirements per implementation: traffic, required voices and languages, output format, latency, and credit plan.</p>
           </div>
         </div>
 
@@ -85,7 +85,7 @@
           <li>Open <strong>API Keys</strong> in the dashboard.</li>
           <li>Click <strong>Create New Key</strong>, name it after the environment (e.g. <code>prod-2026-q2</code>).</li>
           <li>Copy and store the key securely. It will not be shown again.</li>
-          <li>Send your developer to <a href="/web_doc/personas/api.html">High code: API</a> or <a href="/web_doc/personas/sdk.html">Small code: SDK</a>.</li>
+          <li>Send your developer to <a href="/web_doc/personas/api.html">High code: API</a> or <a href="/web_doc/personas/sdk.html">Small code: Python</a>.</li>
         </ol>
 
         <h2>Who the playground is for</h2>
@@ -110,13 +110,13 @@
 
         <div class="callout callout-success">
           <div class="callout-title">Ready to integrate?</div>
-          When the dashboard has answered your "does this work?" questions, hand off to your developer with the <a href="/web_doc/personas/sdk.html">Python SDK</a> guide or the <a href="/web_doc/personas/api.html">REST &amp; WebSocket</a> reference.
+          When the dashboard has answered your "does this work?" questions, hand off to your developer with the <a href="/web_doc/personas/sdk.html">Python integration</a> guide or the <a href="/web_doc/personas/api.html">HTTP API</a> reference.
         </div>
 
         <div class="pager">
           <a class="pager-link" href="/web_doc/personas/sdk.html">
             <div class="pager-label">← Previous</div>
-            <div class="pager-title">Small code: SDK</div>
+            <div class="pager-title">Small code: Python</div>
           </a>
           <a class="pager-link pager-right" href="/web_doc/personas/openai-compatible.html">
             <div class="pager-label">Next →</div>

@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Pipecat Integration | Shunya Labs Docs</title>
-  <meta name="description" content="Use Shunyalabs STT and TTS natively inside Pipecat pipelines with ShunyalabsSTTService and ShunyalabsTTSService.">
+  <meta name="description" content="Use Shunya TTS in a Pipecat voice agent with the OpenAI-compatible TTS service, pointed at the Shunya endpoint.">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@1,500;1,600;1,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/web_doc/assets/css/main.css?v=32">
   <script src="/web_doc/assets/js/theme.js"></script>
@@ -22,302 +22,65 @@
 
         <div class="doc-title-row">
           <h1>Pipecat <span class="accent-italic">integration</span></h1>
-          <a href="https://pypi.org/project/pipecat-shunyalabs/" target="_blank" rel="noopener" class="doc-hf-badge">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-            pipecat-shunyalabs v1.0.3
-          </a>
         </div>
 
-        <p class="lead">Native Shunyalabs STT and TTS services for <a href="https://github.com/pipecat-ai/pipecat" target="_blank" rel="noopener">Pipecat</a> pipelines. Drop <code>ShunyalabsSTTService</code> and <code>ShunyalabsTTSService</code> into any Pipecat pipeline and get real-time streaming ASR with 46 speakers across 23 languages - no glue code required.</p>
+        <p class="lead">Add Shunya TTS to a <a href="https://github.com/pipecat-ai/pipecat" target="_blank" rel="noopener">Pipecat</a> voice agent with the OpenAI-compatible TTS service. Configure <code>OpenAITTSService</code> with the Shunya endpoint as <code>base_url</code> and your Shunya Bearer token as <code>api_key</code>, no glue code required.</p>
 
-        <div class="callout callout-info">
-          <div class="callout-title">Requirements</div>
-          Python 3.9+, Pipecat framework, and a valid Shunyalabs API key. Install a Pipecat transport (e.g. <code>pipecat-ai[daily]</code>) for WebRTC support.
-        </div>
+        <h2>1. Mint a Bearer token</h2>
+        <p>Exchange your API key for a short-lived Bearer token at <code>POST https://app.shunyalabs.ai/api/auth/token</code>, then pass the token to the service. Keep the API key on the server side; never send it to end-user clients.</p>
 
-        <!-- Installation -->
-        <h2>Installation</h2>
-        <p>Install the package from PyPI:</p>
-        <div class="code-group">
-          <div class="code-header"><span>Terminal</span></div>
-          <pre><code>pip install pipecat-shunyalabs</code></pre>
-        </div>
+<pre><code>curl -X POST 'https://app.shunyalabs.ai/api/auth/token' \
+  -H 'api-key: YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{"expires_in": 86400}'</code></pre>
 
-        <p>To include a transport (e.g. Daily WebRTC):</p>
-        <div class="code-group">
-          <div class="code-header"><span>Terminal</span></div>
-          <pre><code>pip install pipecat-shunyalabs pipecat-ai[daily]</code></pre>
-        </div>
+        <h2>2. Configure the TTS service</h2>
+        <p><code>api_key</code> is Pipecat's field name. Pass the ShunyaLabs auth token as its value, and point <code>base_url</code> at the Shunya compatible endpoint. For Pipecat, use an OpenAI-compatible voice name such as <code>nova</code>.</p>
 
-        <!-- Authentication -->
-        <h2>Authentication</h2>
-        <p>Set your API key as an environment variable (recommended) or pass it directly to the service classes:</p>
-        <div class="code-group">
-          <div class="code-header"><span>Environment variable</span></div>
-          <pre><code>export SHUNYALABS_API_KEY="your-api-key"</code></pre>
-        </div>
-        <div class="code-group">
-          <div class="code-header"><span>Python (inline)</span></div>
-          <pre><code>stt = ShunyalabsSTTService(api_key="your-api-key")
-tts = ShunyalabsTTSService(api_key="your-api-key")</code></pre>
-        </div>
-        <div class="callout callout-warn">
-          <div class="callout-title">Security</div>
-          Never commit API keys to source control. Use a secrets manager (GCP Secret Manager, AWS Secrets Manager, HashiCorp Vault) in production.
-        </div>
+<pre><code>from pipecat.services.openai import OpenAITTSService
 
-        <!-- Quick Start -->
-        <h2>Quick start</h2>
-        <p>A minimal pipeline wiring Shunyalabs STT → OpenAI LLM → Shunyalabs TTS on a local audio transport:</p>
-        <div class="code-group">
-          <div class="code-header"><span>Python</span></div>
-          <pre><code>import asyncio, os
-from pipecat.pipeline.pipeline import Pipeline
-from pipecat.pipeline.runner import PipelineRunner
-from pipecat.pipeline.task import PipelineParams, PipelineTask
-from pipecat.services.openai import OpenAILLMService
-from pipecat.transports.local.audio import LocalAudioTransport
-from pipecat_shunyalabs import ShunyalabsSTTService, ShunyalabsTTSService
-
-async def main():
-    transport = LocalAudioTransport()
-
-    stt = ShunyalabsSTTService(
-        api_key=os.environ["SHUNYALABS_API_KEY"],
-        language="en",
-    )
-
-    llm = OpenAILLMService(
-        api_key=os.environ["OPENAI_API_KEY"],
-        model="gpt-4o",
-    )
-
-    tts = ShunyalabsTTSService(
-        api_key=os.environ["SHUNYALABS_API_KEY"],
-        voice="Rajesh",
-        language="en",
-        style="&lt;Conversational&gt;",
-    )
-
-    pipeline = Pipeline([transport.input(), stt, llm, tts, transport.output()])
-    task = PipelineTask(pipeline, PipelineParams(allow_interruptions=True))
-    await PipelineRunner().run(task)
-
-if __name__ == "__main__":
-    asyncio.run(main())</code></pre>
-        </div>
-
-        <!-- STT -->
-        <h2>STT - <code>ShunyalabsSTTService</code></h2>
-        <p>Real-time streaming speech-to-text over a persistent WebSocket connection. The language is set in the init message; there is no auto-detect on streaming.</p>
-
-        <h3>Parameters</h3>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr>
-            </thead>
-            <tbody>
-              <tr><td><code>api_key</code></td><td><code>str</code></td><td><code>None</code></td><td>API key. Falls back to <code>SHUNYALABS_API_KEY</code> env var.</td></tr>
-              <tr><td><code>language</code></td><td><code>str</code></td><td><code>None</code></td><td>Required. Language code (e.g. <code>"en"</code>, <code>"hi"</code>). No auto-detect on streaming.</td></tr>
-              <tr><td><code>url</code></td><td><code>str</code></td><td><code>wss://asrv2prod.shunyalabs.ai/v1/realtime</code></td><td>WebSocket endpoint URL.</td></tr>
-              <tr><td><code>sample_rate</code></td><td><code>int</code></td><td><code>16000</code></td><td>Expected audio sample rate in Hz. Must match transport input.</td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <h3>Frame mapping</h3>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr><th>Shunyalabs event</th><th>Pipecat frame</th></tr>
-            </thead>
-            <tbody>
-              <tr><td><code>partial</code></td><td><code>InterimTranscriptionFrame</code> - emitted continuously as speech is recognised</td></tr>
-              <tr><td><code>final</code></td><td><code>TranscriptionFrame</code> - emitted when the segment is finalised</td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div class="code-group">
-          <div class="code-header"><span>Python (STT example)</span></div>
-          <pre><code>from pipecat_shunyalabs import ShunyalabsSTTService
-
-stt = ShunyalabsSTTService(
-    language="hi",       # required; no auto-detect on streaming
-    sample_rate=16000,
+tts = OpenAITTSService(
+    api_key="YOUR_TOKEN",
+    base_url="https://ttsv2.shunyalabs.ai/v1",
+    voice="nova",
 )</code></pre>
-        </div>
 
-        <div class="callout callout-info">
-          <div class="callout-title">Auto-reconnect</div>
-          If the WebSocket connection drops during audio streaming, the service automatically reconnects and resumes sending audio.
-        </div>
+        <h2>3. Wire it into a pipeline</h2>
+        <p>Drop the service into any Pipecat pipeline in place of the TTS node:</p>
 
-        <!-- TTS -->
-        <h2>TTS - <code>ShunyalabsTTSService</code></h2>
-        <p>Streaming text-to-speech over WebSocket. Each synthesis request opens a new connection and streams audio chunks back as <code>TTSAudioRawFrame</code> frames. Supports 46 speakers across 23 languages - any speaker can synthesise in any language.</p>
-
-        <h3>Parameters</h3>
-        <div class="table-wrap">
-          <table>
-            <thead>
-              <tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr>
-            </thead>
-            <tbody>
-              <tr><td><code>api_key</code></td><td><code>str</code></td><td><code>None</code></td><td>API key. Falls back to <code>SHUNYALABS_API_KEY</code> env var.</td></tr>
-              <tr><td><code>url</code></td><td><code>str</code></td><td><code>wss://tts.shunyalabs.ai/ws</code></td><td>WebSocket endpoint URL.</td></tr>
-              <tr><td><code>model</code></td><td><code>str</code></td><td><code>"zero-indic"</code></td><td>TTS model identifier.</td></tr>
-              <tr><td><code>voice</code></td><td><code>str</code></td><td><code>"Rajesh"</code></td><td>Speaker voice name.</td></tr>
-              <tr><td><code>style</code></td><td><code>str</code></td><td><code>"&lt;Neutral&gt;"</code></td><td>Emotion / delivery style tag.</td></tr>
-              <tr><td><code>language</code></td><td><code>str</code></td><td><code>"en"</code></td><td>Output language code.</td></tr>
-              <tr><td><code>output_format</code></td><td><code>str</code></td><td><code>"pcm"</code></td><td>Audio encoding -  <code>pcm</code>, <code>wav</code>, <code>mp3</code>, <code>ogg_opus</code>, <code>flac</code>, <code>mulaw</code>, <code>alaw</code>.</td></tr>
-              <tr><td><code>speed</code></td><td><code>float</code></td><td><code>1.0</code></td><td>Speaking speed multiplier (0.25 – 4.0).</td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <h3>Style tags</h3>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Tag</th><th>Description</th></tr></thead>
-            <tbody>
-              <tr><td><code>&lt;Neutral&gt;</code></td><td>Clean read-speech by default</td></tr>
-              <tr><td><code>&lt;Happy&gt;</code></td><td>Joyful, upbeat tone</td></tr>
-              <tr><td><code>&lt;Sad&gt;</code></td><td>Somber, melancholic tone</td></tr>
-              <tr><td><code>&lt;Angry&gt;</code></td><td>Forceful, intense tone</td></tr>
-              <tr><td><code>&lt;Fearful&gt;</code></td><td>Anxious, trembling tone</td></tr>
-              <tr><td><code>&lt;Surprised&gt;</code></td><td>Exclamatory, astonished tone</td></tr>
-              <tr><td><code>&lt;Disgust&gt;</code></td><td>Repulsed, disapproving tone</td></tr>
-              <tr><td><code>&lt;News&gt;</code></td><td>Formal news-anchor style</td></tr>
-              <tr><td><code>&lt;Conversational&gt;</code></td><td>Casual, everyday speech - recommended for voice agents</td></tr>
-              <tr><td><code>&lt;Narrative&gt;</code></td><td>Storytelling / audiobook delivery</td></tr>
-              <tr><td><code>&lt;Enthusiastic&gt;</code></td><td>Energetic, passionate tone</td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <h3>Text formatting</h3>
-        <p>The service automatically prepends the style tag before sending to the API:</p>
-        <div class="code-group">
-          <div class="code-header"><span>Python</span></div>
-          <pre><code>tts = ShunyalabsTTSService(speaker="Rajesh", style="&lt;Happy&gt;")
-# Input:  "Welcome!"
-# Sent:   "&lt;Happy&gt; Welcome!"</code></pre>
-        </div>
-
-        <!-- Full pipeline example -->
-        <h2>Full pipeline example</h2>
-        <p>A complete voice agent with Shunyalabs STT and TTS, OpenAI LLM, and the Daily WebRTC transport:</p>
-        <div class="code-group">
-          <div class="code-header"><span>Python</span></div>
-          <pre><code>import asyncio, os
-from pipecat.pipeline.pipeline import Pipeline
+<pre><code>from pipecat.pipeline.pipeline import Pipeline
 from pipecat.pipeline.runner import PipelineRunner
 from pipecat.pipeline.task import PipelineParams, PipelineTask
-from pipecat.processors.aggregators.openai_llm_context import (
-    OpenAILLMContext, OpenAILLMContextAggregator,
-)
-from pipecat.services.openai import OpenAILLMService
+from pipecat.services.openai import OpenAILLMService, OpenAITTSService
 from pipecat.transports.services.daily import DailyParams, DailyTransport
-from pipecat_shunyalabs import ShunyalabsSTTService, ShunyalabsTTSService
 
-async def run_voice_agent(room_url: str, token: str):
-    transport = DailyTransport(
-        room_url, token, "Shunyalabs Agent",
-        DailyParams(audio_out_enabled=True, transcription_enabled=False),
-    )
+tts = OpenAITTSService(
+    api_key="YOUR_TOKEN",
+    base_url="https://ttsv2.shunyalabs.ai/v1",
+    voice="nova",
+)
 
-    stt = ShunyalabsSTTService(
-        api_key=os.environ["SHUNYALABS_API_KEY"],
-        language="auto",
-        sample_rate=16000,
-    )
+pipeline = Pipeline([
+    transport.input(),
+    stt,
+    llm,
+    tts,
+    transport.output(),
+])
+task = PipelineTask(pipeline, PipelineParams(allow_interruptions=True))
+await PipelineRunner().run(task)</code></pre>
 
-    llm = OpenAILLMService(
-        api_key=os.environ["OPENAI_API_KEY"],
-        model="gpt-4o",
-    )
-
-    messages = [{"role": "system", "content": "You are a helpful voice assistant."}]
-    context = OpenAILLMContext(messages)
-    context_aggregator = llm.create_context_aggregator(context)
-
-    tts = ShunyalabsTTSService(
-        api_key=os.environ["SHUNYALABS_API_KEY"],
-        voice="Rajesh",
-        language="hi",
-        style="&lt;Conversational&gt;",
-    )
-
-    pipeline = Pipeline([
-        transport.input(),
-        stt,
-        context_aggregator.user(),
-        llm,
-        tts,
-        transport.output(),
-        context_aggregator.assistant(),
-    ])
-
-    task = PipelineTask(pipeline, PipelineParams(allow_interruptions=True, enable_metrics=True))
-
-    @transport.event_handler("on_first_participant_joined")
-    async def on_first_participant_joined(transport, participant):
-        await task.queue_frames([context_aggregator.user().get_context_frame()])
-
-    await PipelineRunner().run(task)
-
-if __name__ == "__main__":
-    asyncio.run(run_voice_agent(
-        room_url=os.environ["DAILY_ROOM_URL"],
-        token=os.environ["DAILY_TOKEN"],
-    ))</code></pre>
+        <div class="callout callout-info">
+          <div class="callout-title">Response format</div>
+          The OpenAI-compatible endpoint returns audio as supported by the API. Raw PCM output is useful for streaming and voice-agent pipelines. See the <a href="/web_doc/tts/api-reference.html#post-speech">OpenAI-compatible endpoint</a> in the TTS API reference.
         </div>
 
-        <!-- Multilingual -->
-        <h2>Multilingual example</h2>
-        <div class="code-group">
-          <div class="code-header"><span>Python</span></div>
-          <pre><code># Hindi conversational bot
-tts = ShunyalabsTTSService(voice="Rajesh", language="hi", style="&lt;Conversational&gt;")
-
-# English news-style bot
-tts = ShunyalabsTTSService(voice="Varun", language="en", style="&lt;News&gt;")</code></pre>
+        <div class="callout callout-warn">
+          <div class="callout-title">Keep credentials on the server side</div>
+          Do not expose API keys or auth tokens in browser code, mobile app bundles, public repositories, or logs.
         </div>
 
-        <!-- Error reference -->
-        <h2>Error reference</h2>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Exception</th><th>HTTP code</th><th>Description</th></tr></thead>
-            <tbody>
-              <tr><td><code>AuthenticationError</code></td><td>401</td><td>Invalid or missing API key.</td></tr>
-              <tr><td><code>PermissionDeniedError</code></td><td>403</td><td>API key lacks permission for the resource.</td></tr>
-              <tr><td><code>RateLimitError</code></td><td>429</td><td>Rate limit exceeded. Implement exponential backoff.</td></tr>
-              <tr><td><code>ServerError</code></td><td>5xx</td><td>Server-side error. Retried automatically.</td></tr>
-              <tr><td><code>TimeoutError</code></td><td>n/a</td><td>Request exceeded timeout (default 60 s).</td></tr>
-              <tr><td><code>TranscriptionError</code></td><td>n/a</td><td>ASR-specific failure (e.g. unsupported audio format).</td></tr>
-              <tr><td><code>SynthesisError</code></td><td>n/a</td><td>TTS-specific failure (e.g. invalid voice parameter).</td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <!-- Troubleshooting -->
-        <h2>Troubleshooting</h2>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Symptom</th><th>Resolution</th></tr></thead>
-            <tbody>
-              <tr><td><code>AuthenticationError</code> on startup</td><td>Verify <code>SHUNYALABS_API_KEY</code> is set and valid.</td></tr>
-              <tr><td>WebSocket connection refused</td><td>Ensure outbound WSS (port 443) is open to <code>asrv2prod.shunyalabs.ai</code> and <code>tts.shunyalabs.ai</code>.</td></tr>
-              <tr><td>No transcription output</td><td>Check <code>sample_rate</code> matches your transport input. Verify audio source is active.</td></tr>
-              <tr><td>TTS audio silent or missing</td><td>Ensure <code>output_format=pcm</code> matches transport output. Verify <code>TTSStartedFrame</code> is received.</td></tr>
-              <tr><td>High latency on first TTS chunk</td><td>Deploy closer to the Shunyalabs gateway region (<code>asia-south1</code>).</td></tr>
-              <tr><td><code>ImportError: pipecat_shunyalabs</code></td><td>Run <code>pip install pipecat-shunyalabs</code> and confirm your virtual environment is activated.</td></tr>
-            </tbody>
-          </table>
-        </div>
+        <p class="text-subtle">Source: ShunyaLabs TTS API Integration Guide, §4 Voice Agent / OpenAI-Compatible TTS.</p>
 
         <div class="pager">
           <a class="pager-link" href="/web_doc/integrations/hugging-face.html">
@@ -333,15 +96,9 @@ tts = ShunyalabsTTSService(voice="Varun", language="en", style="&lt;News&gt;")</
       </div>
       <aside class="toc" aria-label="On this page">
         <div class="toc-title">On this page</div>
-        <a href="#installation">Installation</a>
-        <a href="#authentication">Authentication</a>
-        <a href="#quick-start">Quick start</a>
-        <a href="#stt--shunyalabssttservice">STT service</a>
-        <a href="#tts--shunyalabsttsservice">TTS service</a>
-        <a href="#full-pipeline-example">Full pipeline example</a>
-        <a href="#multilingual-example">Multilingual</a>
-        <a href="#error-reference">Errors</a>
-        <a href="#troubleshooting">Troubleshooting</a>
+        <a href="#1-mint-a-bearer-token">Mint a Bearer token</a>
+        <a href="#2-configure-the-tts-service">Configure the TTS service</a>
+        <a href="#3-wire-it-into-a-pipeline">Wire it into a pipeline</a>
       </aside>
     </main>
   </div>

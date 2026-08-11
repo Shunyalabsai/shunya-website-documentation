@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>High code: API integration | Shunya Labs Docs</title>
-  <meta name="description" content="Direct REST and WebSocket integration with Shunya Labs. Bearer-token auth, batch HTTP synthesis, real-time streaming, full control.">
+  <meta name="description" content="Direct HTTP integration with Shunya Labs TTS. Mint a Bearer token, call the omni-voice endpoint or the OpenAI-compatible endpoint, full control.">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@1,500;1,600;1,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/web_doc/assets/css/main.css?v=32">
   <script src="/web_doc/assets/js/theme.js"></script>
@@ -17,163 +17,137 @@
           <a href="/web_doc/index.html">Docs</a><span class="sep">/</span><span>Pick your journey</span><span class="sep">/</span><span>High code: API</span>
         </div>
         <div class="persona-label" style="margin-bottom: 0.5rem;">For teams that integrate at the protocol level</div>
-        <h1>Integrate via <span class="accent-italic">REST &amp; WebSocket</span></h1>
-        <p class="lead">No SDK, no abstractions, just HTTP and WebSocket calls with a Bearer token. Pick this path when you need full control, are working in a language without an SDK, or are wiring Shunya into a low-level pipeline (telephony, embedded, custom runtime).</p>
+        <h1>Integrate via <span class="accent-italic">HTTP</span></h1>
+        <p class="lead">No abstractions, just HTTP calls. Mint a short-lived Bearer token from your API key, then call the omni-voice and OpenAI-compatible endpoints directly. Pick this path when you need full control or are working in a language without a client library.</p>
 
         <h2>Your journey</h2>
         <div class="mermaid">graph LR
-  A[1. Get API key] --> B[2. Pick endpoint]
-  B --> C{Batch or<br/>streaming?}
-  C -->|Batch| D[POST /v1/audio/speech]
-  C -->|Streaming| E[WSS /ws/v1/audio/speech]
-  D --> F[3. Handle response]
+  A[1. Get API key] --> B[2. Mint a Bearer token]
+  B --> C{Endpoints}
+  C -->|Standard or LaTeX| D[POST /v1/omni-voice/synthesize]
+  C -->|Voice agents| E[POST /v1/audio/speech]
+  D --> F[3. Handle audio response]
   E --> F
   F --> G[4. Ship to production]
   style A fill:#6366f1,stroke:#4338ca,color:#fff,stroke-width:2px
   style G fill:#6366f1,stroke:#4338ca,color:#fff,stroke-width:2px</div>
 
-        <h2>Step 1: Authentication</h2>
-        <p>All requests use Bearer-token authentication. Every HTTP request and WebSocket handshake must include an <code>Authorization</code> header.</p>
-<pre><code>Authorization: Bearer &lt;your-api-key&gt;</code></pre>
-        <p>Generate the key from the dashboard (API Keys → Create New Key). Copy and store it securely, it will not be shown again.</p>
-        <ul>
-          <li>Never hardcode keys in source, use environment variables or a secrets manager (AWS Secrets Manager, GCP Secret Manager).</li>
-          <li>Add <code>.env</code> to <code>.gitignore</code>.</li>
-          <li>Rotate immediately if a key is compromised.</li>
-          <li>Use separate keys per environment (dev / staging / prod) so you can revoke one without breaking others.</li>
-        </ul>
-
-        <h2>Step 2: Pick your endpoint</h2>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Endpoint</th><th>Protocol</th><th>Use for</th></tr></thead>
-            <tbody>
-              <tr><td><code>POST https://tts.shunyalabs.ai/v1/audio/speech</code></td><td>HTTP</td><td>Batch TTS, pre-rendered prompts, notifications, podcast/audiobook generation.</td></tr>
-              <tr><td><code>wss://tts.shunyalabs.ai/ws/v1/audio/speech</code></td><td>WebSocket</td><td>Streaming TTS, voice agents, IVR, real-time playback.</td></tr>
-              <tr><td><code>GET https://tts.shunyalabs.ai/health</code></td><td>HTTP</td><td>Health check, wire into your deploy smoke tests.</td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <h2>Step 3: Make your first request</h2>
+        <h2>Step 1: Get an API key and mint a Bearer token</h2>
+        <p>Generate an API key from your ShunyaLabs account, then exchange it once for a short-lived Bearer token at <code>POST https://app.shunyalabs.ai/api/auth/token</code>. Send the token as <code>Authorization: Bearer YOUR_TOKEN</code> on every TTS call.</p>
 
         <div class="code-group">
           <div class="code-tabs" role="tablist">
-            <button class="code-tab active">Batch, cURL</button>
-            <button class="code-tab">Batch, Python (<code>requests</code>)</button>
-            <button class="code-tab">Streaming, wscat</button>
+            <button class="code-tab active">cURL</button>
+            <button class="code-tab">Python</button>
           </div>
-
           <div class="code-panel active">
             <div class="code-header"><span>shell</span><button class="copy-btn">Copy</button></div>
-<pre><code class="language-bash">curl -X POST https://tts.shunyalabs.ai/v1/audio/speech \
-  -H "Authorization: Bearer $SHUNYALABS_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "model": "zero-indic",
-    "input": "नमस्ते, यह एक परीक्षण है।",
-    "voice": "Kavita",
-    "language": "hi",
-    "response_format": "wav",
-    "speed": 1.0,
-    "trim_silence": true,
-    "volume_normalization": "loudness"
-  }' \
-  --output output.wav</code></pre>
+<pre><code class="language-bash">curl -X POST 'https://app.shunyalabs.ai/api/auth/token' \
+  -H 'api-key: YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{"expires_in": 86400}'</code></pre>
           </div>
-
           <div class="code-panel">
             <div class="code-header"><span>python</span><button class="copy-btn">Copy</button></div>
-<pre><code class="language-python">import requests
+<pre><code class="language-python">import os, requests
 
-resp = requests.post(
-    "https://tts.shunyalabs.ai/v1/audio/speech",
-    headers={"Authorization": f"Bearer {API_KEY}"},
-    json={
-        "model": "zero-indic",
-        "input": "Hello, how are you today?",
-        "voice": "Varun",
-        "response_format": "mp3",
-    },
-    timeout=120,
-)
-resp.raise_for_status()
-with open("output.mp3", "wb") as f:
-    f.write(resp.content)</code></pre>
-          </div>
-
-          <div class="code-panel">
-            <div class="code-header"><span>shell</span><button class="copy-btn">Copy</button></div>
-<pre><code class="language-bash"># npm install -g wscat
-wscat -c "wss://tts.shunyalabs.ai/ws/v1/audio/speech" \
-  -H "Authorization: Bearer $SHUNYALABS_API_KEY"
-
-# Send a synthesis request
-&gt; {"model": "zero-indic", "input": "Hello!", "voice": "Varun", "response_format": "pcm"}
-
-# Server responds with chunk metadata, binary audio frames, then completion
-&lt; {"type": "chunk", "chunk_index": 0, "format": "pcm", "sample_rate": 16000}
-&lt; [binary audio bytes]
-&lt; {"type": "completion", "total_chunks": 3, "total_duration_seconds": 0.8}</code></pre>
+token = requests.post(
+    "https://app.shunyalabs.ai/api/auth/token",
+    headers={"api-key": os.environ["SHUNYALABS_API_KEY"]},
+    json={"expires_in": 86400},
+).json()["token"]</code></pre>
           </div>
         </div>
 
-        <h2>Step 4: Request parameters that matter</h2>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Parameter</th><th>Type</th><th>Default</th><th>Notes</th></tr></thead>
-            <tbody>
-              <tr><td><code>model</code></td><td>string</td><td>required</td><td>Use <code>"zero-indic"</code> for all Indic + English text.</td></tr>
-              <tr><td><code>input</code> / <code>target_text</code></td><td>string</td><td>required</td><td>Text to synthesize (1-10,000 characters).</td></tr>
-              <tr><td><code>voice</code> / <code>speaker_id</code></td><td>string</td><td>required</td><td>Speaker name. 46 voices across 23 Indic languages, see the <a href="/web_doc/tts/voices.html">voice list</a>.</td></tr>
-              <tr><td><code>response_format</code></td><td>string</td><td><code>mp3</code></td><td><code>pcm</code>, <code>wav</code>, <code>mp3</code>, <code>ogg_opus</code>, <code>flac</code>, <code>mulaw</code>, <code>alaw</code>.</td></tr>
-              <tr><td><code>speed</code></td><td>float</td><td>1.0</td><td>0.25 (slowest) → 4.0 (fastest). Pitch-preserving.</td></tr>
-              <tr><td><code>language</code></td><td>string</td><td>null</td><td>ISO 639 hint for text preprocessing (e.g. <code>"hi"</code>). Optional, model handles mixed scripts natively.</td></tr>
-              <tr><td><code>trim_silence</code></td><td>bool</td><td>false</td><td>Trim leading/trailing silence (-40 dB threshold).</td></tr>
-              <tr><td><code>volume_normalization</code></td><td>string</td><td>null</td><td><code>"peak"</code> (0 dBFS) or <code>"loudness"</code> (EBU R128).</td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <h3>Picking a format</h3>
         <ul>
-          <li><code>mp3</code>: general storage / delivery, widely supported.</li>
-          <li><code>pcm</code> or <code>wav</code>: real-time pipelines, no decoding overhead.</li>
-          <li><code>mulaw</code> / <code>alaw</code>: telephony (IVR, PSTN), 8 kHz.</li>
-          <li><code>ogg_opus</code>: web streaming, lower latency than MP3.</li>
-          <li><code>flac</code>: lossless archival. Avoid for streaming, full file assembly required.</li>
+          <li>Store the API key in a backend or secrets manager, never in source code.</li>
+          <li>Mint the token from the backend and reuse it until near expiry, then refresh.</li>
+          <li>Never send the API key to end-user clients.</li>
+          <li>Rotate immediately if a key is compromised.</li>
         </ul>
 
-        <h2>Step 5: Error handling</h2>
+        <h2>Step 2: Endpoint reference</h2>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Code</th><th>Meaning</th><th>What to do</th></tr></thead>
+            <thead><tr><th>Endpoint</th><th>Use for</th></tr></thead>
             <tbody>
-              <tr><td>400</td><td>Invalid request (missing fields, out-of-range values)</td><td>Validate inputs client-side.</td></tr>
-              <tr><td>401</td><td>Invalid or missing API key</td><td>Check <code>SHUNYALABS_API_KEY</code> and Authorization header.</td></tr>
-              <tr><td>403</td><td>API key lacks required permissions</td><td>Generate a new key with the right scope.</td></tr>
-              <tr><td>422</td><td>Invalid text or configuration</td><td>Check parameter types and ranges.</td></tr>
-              <tr><td>429</td><td>Rate limit hit</td><td>Exponential backoff; concurrent cap is 16 on default tier.</td></tr>
-              <tr><td>5xx / 503</td><td>Transient server / Triton not ready</td><td>Safe to retry with backoff.</td></tr>
-              <tr><td>504</td><td>Timeout (&gt;300s batch, &gt;30s per streaming chunk)</td><td>Split long inputs; check network.</td></tr>
+              <tr><td><code>POST https://app.shunyalabs.ai/api/auth/token</code></td><td>Exchange an API key for a Bearer token.</td></tr>
+              <tr><td><code>POST https://ttsv2.shunyalabs.ai/v1/omni-voice/synthesize</code></td><td>Standard TTS.</td></tr>
+              <tr><td><code>POST https://ttsv2.shunyalabs.ai/v1/omni-voice/synthesize</code> with <code>latex: true</code></td><td>Education TTS with LaTeX content.</td></tr>
+              <tr><td><code>POST https://ttsv2.shunyalabs.ai/v1/audio/speech</code></td><td>OpenAI-compatible, for voice agents and Pipecat.</td></tr>
             </tbody>
           </table>
         </div>
 
-        <h2>Step 6: Ship checklist</h2>
+        <h2>Step 3: Standard TTS</h2>
+        <p>Send the token as <code>Authorization: Bearer YOUR_TOKEN</code> and post the text plus a voice to <code>/v1/omni-voice/synthesize</code>:</p>
+
+        <div class="code-group">
+          <div class="code-tabs" role="tablist">
+            <button class="code-tab active">cURL</button>
+            <button class="code-tab">Python</button>
+          </div>
+          <div class="code-panel active">
+            <div class="code-header"><span>shell</span><button class="copy-btn">Copy</button></div>
+<pre><code class="language-bash">curl -X POST 'https://ttsv2.shunyalabs.ai/v1/omni-voice/synthesize' \
+  -H "Authorization: Bearer $YOUR_TOKEN" \
+  -H 'Content-Type: application/json' \
+  -d '{"text": "Hello, how are you today?", "voice": "Meera"}' \
+  --output hello.wav</code></pre>
+          </div>
+          <div class="code-panel">
+            <div class="code-header"><span>python</span><button class="copy-btn">Copy</button></div>
+<pre><code class="language-python">r = requests.post(
+    "https://ttsv2.shunyalabs.ai/v1/omni-voice/synthesize",
+    headers={"Authorization": f"Bearer {token}"},
+    json={"text": "Hello, how are you today?", "voice": "Meera"},
+    timeout=120,
+)
+r.raise_for_status()
+with open("hello.wav", "wb") as f:
+    f.write(r.content)</code></pre>
+          </div>
+        </div>
+
+        <h2>Step 4: Education TTS (LaTeX)</h2>
+        <p>Use the same endpoint with <code>"latex": true</code> when the input contains LaTeX expressions, and set <code>"language"</code> to identify the content language:</p>
+
+<pre><code class="language-python">r = requests.post(
+    "https://ttsv2.shunyalabs.ai/v1/omni-voice/synthesize",
+    headers={"Authorization": f"Bearer {token}"},
+    json={"text": "If $x^2 = 49$, what is the value of x?", "voice": "Meera", "latex": true, "language": "en"},
+    timeout=120,
+)</code></pre>
+
+        <h2>Step 5: OpenAI-compatible endpoint</h2>
+        <p>For voice agents and Pipecat, use <code>POST https://ttsv2.shunyalabs.ai/v1/audio/speech</code>. Raw PCM output (<code>response_format="pcm"</code>) is useful for streaming and voice-agent pipelines.</p>
+
+<pre><code class="language-bash">curl -X POST 'https://ttsv2.shunyalabs.ai/v1/audio/speech' \
+  -H "Authorization: Bearer $YOUR_TOKEN" \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "model": "tts-1",
+    "input": "Hello, how are you today?",
+    "voice": "Meera",
+    "response_format": "pcm"
+  }' \
+  --output hello.pcm</code></pre>
+
+        <h2>Step 6: Response formats</h2>
+        <p>Select the response format required by your integration as supported by the API. Raw PCM output (<code>response_format="pcm"</code>) is useful for streaming and voice-agent pipelines.</p>
+
+        <h2>Step 7: Ship checklist</h2>
         <ul>
-          <li>✅ API key loaded from environment, never source-controlled</li>
-          <li>✅ HTTP client timeout set to ≥120s for long batch synthesis</li>
-          <li>✅ Errors mapped to user-facing messages (401, 429, 5xx)</li>
-          <li>✅ <code>response_format</code> matched to use case (PCM/μ-law for real-time, MP3 for storage)</li>
-          <li>✅ Reconnect + exponential backoff on WebSocket drops</li>
-          <li>✅ <code>GET /health</code> wired into deploy smoke tests</li>
-          <li>✅ Batch <code>request_id</code> logged for support debugging</li>
+          <li>✅ API key stored server side, never source-controlled</li>
+          <li>✅ Bearer token minted from the backend and reused until near expiry</li>
+          <li>✅ HTTP client timeout set for long synthesis requests</li>
+          <li>✅ <code>response_format</code> matched to the use case (PCM for real-time, otherwise as supported by the API)</li>
+          <li>✅ Credentials kept out of browser code, mobile app bundles, public repositories, and logs</li>
         </ul>
 
         <div class="callout callout-success">
-          <div class="callout-title">Want less boilerplate?</div>
-          The <a href="/web_doc/personas/sdk.html">Python SDK</a> wraps these endpoints with typed config, async streaming generators, and built-in error classes. Same protocol, fewer lines.
+          <div class="callout-title">Already using the OpenAI SDK?</div>
+          You can keep your code and just change the <code>base_url</code>. See <a href="/web_doc/personas/openai-compatible.html">OpenAI compatible</a>.
         </div>
 
         <div class="pager">
@@ -183,7 +157,7 @@ wscat -c "wss://tts.shunyalabs.ai/ws/v1/audio/speech" \
           </a>
           <a class="pager-link pager-right" href="/web_doc/personas/sdk.html">
             <div class="pager-label">Next →</div>
-            <div class="pager-title">Small code: SDK</div>
+            <div class="pager-title">Small code: Python</div>
           </a>
         </div>
       </div>

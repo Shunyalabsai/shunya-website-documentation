@@ -147,56 +147,79 @@ print(r.text)</code></pre>
 }</code></pre>
 
         <h2>3. Generate speech</h2>
-        <p>Now send text to <code>POST /v1/audio/speech</code>. The response body is audio bytes in your requested format.</p>
+        <p>TTS authenticates with a <strong>Bearer token</strong>: exchange your API key once at <code>POST https://app.shunyalabs.ai/api/auth/token</code>, then call the Omni Voice synthesis endpoint. The response body is audio bytes.</p>
 
         <div class="code-group">
           <div class="code-tabs" role="tablist">
             <button class="code-tab active">cURL</button>
             <button class="code-tab">Python</button>
-            <button class="code-tab">Python SDK</button>
+            <button class="code-tab">OpenAI-compatible</button>
           </div>
           <div class="code-panel active">
             <div class="code-header"><span>shell</span><button class="copy-btn">Copy</button></div>
-            <pre><code class="language-bash">curl -X POST https://tts.shunyalabs.ai/v1/audio/speech \
-  -H "Authorization: Bearer $SHUNYALABS_API_KEY" \
+            <pre><code class="language-bash"># 1. Mint a Bearer token (POST /api/auth/token)
+curl -X POST 'https://app.shunyalabs.ai/api/auth/token' \
+  -H 'api-key: YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{"expires_in": 86400}'
+# → { "token": "&lt;your_token&gt;", ... }
+
+# 2. Synthesize with the token
+export YOUR_TOKEN="&lt;your_token&gt;"
+curl -X POST 'https://ttsv2.shunyalabs.ai/v1/omni-voice/synthesize' \
+  -H "Authorization: Bearer $YOUR_TOKEN" \
   -H "Content-Type: application/json" \
-  -d '{"model":"zero-indic","input":"Hello, how are you today?","voice":"Varun"}' \
-  --output hello.mp3</code></pre>
+  -d '{"text":"Hello, how are you today?","voice":"Meera"}' \
+  --output hello.wav</code></pre>
           </div>
           <div class="code-panel">
             <div class="code-header"><span>python</span><button class="copy-btn">Copy</button></div>
             <pre><code class="language-python">import os, requests
 
+# 1. Mint a Bearer token (POST /api/auth/token)
+token = requests.post(
+    "https://app.shunyalabs.ai/api/auth/token",
+    headers={"api-key": os.environ["SHUNYALABS_API_KEY"]},
+    json={"expires_in": 86400},
+).json()["token"]
+
+# 2. Synthesize with the token
 r = requests.post(
-    "https://tts.shunyalabs.ai/v1/audio/speech",
-    headers={"Authorization": f"Bearer {os.environ['SHUNYALABS_API_KEY']}"},
-    json={"model": "zero-indic", "input": "Hello, how are you today?", "voice": "Varun"},
+    "https://ttsv2.shunyalabs.ai/v1/omni-voice/synthesize",
+    headers={"Authorization": f"Bearer {token}"},
+    json={"text": "Hello, how are you today?", "voice": "Meera"},
     timeout=120,
 )
 r.raise_for_status()
-with open("hello.mp3", "wb") as f:
+with open("hello.wav", "wb") as f:
     f.write(r.content)</code></pre>
           </div>
           <div class="code-panel">
-            <div class="code-header"><span>shunyalabs SDK</span><button class="copy-btn">Copy</button></div>
-            <pre><code class="language-python">import asyncio
-from shunyalabs import AsyncShunyaClient
-from shunyalabs.tts import TTSConfig
+            <div class="code-header"><span>openai SDK</span><button class="copy-btn">Copy</button></div>
+            <pre><code class="language-python">import os, requests
+from openai import OpenAI
 
-async def main():
-    async with AsyncShunyaClient() as client:
-        result = await client.tts.synthesize(
-            "Hello, how are you today?",
-            config=TTSConfig(model="zero-indic", voice="Varun"),
-        )
-        result.save("hello.mp3")
+# 1. Mint a Bearer token (POST /api/auth/token)
+token = requests.post(
+    "https://app.shunyalabs.ai/api/auth/token",
+    headers={"api-key": os.environ["SHUNYALABS_API_KEY"]},
+    json={"expires_in": 86400},
+).json()["token"]
 
-asyncio.run(main())</code></pre>
+# 2. Synthesize with the token
+client = OpenAI(api_key=token, base_url="https://ttsv2.shunyalabs.ai/v1")
+resp = client.audio.speech.create(
+    model="tts-1",
+    input="Hello, how are you today?",
+    voice="Meera",
+    response_format="pcm",
+)
+resp.stream_to_file("hello.pcm")</code></pre>
           </div>
         </div>
 
-        <h2>4. Stream in real time</h2>
-        <p>For voice agents and IVR, both ASR and TTS support streaming over WebSocket, see <a href="/web_doc/asr/streaming.html">ASR streaming</a> and <a href="/web_doc/tts/streaming.html">TTS streaming</a>. You get partial transcripts as speech is happening, and synthesized audio as text is generated.</p>
+        <h2>4. Stream for voice agents</h2>
+        <p>ASR streams live audio over WebSocket, see <a href="/web_doc/asr/streaming.html">ASR streaming</a>. On the TTS side, the OpenAI-compatible <code>POST /v1/audio/speech</code> endpoint returns raw PCM audio, which is useful for streaming and voice-agent pipelines. See the <a href="/web_doc/tts/llm-to-tts.html">LLM → TTS pipeline</a> for the sentence-by-sentence pattern.</p>
 
 
         <div class="pager">

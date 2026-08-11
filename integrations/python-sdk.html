@@ -3,8 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Python SDK | Shunya Labs Docs</title>
-  <meta name="description" content="The shunyalabs Python package, install options, AsyncShunyaClient configuration, error handling.">
+  <title>Python | Shunya Labs Docs</title>
+  <meta name="description" content="Call ShunyaLabs TTS from Python: mint a Bearer token, then use requests for the omni-voice endpoint or the OpenAI SDK for the compatible endpoint.">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@1,500;1,600;1,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/web_doc/assets/css/main.css?v=32">
   <script src="/web_doc/assets/js/theme.js"></script>
@@ -14,134 +14,92 @@
     <main class="main">
       <div class="content">
         <div class="breadcrumb">
-          <a href="/web_doc/index.html">Docs</a><span class="sep">/</span><span>Integrations</span><span class="sep">/</span><span>Python SDK</span>
+          <a href="/web_doc/index.html">Docs</a><span class="sep">/</span><span>Integrations</span><span class="sep">/</span><span>Python</span>
         </div>
-        <h1>Python <span class="accent-italic">SDK</span></h1>
-        <p class="lead">First-party Python package for Shunya Labs. Async client, async generators for streaming, automatic retries, override URLs for self-hosted deployments.</p>
+        <h1>Python <span class="accent-italic">integration</span></h1>
+        <p class="lead">Integrate ShunyaLabs TTS from Python without a custom SDK. Mint a short-lived Bearer token, then call the omni-voice endpoint with <code>requests</code>, or point the OpenAI Python SDK at the compatible endpoint.</p>
 
-        <h2>Install</h2>
-<pre><code># TTS only
-pip install shunyalabs[TTS]
+        <h2>1. Mint a Bearer token</h2>
+        <p>Exchange your API key for a short-lived Bearer token at <code>POST https://app.shunyalabs.ai/api/auth/token</code>. Keep the API key on the server side; never send it to end-user clients.</p>
 
-# TTS + ASR + all features
-pip install shunyalabs[all]
+        <div class="code-group">
+          <div class="code-tabs" role="tablist">
+            <button class="code-tab active">Python</button>
+            <button class="code-tab">cURL</button>
+          </div>
+          <div class="code-panel active">
+            <div class="code-header"><span>python</span><button class="copy-btn">Copy</button></div>
+<pre><code class="language-python">import os, requests
 
-# Audio playback helpers (sounddevice)
-pip install shunyalabs[extras]</code></pre>
+token = requests.post(
+    "https://app.shunyalabs.ai/api/auth/token",
+    headers={"api-key": os.environ["SHUNYALABS_API_KEY"]},
+    json={"expires_in": 86400},  # lifetime in seconds, example 24 h
+).json()["token"]</code></pre>
+          </div>
+          <div class="code-panel">
+            <div class="code-header"><span>shell</span><button class="copy-btn">Copy</button></div>
+<pre><code class="language-bash">curl -X POST 'https://app.shunyalabs.ai/api/auth/token' \
+  -H 'api-key: YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{"expires_in": 86400}'</code></pre>
+          </div>
+        </div>
 
-        <h3>Minimum requirements</h3>
-        <ul>
-          <li>Python 3.8 or higher.</li>
-          <li>An active Shunyalabs API key.</li>
-        </ul>
+        <div class="callout callout-warn">
+          <div class="callout-title">Keep credentials on the server side</div>
+          Do not expose API keys or auth tokens in browser code, mobile app bundles, public repositories, or logs.
+        </div>
 
-        <h2>Client setup</h2>
-        <p>The client reads <code>SHUNYALABS_API_KEY</code> from the environment by default.</p>
+        <h2>2. Standard TTS</h2>
+        <p>Send the token as <code>Authorization: Bearer YOUR_TOKEN</code> and call <code>POST https://ttsv2.shunyalabs.ai/v1/omni-voice/synthesize</code>.</p>
 
-<pre><code>from shunyalabs import AsyncShunyaClient
-from shunyalabs.tts import TTSConfig
-
-# Option 1, env var (recommended)
-client = AsyncShunyaClient()
-
-# Option 2, explicit key
-client = AsyncShunyaClient(api_key="your-api-key")
-
-# Option 3, full configuration for production
-client = AsyncShunyaClient(
-    api_key="your-api-key",
-    timeout=120.0,    # seconds before request times out
-    max_retries=3,    # retries on 5xx and connection errors
+<pre><code class="language-python">r = requests.post(
+    "https://ttsv2.shunyalabs.ai/v1/omni-voice/synthesize",
+    headers={"Authorization": f"Bearer {token}"},
+    json={"text": "Hello, how are you today?", "voice": "Meera"},
+    timeout=120,
 )
+r.raise_for_status()
+with open("hello.wav", "wb") as f:
+    f.write(r.content)</code></pre>
 
-# Use as async context manager to ensure connection cleanup
-async with AsyncShunyaClient() as client:
-    result = await client.tts.synthesize("Hello!", config=config)</code></pre>
+        <h2>3. Education TTS (LaTeX)</h2>
+        <p>Add <code>"latex": true</code> when the input contains LaTeX expressions, and <code>"language"</code> to identify the content language:</p>
 
-        <h2>Configuration reference</h2>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Parameter</th><th>Type</th><th>Default</th><th>Description</th></tr></thead>
-            <tbody>
-              <tr><td><code>api_key</code></td><td>string</td><td>None</td><td>Falls back to <code>SHUNYALABS_API_KEY</code> if not set.</td></tr>
-              <tr><td><code>timeout</code></td><td>float</td><td>60.0</td><td>Request timeout in seconds.</td></tr>
-              <tr><td><code>max_retries</code></td><td>int</td><td>2</td><td>Retries for 5xx and connection failures.</td></tr>
-              <tr><td><code>tts_url</code></td><td>string</td><td><code>https://tts.shunyalabs.ai</code></td><td>Override for self-hosted deployments.</td></tr>
-              <tr><td><code>tts_ws_url</code></td><td>string</td><td><code>wss://tts.shunyalabs.ai/ws/v1/audio/speech</code></td><td>Streaming WebSocket URL override.</td></tr>
-            </tbody>
-          </table>
-        </div>
-
-        <h3>Self-hosted / on-premise deployment</h3>
-<pre><code>client = AsyncShunyaClient(
-    api_key="your-api-key",
-    tts_url="https://my-tts-server.example.com",
-    tts_ws_url="wss://my-tts-server.example.com/ws",
+<pre><code class="language-python">r = requests.post(
+    "https://ttsv2.shunyalabs.ai/v1/omni-voice/synthesize",
+    headers={"Authorization": f"Bearer {token}"},
+    json={"text": "If $x^2 = 49$, what is the value of x?", "voice": "Meera", "latex": true, "language": "en"},
+    timeout=120,
 )</code></pre>
 
-        <h2>Environment variables</h2>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Variable</th><th>Description</th></tr></thead>
-            <tbody>
-              <tr><td><code>SHUNYALABS_API_KEY</code></td><td>API key for authentication.</td></tr>
-              <tr><td><code>SHUNYALABS_TTS_URL</code></td><td>Override the TTS batch API base URL.</td></tr>
-              <tr><td><code>SHUNYALABS_TTS_WS_URL</code></td><td>Override the TTS streaming WebSocket URL.</td></tr>
-            </tbody>
-          </table>
-        </div>
+        <h2>4. OpenAI-compatible endpoint</h2>
+        <p>For voice-agent and Pipecat pipelines, point the official OpenAI Python SDK at the ShunyaLabs compatible endpoint <code>POST https://ttsv2.shunyalabs.ai/v1/audio/speech</code>. Raw PCM output (<code>response_format="pcm"</code>) is useful for streaming and voice-agent pipelines.</p>
 
-        <h2>Error handling</h2>
-        <p>All exceptions inherit from <code>ShunyalabsError</code> in <code>shunyalabs.exceptions</code>.</p>
+<pre><code class="language-python">from openai import OpenAI
 
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Exception</th><th>HTTP status</th><th>Description</th></tr></thead>
-            <tbody>
-              <tr><td><code>AuthenticationError</code></td><td>401</td><td>Invalid or missing API key.</td></tr>
-              <tr><td><code>PermissionDeniedError</code></td><td>403</td><td>API key lacks required permissions.</td></tr>
-              <tr><td><code>RateLimitError</code></td><td>429</td><td>Rate limit exceeded. Back off and retry.</td></tr>
-              <tr><td><code>SynthesisError</code></td><td>422</td><td>Invalid text or configuration.</td></tr>
-              <tr><td><code>ServerError</code></td><td>5xx</td><td>Transient server error. Safe to retry.</td></tr>
-              <tr><td><code>TimeoutError</code></td><td>-</td><td>Request exceeded configured timeout.</td></tr>
-              <tr><td><code>ConnectionError</code></td><td>-</td><td>Network connectivity failure.</td></tr>
-            </tbody>
-          </table>
-        </div>
+client = OpenAI(api_key=token, base_url="https://ttsv2.shunyalabs.ai/v1")
 
-<pre><code>from shunyalabs.exceptions import (
-    AuthenticationError, RateLimitError,
-    SynthesisError, ServerError, ShunyalabsError,
+resp = client.audio.speech.create(
+    model="tts-1",
+    input="Hello, how are you today?",
+    voice="Meera",
+    response_format="pcm",
 )
+resp.stream_to_file("hello.pcm")</code></pre>
 
-try:
-    result = await client.tts.synthesize("Hello!", config=config)
-except AuthenticationError:
-    print("Invalid API key, check SHUNYALABS_API_KEY")
-except RateLimitError:
-    print("Rate limit hit, back off and retry")
-except SynthesisError as e:
-    print(f"Synthesis failed: {e}")
-except ServerError:
-    print("Server error, safe to retry")
-except ShunyalabsError as e:
-    print(f"SDK error: {e}")</code></pre>
+        <p>Select the response format required by your integration as supported by the API. See <a href="/web_doc/tts/api-reference.html">TTS API reference</a> for the full flow and the <a href="/web_doc/tts/api-reference.html#pipecat">Pipecat example</a>.</p>
 
-        <h2>Security best practices</h2>
+        <h2>5. Security best practices</h2>
         <ul>
-          <li>Never hardcode API keys in source code.</li>
-          <li>Use <code>.env</code> files locally and a secrets manager (AWS Secrets Manager, GCP Secret Manager) in production.</li>
+          <li>Store the API key in a backend or secrets manager, not in source code.</li>
+          <li>Mint the Bearer token from the backend and reuse it until near expiry, then refresh.</li>
+          <li>Never send the API key to end-user clients.</li>
           <li>Add <code>.env</code> to <code>.gitignore</code> to prevent accidental commits.</li>
-          <li>Rotate keys immediately if compromised, generate a new key from the dashboard.</li>
         </ul>
 
-        <h2>Source &amp; further reading</h2>
-        <ul>
-          <li>GitHub: <a href="https://github.com/Shunyalabsai/shunyalabs-python-sdk" target="_blank" rel="noopener">github.com/Shunyalabsai/shunyalabs-python-sdk</a></li>
-          <li>Pingala (ASR) PyPI package: <a href="https://pypi.org/project/pingala-shunya" target="_blank" rel="noopener">pypi.org/project/pingala-shunya</a></li>
-        </ul>
-
-        <p class="text-subtle">Source: Shunyalabs TTS Developer Documentation v1.0 (March 2026), §1.2 Authentication, §2.5 Error handling, §12.1 Python SDK. Reproduced verbatim.</p>
+        <p class="text-subtle">Source: ShunyaLabs TTS API Integration Guide.</p>
 
         <div class="pager">
           <a class="pager-link" href="/web_doc/integrations/overview.html">

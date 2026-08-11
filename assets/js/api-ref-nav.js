@@ -57,9 +57,9 @@
         label: 'Text-to-Speech',
         open: true,
         items: [
-          { method: 'POST', label: 'Single Text Request', path: '/tts/api-reference.html#post-speech' },
-          { method: 'WSS', label: 'Continuous Text Stream', path: '/tts/api-reference.html#websocket' },
-          { method: 'GET', label: '/health', path: '/tts/api-reference.html#health' },
+          { method: 'POST', label: 'Auth (token)', path: '/tts/api-reference.html#authentication' },
+          { method: 'POST', label: 'Omni Voice (synthesize)', path: '/tts/api-reference.html#post-synthesize' },
+          { method: 'POST', label: 'OpenAI-compatible (audio/speech)', path: '/tts/api-reference.html#post-speech' },
         ],
       },
     ],

@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>OpenAI SDK | Shunya Labs Docs</title>
-  <meta name="description" content="The Shunya Labs TTS API is OpenAI-compatible, use the official OpenAI Python SDK as a drop-in client.">
+  <meta name="description" content="The ShunyaLabs TTS API is OpenAI-compatible, use the official OpenAI Python SDK as a drop-in client for POST /v1/audio/speech.">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@1,500;1,600;1,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/web_doc/assets/css/main.css?v=32">
   <script src="/web_doc/assets/js/theme.js"></script>
@@ -17,42 +17,50 @@
           <a href="/web_doc/index.html">Docs</a><span class="sep">/</span><span>Integrations</span><span class="sep">/</span><span>OpenAI SDK</span>
         </div>
         <h1>OpenAI SDK <span class="accent-italic">(compatible)</span></h1>
-        <p class="lead">Shunya Labs' TTS API is OpenAI-compatible. You can use the official OpenAI Python SDK by pointing <code>base_url</code> to the Shunya Labs endpoint, no other client changes needed.</p>
+        <p class="lead">ShunyaLabs' voice-agent TTS endpoint is OpenAI-compatible. You can use the official OpenAI Python SDK by pointing <code>base_url</code> to the ShunyaLabs endpoint and passing your Bearer token, no other client changes needed.</p>
 
         <h2>Why this is useful</h2>
         <ul>
-          <li>You're already using <code>openai.audio.speech.create()</code> and you want to switch to Shunya without rewriting your call sites.</li>
+          <li>You're already using <code>openai.audio.speech.create()</code> and you want to switch to ShunyaLabs without rewriting your call sites.</li>
           <li>You want to A/B test voices across providers from one client interface.</li>
           <li>Your team standardised on the OpenAI SDK and prefers not to maintain a second SDK.</li>
         </ul>
+
+        <h2>Authenticate first</h2>
+        <p>Generate an API key from your ShunyaLabs account, then exchange it for a short-lived Bearer token at <code>POST /api/auth/token</code>. Pass the token as <code>api_key</code>; the SDK sets the <code>Authorization</code> header for you. Keep the API key on the server side; never send it to end-user clients.</p>
+
+<pre><code>curl -X POST 'https://app.shunyalabs.ai/api/auth/token' \
+  -H 'api-key: YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{"expires_in": 86400}'</code></pre>
 
         <h2>Drop-in code sample</h2>
 <pre><code>from openai import OpenAI
 
 client = OpenAI(
-    api_key="YOUR_API_KEY",
-    base_url="https://tts.shunyalabs.ai/v1",
+    api_key="YOUR_TOKEN",
+    base_url="https://ttsv2.shunyalabs.ai/v1",
 )
 
 response = client.audio.speech.create(
-    model="zero-indic",
+    model="tts-1",
     input="Hello, how are you today?",
-    voice="Varun",
-    response_format="mp3",
+    voice="Meera",
+    response_format="pcm",
 )
 
-response.stream_to_file("output.mp3")</code></pre>
+response.stream_to_file("output.pcm")</code></pre>
 
         <h2>Field mapping</h2>
-        <p>The OpenAI Python SDK's <code>audio.speech.create()</code> arguments map cleanly onto Shunya's <code>POST /v1/audio/speech</code> body:</p>
+        <p>The OpenAI Python SDK's <code>audio.speech.create()</code> arguments map cleanly onto ShunyaLabs' <code>POST /v1/audio/speech</code> body:</p>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>OpenAI SDK argument</th><th>Shunya field</th><th>Notes</th></tr></thead>
+            <thead><tr><th>OpenAI SDK argument</th><th>ShunyaLabs field</th><th>Notes</th></tr></thead>
             <tbody>
-              <tr><td><code>model</code></td><td><code>model</code></td><td>Use <code>"zero-indic"</code>.</td></tr>
-              <tr><td><code>input</code></td><td><code>input</code></td><td>The text to synthesize. Up to 10,000 characters.</td></tr>
-              <tr><td><code>voice</code></td><td><code>voice</code></td><td>Any of the 46 Shunya voices, see <a href="/web_doc/tts/voices.html">Voices &amp; languages</a>.</td></tr>
-              <tr><td><code>response_format</code></td><td><code>response_format</code></td><td><code>mp3</code>, <code>wav</code>, <code>pcm</code>, <code>ogg_opus</code>, <code>flac</code>, <code>mulaw</code>, <code>alaw</code>.</td></tr>
+              <tr><td><code>model</code></td><td><code>model</code></td><td>Use <code>tts-1</code>.</td></tr>
+              <tr><td><code>input</code></td><td><code>input</code></td><td>The text to synthesize.</td></tr>
+              <tr><td><code>voice</code></td><td><code>voice</code></td><td>A ShunyaLabs voice (for example, <code>Meera</code>). For Pipecat use an OpenAI-compatible voice name such as <code>nova</code>.</td></tr>
+              <tr><td><code>response_format</code></td><td><code>response_format</code></td><td>As supported by the API; raw PCM is useful for streaming and voice-agent pipelines.</td></tr>
             </tbody>
           </table>
         </div>
@@ -64,20 +72,17 @@ response.stream_to_file("output.mp3")</code></pre>
           <li>Same error types your code already catches.</li>
         </ul>
 
-        <h2>What you give up</h2>
-        <p>The OpenAI SDK only exposes the parameters in the OpenAI spec. Shunya-specific parameters, voice cloning (<code>reference_wav</code>, <code>reference_text</code>), <code>speed</code>, <code>language</code>, <code>trim_silence</code>, <code>volume_normalization</code>, <code>background_audio</code>, <code>word_timestamps</code>, <code>max_tokens</code>: aren't accepted by the OpenAI SDK signature. To use those, switch to the <a href="/web_doc/integrations/python-sdk.html">Shunya Python SDK</a> or call the REST endpoint directly.</p>
-
         <div class="callout callout-info">
-          <div class="callout-title">Streaming via the OpenAI SDK</div>
-          For real-time / streaming synthesis, use Shunya's WebSocket endpoint at <code>wss://tts.shunyalabs.ai/ws/v1/audio/speech</code>: that path is not OpenAI-compatible. See <a href="/web_doc/tts/streaming.html">TTS streaming</a>.
+          <div class="callout-title">Streaming and voice agents</div>
+          Request raw PCM output (<code>response_format="pcm"</code>) and stream the bytes to your pipeline; this is the recommended path for real-time voice-agent frameworks and Pipecat. See the <a href="/web_doc/tts/api-reference.html#pipecat">Pipecat example</a> and the <a href="/web_doc/tts/llm-to-tts.html">LLM → TTS pipeline</a>.
         </div>
 
-        <p class="text-subtle">Source: Shunyalabs TTS Developer Documentation v1.0 (March 2026), §2.2 Your First Request → "OpenAI Python SDK (compatible)". Code reproduced verbatim.</p>
+        <p class="text-subtle">Source: ShunyaLabs TTS API Integration Guide, §4 Voice Agent / OpenAI-Compatible TTS. Examples reproduced from the guide.</p>
 
         <div class="pager">
           <a class="pager-link" href="/web_doc/integrations/python-sdk.html">
             <div class="pager-label">← Previous</div>
-            <div class="pager-title">Python SDK</div>
+            <div class="pager-title">Python</div>
           </a>
           <a class="pager-link pager-right" href="/web_doc/integrations/sip-pstn.html">
             <div class="pager-label">Next →</div>

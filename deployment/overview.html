@@ -24,7 +24,7 @@
           <a href="#cloud-api" class="card-link"><div class="card">
             <div style="margin-bottom: 0.625rem;"><span class="pill pill-green">Fastest to start</span></div>
             <div class="card-title">Cloud API</div>
-            <p class="card-desc">Managed endpoints at <code>asrv2prod.shunyalabs.ai</code> (ASR) and <code>tts.shunyalabs.ai</code> (TTS). Bearer token auth. Auto-scaled, 99.9% SLA.</p>
+            <p class="card-desc">Managed endpoints at <code>asrv2prod.shunyalabs.ai</code> (ASR) and <code>ttsv2.shunyalabs.ai</code> (TTS). Exchange your API key for a Bearer token. Auto-scaled, 99.9% SLA.</p>
             <p class="small"><strong>Picks when:</strong> prototypes, SaaS products, latency is acceptable over WAN.</p>
             <span class="card-cta">Read the Cloud API guide <span class="card-cta-arrow">→</span></span>
           </div></a>
@@ -41,10 +41,11 @@
         <p>The fastest path. Sign up → get API key → start calling. All features available, including the intelligence layer.</p>
 
         <h3>Endpoints</h3>
-<pre><code>ASR batch:     https://asrv2prod.shunyalabs.ai/v1/audio/transcriptions
-ASR streaming: wss://asrv2prod.shunyalabs.ai/v1/realtime
-TTS batch:     https://tts.shunyalabs.ai/v1/audio/speech
-TTS streaming: wss://tts.shunyalabs.ai/ws/v1/audio/speech</code></pre>
+<pre><code>ASR batch:          https://asrv2prod.shunyalabs.ai/v1/audio/transcriptions
+ASR streaming:      wss://asrv2prod.shunyalabs.ai/v1/realtime
+TTS auth (token):   https://app.shunyalabs.ai/api/auth/token
+TTS omni-voice:     https://ttsv2.shunyalabs.ai/v1/omni-voice/synthesize
+TTS OpenAI-compat:  https://ttsv2.shunyalabs.ai/v1/audio/speech</code></pre>
 
         <h3>SLA &amp; regions</h3>
         <ul>
@@ -80,12 +81,18 @@ TTS streaming: wss://tts.shunyalabs.ai/ws/v1/audio/speech</code></pre>
   end
   style B fill:#6366f1,stroke:#4338ca,color:#fff,stroke-width:2px</div>
 
-        <h3>SDK pointed at self-hosted</h3>
-<pre><code>client = AsyncShunyaClient(
-    api_key="your-api-key",
-    tts_url="https://voice.yourcompany.internal",
-    tts_ws_url="wss://voice.yourcompany.internal/ws",
-)</code></pre>
+        <h3>Calling the API</h3>
+        <p>Mint a Bearer token from your API key, then call the TTS endpoints:</p>
+<pre><code>curl -X POST 'https://app.shunyalabs.ai/api/auth/token' \
+  -H 'api-key: YOUR_API_KEY' \
+  -H 'Content-Type: application/json' \
+  -d '{"expires_in": 86400}'
+
+curl -X POST 'https://ttsv2.shunyalabs.ai/v1/omni-voice/synthesize' \
+  -H "Authorization: Bearer $YOUR_TOKEN" \
+  -H 'Content-Type: application/json' \
+  -d '{"text": "Hello, how are you today?", "voice": "Meera"}' \
+  --output hello.wav</code></pre>
 
         <h2>The only models of their kind <span class="accent-italic">on Hugging Face</span></h2>
         <p>For environments with no network connectivity to the internet, defence, offline kiosks, mobile edge, air-gapped labs. Open weights from Shunya's <a class="hf-model-link" href="https://huggingface.co/shunyalabs" target="_blank" rel="noopener">Hugging Face organization</a>, run on commodity x86.</p>

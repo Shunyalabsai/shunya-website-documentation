@@ -25,9 +25,9 @@
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
             </div>
             <div class="int-body">
-              <div class="int-title">Python SDK</div>
-              <p class="int-desc">First-party <code>shunyalabs</code> package on PyPI. <code>AsyncShunyaClient</code> with async/await, retries, and override URLs for self-hosted deployments.</p>
-              <span class="int-pill">First-party</span>
+              <div class="int-title">Python</div>
+              <p class="int-desc">Call Shunya TTS from Python. Mint a Bearer token, then <code>requests</code> for the omni-voice endpoint or the OpenAI SDK for the compatible endpoint.</p>
+              <span class="int-pill">HTTP</span>
             </div>
           </a>
 
@@ -48,7 +48,7 @@
             </div>
             <div class="int-body">
               <div class="int-title">SIP / PSTN</div>
-              <p class="int-desc">Generic telephony pipelines. <code>mulaw</code> for North American and Indian PSTN; <code>alaw</code> for European telephony and many SIP providers.</p>
+              <p class="int-desc">Telephony pipelines. ASR streams raw PCM over WebSocket; TTS returns raw PCM (<code>response_format="pcm"</code>) on the OpenAI-compatible endpoint.</p>
               <span class="int-pill">Telephony</span>
             </div>
           </a>
@@ -71,7 +71,7 @@
             </div>
             <div class="int-body">
               <div class="int-title">Pipecat</div>
-              <p class="int-desc">Native <code>ShunyalabsSTTService</code> and <code>ShunyalabsTTSService</code> for Pipecat pipelines. Real-time streaming ASR and 46 speakers across 23 languages, drop-in with any Pipecat transport.</p>
+              <p class="int-desc">Use Shunya TTS in a Pipecat voice agent with <code>OpenAITTSService</code>, pointed at the Shunya compatible endpoint with the Bearer token as <code>api_key</code>.</p>
               <span class="int-pill">Voice agents</span>
             </div>
           </a>
@@ -83,7 +83,7 @@
             </div>
             <div class="int-body">
               <div class="int-title">LiveKit</div>
-              <p class="int-desc">Official <code>livekit-plugins-shunyalabs</code> package. Plug <code>shunyalabs.STT</code> and <code>shunyalabs.TTS</code> directly into a LiveKit <code>AgentSession</code> with streaming and batch support.</p>
+              <p class="int-desc">Run Shunya ASR and TTS inside LiveKit Agents. STT streams over the Shunya realtime endpoint, TTS uses the OpenAI-compatible endpoint pointed at Shunya.</p>
               <span class="int-pill">Voice agents</span>
             </div>
           </a>
@@ -96,7 +96,7 @@
           </a>
           <a class="pager-link pager-right" href="/web_doc/integrations/python-sdk.html">
             <div class="pager-label">Next →</div>
-            <div class="pager-title">Python SDK</div>
+            <div class="pager-title">Python</div>
           </a>
         </div>
       </div>

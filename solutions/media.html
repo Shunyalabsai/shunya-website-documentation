@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Media &amp; entertainment | Shunya Labs Docs</title>
-  <meta name="description" content="Shunya Labs in media, batch ASR with word timestamps, Vāķ translation, Zero TTS voice cloning.">
+  <meta name="description" content="Shunya Labs in media, batch ASR with word timestamps, Vāķ translation, Zero TTS.">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@1,500;1,600;1,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/web_doc/assets/css/main.css?v=32">
   <script src="/web_doc/assets/js/theme.js"></script>
@@ -41,13 +41,8 @@
               </tr>
               <tr>
                 <td>Dubbing &amp; voiceover</td>
-                <td>Zero TTS, 23 Indic languages + English, 46 voices, 11 expression styles</td>
-                <td>TTS docs §5</td>
-              </tr>
-              <tr>
-                <td>Voice cloning</td>
-                <td><code>reference_wav</code> + <code>reference_text</code>: clone from a 1-6 second sample, works across all 23 supported Indic languages</td>
-                <td>TTS docs §6</td>
+                <td>Zero TTS via the omni-voice synthesize endpoint (standard or education with LaTeX); voice and language support is confirmed per client plan</td>
+                <td>TTS API Integration Guide</td>
               </tr>
               <tr>
                 <td>Subtitle file output</td>
@@ -64,12 +59,7 @@
         </div>
 
 
-        <div class="callout callout-warn">
-          <div class="callout-title">Voice cloning consent</div>
-          When dubbing with a cloned voice, confirm you have rights, both the original recording's rights and written consent from the voice owner to synthesize. This is both a legal and reputational bar.
-        </div>
-
-        <p class="text-subtle">Source: Shunya Labs website (Media &amp; Entertainment vertical), ASR Gateway API Reference, TTS Developer Documentation §5 + §6, Vāķ Translate model card on Hugging Face. Specific production pipelines, ROI estimates, and tooling integrations are not officially published by Shunya.</p>
+        <p class="text-subtle">Source: Shunya Labs website (Media &amp; Entertainment vertical), ASR Gateway API Reference, ShunyaLabs TTS API Integration Guide, Vāķ Translate model card on Hugging Face. Specific production pipelines, ROI estimates, and tooling integrations are not officially published by Shunya.</p>
 
         <div class="pager">
           <a class="pager-link" href="/web_doc/solutions/contact-centers.html">

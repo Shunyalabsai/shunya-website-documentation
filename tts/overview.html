@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>TTS overview | Shunya Labs Docs</title>
-  <meta name="description" content="Zero TTS overview: 46 voices, 23 Indic languages, 11 expression styles, voice cloning.">
+  <meta name="description" content="ShunyaLabs Text-to-Speech: standard omni-voice synthesis, education LaTeX TTS, and the OpenAI-compatible voice-agent endpoint.">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@1,500;1,600;1,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/web_doc/assets/css/main.css?v=37">
   <script src="/web_doc/assets/js/theme.js"></script>
@@ -17,225 +17,106 @@
           <a href="/web_doc/index.html">Docs</a><span class="sep">/</span><span>Text-to-Speech</span><span class="sep">/</span><span>Overview</span>
         </div>
         <h1>Text-to-Speech <span class="accent-italic">(TTS)</span></h1>
-        <p class="lead">Zero TTS is Shunya's speech synthesis family. 46 speaker voices across 23 Indic languages and English. Every voice can speak every language. 11 expression styles. Voice cloning from a 3-6 second reference clip.</p>
+        <p class="lead">ShunyaLabs TTS turns text into spoken audio. The recommended integration path covers standard omni-voice synthesis, education LaTeX TTS for math content, and an OpenAI-compatible voice-agent endpoint for Pipecat and similar frameworks. Every call authenticates with a short-lived Bearer token minted from your API key.</p>
 
-        <h2>How it fits together</h2>
-        <div class="mermaid">graph LR
-  A[Text] --> B{Mode}
-  B -->|Batch| C[POST /v1/audio/speech]
-  B -->|Streaming| D[WSS /ws/v1/audio/speech]
-  C --> E[Audio file<br/>mp3, wav, pcm, ...]
-  D --> F[Audio chunks<br/>played incrementally]
-  G[Voice + Style + Speed] -.-> C
-  G -.-> D
-  style C fill:#6366f1,stroke:#4338ca,color:#fff,stroke-width:2px
-  style D fill:#6366f1,stroke:#4338ca,color:#fff,stroke-width:2px</div>
-
-        <h2 id="batch-vs-streaming">Batch vs Streaming</h2>
-        <p>Two synthesis modes are available. Same model, same voices, different transport and different "when does the first byte of audio leave the server."</p>
-
-        <div class="bs-compare">
-          <!-- BATCH -->
-          <div class="bs-card bs-card-batch">
-            <div class="bs-card-body">
-              <div class="bs-head">
-                <div class="bs-icon" aria-hidden="true">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-                </div>
-                <div>
-                  <div class="bs-title">Batch</div>
-                  <div class="bs-subtitle">HTTP POST, returns a complete file</div>
-                </div>
-              </div>
-
-              <p class="bs-summary">Send text via HTTP POST and receive a complete audio file in a single response.</p>
-
-              <div class="bs-section">
-                <span class="bs-section-label">Best for</span>
-                <ul class="bs-best">
-                  <li>Pre-rendered voice prompts for IVR and telephony systems.</li>
-                  <li>Notification audio, order updates, alerts, reminders.</li>
-                  <li>Podcast, audiobook, and long-form content generation.</li>
-                  <li>Any use case where audio does not need to start playing before synthesis is complete.</li>
-                </ul>
-              </div>
-
-              <div class="bs-section">
-                <span class="bs-section-label">Properties</span>
-                <dl class="bs-props">
-                  <dt>Transport</dt><dd>HTTP POST</dd>
-                  <dt>Endpoint</dt><dd><code>https://tts.shunyalabs.ai/v1/audio/speech</code></dd>
-                  <dt>Auth</dt><dd>Bearer <code>&lt;API_KEY&gt;</code></dd>
-                  <dt>Required</dt><dd><code>text</code>, <code>model</code>, <code>voice</code></dd>
-                  <dt>Default format</dt><dd><code>mp3</code></dd>
-                </dl>
-              </div>
-
-              <div class="bs-section">
-                <span class="bs-section-label">Flow</span>
-                <div class="bs-flow">
-                  <span class="bs-step"><span class="bs-step-num">1</span>POST text</span>
-                  <span class="bs-arrow">→</span>
-                  <span class="bs-step"><span class="bs-step-num">2</span>Server synthesizes</span>
-                  <span class="bs-arrow">→</span>
-                  <span class="bs-step"><span class="bs-step-num">3</span>Receive audio</span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <!-- STREAMING -->
-          <div class="bs-card bs-card-stream">
-            <div class="bs-card-body">
-              <div class="bs-head">
-                <div class="bs-icon" aria-hidden="true">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
-                </div>
-                <div>
-                  <div class="bs-title">Streaming</div>
-                  <div class="bs-subtitle">WebSocket, chunks arrive in real time</div>
-                </div>
-              </div>
-
-              <p class="bs-summary">Open a persistent WebSocket connection and receive audio chunks in real time as synthesis happens.</p>
-
-              <div class="bs-section">
-                <span class="bs-section-label">Best for</span>
-                <ul class="bs-best">
-                  <li>Voice agents and conversational AI requiring sub-second audio start.</li>
-                  <li>IVR and telephony pipelines.</li>
-                  <li>Real-time audio playback in applications.</li>
-                  <li>Any use case where audio must begin playing before synthesis of the full text is complete.</li>
-                </ul>
-              </div>
-
-              <div class="bs-section">
-                <span class="bs-section-label">Properties</span>
-                <dl class="bs-props">
-                  <dt>Transport</dt><dd>WebSocket</dd>
-                  <dt>Endpoint</dt><dd><code>wss://tts.shunyalabs.ai/ws/v1/audio/speech</code><br/><span style="color: var(--text-subtle); font-size: 0.8125rem;">also: <code>/ws/tts</code>, <code>/ws</code></span></dd>
-                  <dt>Config</dt><dd><code>TTSConfig</code></dd>
-                  <dt>Default format</dt><dd><code>mp3</code></dd>
-                </dl>
-              </div>
-
-              <div class="bs-section">
-                <span class="bs-section-label">Lifecycle</span>
-                <div class="bs-flow">
-                  <span class="bs-step"><span class="bs-step-num">1</span>Connect</span>
-                  <span class="bs-arrow">→</span>
-                  <span class="bs-step"><span class="bs-step-num">2</span>Receive chunks</span>
-                  <span class="bs-arrow">→</span>
-                  <span class="bs-step"><span class="bs-step-num">3</span>Done</span>
-                </div>
-              </div>
-            </div>
-          </div>
+        <div class="callout callout-info">
+          <div class="callout-title">New endpoints</div>
+          These endpoints are the recommended integration path for new client implementations and provide an improved experience over the previous TTS endpoints.
         </div>
 
-        <p class="bs-source">Source: Shunyalabs TTS Developer Documentation v1.0 (March 2026), §2.1 Batch overview and §3.1 Streaming overview, text reproduced verbatim.</p>
-
-        <h2>Endpoints</h2>
+        <h2>Capabilities</h2>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Mode</th><th>Endpoint</th><th>Default format</th></tr></thead>
+            <thead><tr><th>Capability</th><th>Endpoint / interface</th></tr></thead>
             <tbody>
-              <tr><td>Batch</td><td><code>POST https://tts.shunyalabs.ai/v1/audio/speech</code></td><td>mp3</td></tr>
-              <tr><td>Streaming</td><td><code>wss://tts.shunyalabs.ai/ws/v1/audio/speech</code></td><td>mp3 (pcm recommended)</td></tr>
-              <tr><td>Health</td><td><code>GET https://tts.shunyalabs.ai/health</code></td><td>-</td></tr>
+              <tr><td>Authentication</td><td><code>POST https://app.shunyalabs.ai/api/auth/token</code></td></tr>
+              <tr><td>Standard TTS</td><td><code>POST https://ttsv2.shunyalabs.ai/v1/omni-voice/synthesize</code></td></tr>
+              <tr><td>Education TTS</td><td><code>POST https://ttsv2.shunyalabs.ai/v1/omni-voice/synthesize</code></td></tr>
+              <tr><td>Voice Agent / Pipecat</td><td><code>POST https://ttsv2.shunyalabs.ai/v1/audio/speech</code></td></tr>
+              <tr><td>API Documentation</td><td><code>https://ttsv2.shunyalabs.ai/docs</code></td></tr>
             </tbody>
           </table>
         </div>
 
-        <h2>Your first synthesis</h2>
+        <h2>How authentication works</h2>
+        <p>Generate an API key from your ShunyaLabs account, then exchange it for a short-lived Bearer token at <code>POST /api/auth/token</code>. Use the token as <code>Authorization: Bearer YOUR_TOKEN</code> on every TTS call. Request the token lifetime in seconds with <code>expires_in</code> (for example, <code>86400</code> for 24 hours), reuse it until it approaches expiry, then mint a fresh one. Keep the API key on the server side; never send it to end-user clients.</p>
 
-        <div class="code-group">
-          <div class="code-tabs">
-            <button class="code-tab active">cURL</button>
-            <button class="code-tab">Python SDK</button>
-            <button class="code-tab">OpenAI SDK</button>
-          </div>
-          <div class="code-panel active">
-<pre><code>curl -X POST https://tts.shunyalabs.ai/v1/audio/speech \
-  -H "Authorization: Bearer $SHUNYALABS_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{"model":"zero-indic","input":"Hello, how are you today?","voice":"Varun"}' \
-  --output hello.mp3</code></pre>
-          </div>
-          <div class="code-panel">
-<pre><code>import asyncio
-from shunyalabs import AsyncShunyaClient
-from shunyalabs.tts import TTSConfig
+        <p>See <a href="/web_doc/tts/api-reference.html#authentication">Authentication</a> for the full flow.</p>
 
-async def main():
-    async with AsyncShunyaClient() as client:
-        result = await client.tts.synthesize(
-            "Hello, how are you today?",
-            config=TTSConfig(model="zero-indic", voice="Varun"),
-        )
-        result.save("hello.mp3")
+        <h2>Standard TTS</h2>
+        <p>Use the Omni Voice synthesis endpoint for standard text-to-speech generation. The body takes <code>text</code> (the content to synthesize) and <code>voice</code> (the requested ShunyaLabs voice).</p>
 
-asyncio.run(main())</code></pre>
-          </div>
-          <div class="code-panel">
-<pre><code>from openai import OpenAI
+<pre><code>curl -X POST 'https://ttsv2.shunyalabs.ai/v1/omni-voice/synthesize' \
+  -H 'Authorization: Bearer YOUR_TOKEN' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "text": "If Modi is prime minister who is Amit Shah?",
+    "voice": "Meera"
+  }' \
+  --output speech.wav</code></pre>
 
-client = OpenAI(
-    api_key="YOUR_API_KEY",
-    base_url="https://tts.shunyalabs.ai/v1",
-)
-response = client.audio.speech.create(
-    model="zero-indic",
-    input="Hello, how are you today?",
-    voice="Varun",
-    response_format="mp3",
-)
-response.stream_to_file("output.mp3")</code></pre>
-          </div>
+        <h2>Education TTS with LaTeX</h2>
+        <p>For educational content containing mathematical expressions, enable LaTeX processing and provide the content language. Math-oriented content is handled through the same Omni Voice synthesis endpoint.</p>
+
+<pre><code>curl -X POST 'https://ttsv2.shunyalabs.ai/v1/omni-voice/synthesize' \
+  -H 'Authorization: Bearer YOUR_TOKEN' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "text": "If $x^2 = 49$, what is the value of x?",
+    "voice": "Meera",
+    "latex": true,
+    "language": "en"
+  }' \
+  --output math.wav</code></pre>
+
+        <p>Set <code>latex</code> to <code>true</code> when the input contains LaTeX expressions, and use <code>language</code> to identify the content language.</p>
+
+        <h2>Voice Agent / OpenAI-compatible</h2>
+        <p>For real-time voice-agent frameworks and integrations expecting an OpenAI-compatible speech interface, use the <code>/v1/audio/speech</code> endpoint. Requesting raw PCM output is useful for streaming and voice-agent pipelines.</p>
+
+<pre><code>curl -X POST 'https://ttsv2.shunyalabs.ai/v1/audio/speech' \
+  -H 'Authorization: Bearer YOUR_TOKEN' \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "model": "tts-1",
+    "input": "Hello, how are you today?",
+    "voice": "Meera",
+    "response_format": "pcm"
+  }' \
+  --output speech.pcm</code></pre>
+
+        <h3>Pipecat</h3>
+<pre><code>from pipecat.services.openai import OpenAITTSService
+
+tts = OpenAITTSService(
+    api_key="YOUR_TOKEN",
+    base_url="https://ttsv2.shunyalabs.ai/v1",
+    voice="nova",
+)</code></pre>
+
+        <div class="callout callout-info">
+          <div class="callout-title">Pipecat note</div>
+          The <code>api_key</code> field name comes from Pipecat's OpenAI-compatible service interface; pass the ShunyaLabs auth token as its value. For Pipecat, use an OpenAI-compatible voice name such as <code>nova</code> in the client configuration.
         </div>
 
-        <h2>Key features</h2>
+        <h2>Before production rollout</h2>
+        <p>The examples above are sufficient for initial testing. Before moving a client workload to production, confirm the requirements relevant to that implementation: expected traffic, required voices and languages, output or streaming format, latency expectations, and credit or commercial plan. Supported voices, response formats, and rate or concurrency limits are intentionally not hard-coded because they may vary by product version or client plan.</p>
 
+        <h2>Next steps</h2>
         <div class="grid grid-3">
-          <a href="/web_doc/tts/voices.html" class="card-link"><div class="card">
-            <div class="card-title">46 voices</div>
-            <p class="card-desc">Male & female speakers per language. Any voice, any language, cross-lingual synthesis is built in.</p>
+          <a href="/web_doc/tts/quickstart.html" class="card-link"><div class="card">
+            <div class="card-title">Quickstart</div>
+            <p class="card-desc">Mint a token and run your first standard, LaTeX, and OpenAI-compatible synthesis calls.</p>
           </div></a>
-          <a href="/web_doc/tts/audio-formats.html" class="card-link"><div class="card">
-            <div class="card-title">7 audio formats</div>
-            <p class="card-desc">PCM, WAV, MP3, OGG Opus, FLAC, mulaw, alaw. Pick by use case, telephony, web, archival.</p>
-          </div></a>
-          <a href="/web_doc/tts/expression-styles.html" class="card-link"><div class="card">
-            <div class="card-title">11 expression styles</div>
-            <p class="card-desc">Happy, Sad, News, Narrative, Conversational, Enthusiastic, and more, prepended as tags to your text.</p>
-          </div></a>
-          <a href="/web_doc/tts/voice-cloning.html" class="card-link"><div class="card">
-            <div class="card-title">Voice cloning</div>
-            <p class="card-desc">Clone a voice from 3-6 seconds of reference audio. Works across all 23 supported languages.</p>
-          </div></a>
-          <a href="/web_doc/tts/streaming.html" class="card-link"><div class="card">
-            <div class="card-title">Streaming</div>
-            <p class="card-desc">First audio in under 350 ms. Critical for voice agents.</p>
+          <a href="/web_doc/tts/api-reference.html" class="card-link"><div class="card">
+            <div class="card-title">API reference</div>
+            <p class="card-desc">Every endpoint with request fields, examples, the client checklist, and the API docs link.</p>
           </div></a>
           <a href="/web_doc/tts/llm-to-tts.html" class="card-link"><div class="card">
             <div class="card-title">LLM → TTS pipeline</div>
-            <p class="card-desc">Pipe OpenAI / Anthropic / Gemini tokens to TTS at sentence boundaries, the core pattern for low-latency voice agents.</p>
+            <p class="card-desc">Pipe LLM output into the OpenAI-compatible endpoint at sentence boundaries for voice agents.</p>
           </div></a>
         </div>
-
-        <h2>Required fields, at a glance</h2>
-<pre><code>{
-  "model": "zero-indic",      // required, only "zero-indic" today
-  "input": "Your text here",  // required, up to 10,000 chars
-  "voice": "Varun",           // required, see Voices page for full list
-  "response_format": "mp3",   // optional, default mp3
-  "speed": 1.0,               // optional, 0.25 to 4.0
-  "language": "en",           // optional, ISO code for preprocessing
-  "trim_silence": false,      // optional, tight audio when true
-  "reference_wav": "...",     // optional, base64 for voice cloning
-  "reference_text": "..."     // optional, transcript for voice cloning
-}</code></pre>
-
 
         <div class="pager">
           <a class="pager-link" href="/web_doc/asr/api-reference.html">
@@ -255,7 +136,5 @@ response.stream_to_file("output.mp3")</code></pre>
   <script src="/web_doc/assets/js/shell.js?v=3"></script>
   <script src="/web_doc/assets/js/tts-nav.js?v=1"></script>
   <script src="/web_doc/assets/js/nav.js?v=4"></script>
-  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
-  <script src="/web_doc/assets/js/mermaid-init.js?v=2"></script>
 </body>
 </html>

@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>SIP / PSTN | Shunya Labs Docs</title>
-  <meta name="description" content="Use Shunya Labs ASR and TTS over SIP and PSTN, mulaw 8 kHz for North American & Indian telephony, alaw for European.">
+  <meta name="description" content="Use Shunya Labs ASR and TTS over SIP and PSTN. ASR streams raw PCM, TTS returns raw PCM on the OpenAI-compatible endpoint.">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@1,500;1,600;1,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/web_doc/assets/css/main.css?v=32">
   <script src="/web_doc/assets/js/theme.js"></script>
@@ -17,18 +17,7 @@
           <a href="/web_doc/index.html">Docs</a><span class="sep">/</span><span>Integrations</span><span class="sep">/</span><span>SIP / PSTN</span>
         </div>
         <h1>SIP <span class="accent-italic">/ PSTN</span></h1>
-        <p class="lead">For <strong>TTS output</strong>, Shunya Labs supports the two G.711 codecs that telephone networks use globally, <code>mulaw</code> and <code>alaw</code>. For <strong>ASR streaming</strong>, send raw 16-bit PCM at 8 kHz (<code>sample_rate: 8000</code>). Pick the codec that matches your geography or carrier.</p>
-
-        <h2>Pick the codec</h2>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>Codec</th><th>When to use</th><th>Sample rate</th></tr></thead>
-            <tbody>
-              <tr><td><code>mulaw</code> (G.711 μ-law)</td><td>Most Indian PSTN systems, North American telephony.</td><td>8 kHz, 8-bit</td></tr>
-              <tr><td><code>alaw</code> (G.711 A-law)</td><td>European telephony systems and some SIP providers.</td><td>8 kHz, 8-bit</td></tr>
-            </tbody>
-          </table>
-        </div>
+        <p class="lead">For <strong>ASR streaming</strong>, send raw 16-bit signed PCM at 8 kHz or 16 kHz (<code>sample_rate</code> in the init message). On the <strong>TTS side</strong>, request raw PCM (<code>response_format="pcm"</code>) on the OpenAI-compatible endpoint and let your telephony stack handle the final encoding.</p>
 
         <h2>ASR: accept telephony audio over WebSocket</h2>
         <p>The streaming endpoint accepts raw <strong>16-bit signed PCM, little-endian, mono</strong> frames. For 8 kHz telephony audio, set <code>sample_rate: 8000</code> in the init message (16 kHz is the default). Decode the G.711 stream from your SIP trunk to PCM before sending.</p>
@@ -42,34 +31,35 @@
 // then stream 16-bit signed PCM frames, and finish with the text message "end"</code></pre>
 
         <h2>TTS: generate telephony-ready audio</h2>
-        <p>Set <code>response_format</code> to the codec your trunk expects. The output is ready to forward to a SIP <code>RTP</code> stream or an IVR platform's audio sink.</p>
+        <p>Request raw PCM output on the OpenAI-compatible endpoint <code>POST https://ttsv2.shunyalabs.ai/v1/audio/speech</code>, then encode or forward the PCM bytes to your media pipeline.</p>
 
-<pre><code># mulaw, North American / Indian PSTN
-config = TTSConfig(model="zero-indic", voice="Varun", response_format="mulaw")
-result = await client.tts.synthesize("&lt;Conversational&gt; Hello!", config=config)
-# Forward result.audio_data directly to your media stream or IVR system
+<pre><code>from openai import OpenAI
 
-# alaw, European telephony
-config = TTSConfig(model="zero-indic", voice="Rajesh", response_format="alaw")
-result = await client.tts.synthesize("Guten Morgen!", config=config)</code></pre>
+token = "YOUR_TOKEN"   # short-lived Bearer token, see /api/auth/token
+client = OpenAI(api_key=token, base_url="https://ttsv2.shunyalabs.ai/v1")
 
-        <h2>Why these codecs matter</h2>
-        <p>ASR streaming consumes raw PCM (16-bit signed, mono) at 8 kHz or 16 kHz, so the G.711 codec used by your telephony trunk must be decoded to PCM before sending. On the TTS side, <code>mulaw</code> / <code>alaw</code> output at 8 kHz can be forwarded straight to a SIP <code>RTP</code> stream or an IVR platform's audio sink.</p>
+resp = client.audio.speech.create(
+    model="tts-1",
+    input="Hello, how are you today?",
+    voice="Meera",
+    response_format="pcm",
+)
+resp.stream_to_file("telephony.pcm")</code></pre>
 
-        <p>From the TTS docs:</p>
-        <blockquote class="callout callout-info" style="font-style: italic;">
-          mulaw (G.711 mu-law) and alaw (G.711 A-law) are the two standard codecs for telephone networks globally. Both encode audio at 8 kHz, 8-bit, which is the standard for PSTN, SIP, and most IVR platforms.
-        </blockquote>
+        <p>Raw PCM output is useful for streaming and voice-agent pipelines. Select the response format required by your integration as supported by the API.</p>
+
+        <h2>Why raw PCM matters here</h2>
+        <p>ASR streaming consumes raw PCM (16-bit signed, mono) at 8 kHz or 16 kHz, so the G.711 codec used by your telephony trunk must be decoded to PCM before sending. On the TTS side, <code>response_format="pcm"</code> gives you the raw bytes to encode into whichever telephony format your IVR or SIP stack expects.</p>
 
         <h2>Pacing &amp; finishing for telephony</h2>
         <p>The streaming init message has no latency knobs beyond <code>token</code>, <code>language</code>, <code>sample_rate</code>, <code>diarize</code>, and <code>num_speakers</code>. Latency is controlled by how you send frames and end the session:</p>
         <ul>
           <li><strong>Send 20–320 ms frames</strong> of raw 16-bit signed PCM, paced roughly in real time, so the server can emit <code>partial</code> transcripts while the caller is still speaking.</li>
           <li><strong>Finish with a text message <code>end</code></strong>: the server finalises the session and returns the last <code>final</code> event.</li>
-          <li><strong>For barge-in / interruption</strong>, treat an incoming <code>partial</code>/<code>final</code> event as the caller taking the floor and cancel any in-flight TTS stream. See <a href="/web_doc/tts/llm-to-tts.html">LLM → TTS pipeline</a>.</li>
+          <li><strong>For barge-in / interruption</strong>, treat an incoming <code>partial</code>/<code>final</code> event as the caller taking the floor and cancel any in-flight TTS playback. See <a href="/web_doc/tts/llm-to-tts.html">LLM → TTS pipeline</a>.</li>
         </ul>
 
-        <p class="text-subtle">Source: Shunyalabs ASR Gateway API Reference (31 March), WebSocket Streaming API → "Audio Formats"; Shunyalabs TTS Developer Documentation v1.0 (March 2026), §8.2 Telephony Formats. Codec descriptions reproduced verbatim.</p>
+        <p class="text-subtle">Source: Shunyalabs ASR Gateway API Reference (31 March), WebSocket Streaming API → "Audio Formats"; ShunyaLabs TTS API Integration Guide, §4 Voice Agent / OpenAI-Compatible TTS.</p>
 
         <div class="pager">
           <a class="pager-link" href="/web_doc/integrations/openai-sdk.html">

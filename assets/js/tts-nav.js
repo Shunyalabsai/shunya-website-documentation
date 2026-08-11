@@ -29,69 +29,34 @@
   const NAV = [
     { id: 'title', title: 'Text-to-Speech (TTS)' },
     {
-      id: 'batch',
-      heading: 'Batch',
+      id: 'start',
+      heading: 'Get started',
       open: true,
       items: [
-        { label: 'Batch vs Streaming', path: '/tts/overview.html#batch-vs-streaming' },
         { label: 'Quickstart', path: '/tts/quickstart.html' },
-        { label: 'POST /v1/audio/speech', path: '/tts/api-reference.html#post-speech' },
+        { label: 'Overview', path: '/tts/overview.html' },
       ],
     },
     {
-      id: 'streaming',
-      heading: 'Streaming',
+      id: 'endpoints',
+      heading: 'Endpoints',
       open: true,
       items: [
-        { label: 'Streaming (WebSocket)', path: '/tts/streaming.html' },
-        { label: 'WebSocket /ws', path: '/tts/api-reference.html#websocket' },
+        { label: 'Authentication', path: '/tts/api-reference.html#authentication' },
+        { label: 'Standard TTS', path: '/tts/api-reference.html#post-synthesize' },
+        { label: 'Education TTS (LaTeX)', path: '/tts/api-reference.html#education-tts' },
+        { label: 'OpenAI-compatible', path: '/tts/api-reference.html#post-speech' },
+        { label: 'Pipecat', path: '/tts/api-reference.html#pipecat' },
       ],
     },
     {
-      id: 'voices',
-      heading: 'Voices and languages',
-      open: true,
-      items: [
-        { label: 'Voices & languages', path: '/tts/voices.html' },
-        { label: 'Expression styles', path: '/tts/expression-styles.html' },
-        { label: 'Audio formats', path: '/tts/audio-formats.html' },
-        { label: 'Voice cloning', path: '/tts/voice-cloning.html' },
-      ],
-    },
-    {
-      id: 'expression',
-      heading: 'Expression styles',
+      id: 'api',
+      heading: 'API reference',
       open: false,
       items: [
-        { label: 'How tags work', path: '/tts/expression-styles.html#how-tags-work' },
-        { label: 'The eleven styles', path: '/tts/expression-styles.html#the-eleven-styles' },
-        { label: 'Style by use case', path: '/tts/expression-styles.html#style-by-use-case' },
-        { label: 'Style pairing guide', path: '/tts/expression-styles.html#style-pairing-guide' },
-        { label: 'Combining with speed & trim', path: '/tts/expression-styles.html#combining-with-speed-trim' },
-      ],
-    },
-    {
-      id: 'formats',
-      heading: 'Audio formats',
-      open: false,
-      items: [
-        { label: 'Format reference', path: '/tts/audio-formats.html#format-reference' },
-        { label: 'Pick by use case', path: '/tts/audio-formats.html#pick-by-use-case' },
-        { label: 'Per-format examples', path: '/tts/audio-formats.html#per-format-examples' },
-        { label: 'Telephony (mulaw & alaw)', path: '/tts/audio-formats.html#telephony-mulaw-alaw' },
-        { label: 'HTTP response headers', path: '/tts/audio-formats.html#http-response-headers' },
-      ],
-    },
-    {
-      id: 'cloning',
-      heading: 'Voice cloning',
-      open: false,
-      items: [
-        { label: 'How it works', path: '/tts/voice-cloning.html#how-it-works' },
-        { label: 'Two cloning modes', path: '/tts/voice-cloning.html#two-cloning-modes' },
-        { label: 'Reference audio requirements', path: '/tts/voice-cloning.html#reference-audio-requirements' },
-        { label: 'Best practices', path: '/tts/voice-cloning.html#best-practices' },
-        { label: 'Error cases', path: '/tts/voice-cloning.html#error-cases' },
+        { label: 'Client checklist', path: '/tts/api-reference.html#client-checklist' },
+        { label: 'API documentation', path: '/tts/api-reference.html#api-docs' },
+        { label: 'TTS API reference', path: '/tts/api-reference.html' },
       ],
     },
     {
@@ -99,18 +64,6 @@
       heading: 'Pipelines',
       open: false,
       items: [{ label: 'LLM → TTS pipeline', path: '/tts/llm-to-tts.html' }],
-    },
-    {
-      id: 'api',
-      heading: 'API reference',
-      open: false,
-      items: [
-        { label: 'Authentication', path: '/tts/api-reference.html#authentication' },
-        { label: 'GET /health', path: '/tts/api-reference.html#health' },
-        { label: 'Rate & concurrency limits', path: '/tts/api-reference.html#rate-limits' },
-        { label: 'HTTP error status codes', path: '/tts/api-reference.html#http-error-status-codes' },
-        { label: 'API reference', path: '/tts/api-reference.html' },
-      ],
     },
   ];
 

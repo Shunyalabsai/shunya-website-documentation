@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>LLM → TTS pipeline | Shunya Labs Docs</title>
-  <meta name="description" content="Pipe LLM token output directly to TTS as it arrives, the core latency pattern for voice agents.">
+  <meta name="description" content="Pipe LLM token output to ShunyaLabs TTS as it arrives, the core latency pattern for voice agents, using the OpenAI-compatible endpoint.">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@1,500;1,600;1,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/web_doc/assets/css/main.css?v=37">
   <script src="/web_doc/assets/js/theme.js"></script>
@@ -17,20 +17,10 @@
           <a href="/web_doc/index.html">Docs</a><span class="sep">/</span><span>Text-to-Speech</span><span class="sep">/</span><span>LLM → TTS pipeline</span>
         </div>
         <h1>LLM → TTS streaming <span class="accent-italic">pipeline</span></h1>
-        <p class="lead">The core latency pattern for voice agents. Pipe LLM tokens directly into TTS as they arrive, don't wait for the full response. Saves 200-400 ms of time-to-first-audio and makes conversations feel natural.</p>
+        <p class="lead">The core latency pattern for voice agents. Pipe LLM output into ShunyaLabs TTS as sentences complete, instead of waiting for the full response, so audio starts sooner and memory stays constant.</p>
 
         <h2>Why it matters</h2>
-        <div class="table-wrap">
-          <table>
-            <thead><tr><th>-</th><th>Full-text pipeline</th><th>Token-streaming pipeline</th></tr></thead>
-            <tbody>
-              <tr><td>Time to first audio</td><td>LLM ~500 ms + TTS ~300 ms = ~800 ms</td><td>First sentence ~150 ms + TTS ~200 ms = ~350 ms</td></tr>
-              <tr><td>Memory requirement</td><td>Full response buffered</td><td>Constant, chunk by chunk</td></tr>
-              <tr><td>Complexity</td><td>Simple</td><td>Requires sentence buffering</td></tr>
-              <tr><td>Best for</td><td>Short, known text</td><td>Voice agents, conversational AI</td></tr>
-            </tbody>
-          </table>
-        </div>
+        <p>A full-text pipeline buffers the entire LLM response, then synthesizes it as one blob. A sentence-buffered pipeline sends each complete sentence to TTS as soon as the LLM finishes it, so the first audio reaches the speaker while the LLM is still generating the rest. The trade-off is a little more code: you accumulate tokens, detect sentence boundaries, and flush each sentence in turn.</p>
 
         <h2>The pattern</h2>
         <div class="mermaid">sequenceDiagram
@@ -45,27 +35,27 @@
     L-->>A: token
     A->>A: buffer += token
     alt sentence ended AND len(buffer) > 15
-      A->>T: stream buffer
-      T-->>S: audio chunk
+      A->>T: synthesize sentence
+      T-->>S: audio
       A->>A: buffer = ""
     end
   end
   L-->>A: [stream done]
-  A->>T: flush remaining buffer
-  T-->>S: final audio chunk</div>
+  A->>T: synthesize remaining buffer
+  T-->>S: audio</div>
 
         <h2>Sentence-buffering strategy</h2>
-        <p>Flush to TTS at <strong>sentence boundaries</strong>, not word boundaries. Word-by-word flushes kill prosody, the model needs full sentences to produce natural intonation.</p>
+        <p>Flush to TTS at <strong>sentence boundaries</strong>, not word boundaries. Word-by-word flushes hurt prosody; the model needs full sentences to produce natural intonation.</p>
 
         <ul>
           <li>Accumulate incoming tokens into a string buffer.</li>
           <li>Flush when a sentence-ending punctuation mark appears: <code>. ! ? ;</code></li>
           <li>Apply a minimum buffer length (e.g. 15 characters) to avoid flushing fragments like "Yes."</li>
-          <li>After the LLM stream ends, always flush the remaining buffer, LLMs often end mid-sentence.</li>
+          <li>After the LLM stream ends, always flush the remaining buffer; LLMs often end mid-sentence.</li>
         </ul>
 
-        <h2>LLM → Shunyalabs pipeline</h2>
-        <p>Pick your LLM provider, the pattern is the same on both sides: stream tokens out of the LLM, buffer them until a sentence boundary, flush each complete sentence into Shunya TTS.</p>
+        <h2>LLM → ShunyLabs pipeline</h2>
+        <p>Pick your LLM provider; the pattern is the same on both sides: stream tokens out of the LLM, buffer them until a sentence boundary, then flush each complete sentence into Shunya TTS through the <a href="/web_doc/tts/api-reference.html#post-speech">OpenAI-compatible endpoint</a> (<code>POST /v1/audio/speech</code>, raw PCM for playback).</p>
 
         <div class="code-group">
           <div class="code-tabs" role="tablist">
@@ -76,45 +66,62 @@
           <div class="code-panel active">
             <div class="code-header"><span>python</span><button class="copy-btn">Copy</button></div>
 <pre><code class="language-python">from openai import AsyncOpenAI
-from shunyalabs import AsyncShunyaClient
-from shunyalabs.tts import TTSConfig
+
+llm = AsyncOpenAI()  # your LLM provider
+tts = AsyncOpenAI(api_key=TOKEN, base_url="https://ttsv2.shunyalabs.ai/v1")
+
+async def speak(sentence: str):
+    resp = await tts.audio.speech.create(
+        model="tts-1",
+        input=sentence,
+        voice="Meera",
+        response_format="pcm",
+    )
+    for frame in pcm_frames(resp.content):
+        speaker.write(frame)
 
 async def gpt_to_tts(user_message: str):
-    oai    = AsyncOpenAI()
-    shunya = AsyncShunyaClient()
-    config = TTSConfig(model="zero-indic", voice="Sunita", response_format="pcm")
-
     buffer = ""
-    stream = await oai.chat.completions.create(
+    stream = await llm.chat.completions.create(
         model="gpt-4o",
         messages=[{"role": "user", "content": user_message}],
         stream=True,
     )
     async for chunk in stream:
-        token   = chunk.choices[0].delta.content or ""
+        token = chunk.choices[0].delta.content or ""
         buffer += token
         if token in (".", "!", "?", ";") and len(buffer) > 15:
-            async for audio in await shunya.tts.stream(buffer, config=config):
-                speaker.write(audio)
+            await speak(buffer)
             buffer = ""
 
     # Flush remaining buffer after LLM stream ends
     if buffer.strip():
-        async for audio in await shunya.tts.stream(buffer, config=config):
-            speaker.write(audio)</code></pre>
+        await speak(buffer)
+
+def pcm_frames(data, frame_bytes=320):
+    """Split PCM bytes into frames (320 bytes = 20 ms at 16 kHz)."""
+    return (data[i : i + frame_bytes] for i in range(0, len(data), frame_bytes))</code></pre>
           </div>
 
           <div class="code-panel">
             <div class="code-header"><span>python</span><button class="copy-btn">Copy</button></div>
 <pre><code class="language-python">import anthropic
-from shunyalabs import AsyncShunyaClient
-from shunyalabs.tts import TTSConfig
+from openai import AsyncOpenAI
+
+claude = anthropic.AsyncAnthropic()
+tts = AsyncOpenAI(api_key=TOKEN, base_url="https://ttsv2.shunyalabs.ai/v1")
+
+async def speak(sentence: str):
+    resp = await tts.audio.speech.create(
+        model="tts-1",
+        input=sentence,
+        voice="Meera",
+        response_format="pcm",
+    )
+    for frame in pcm_frames(resp.content):
+        speaker.write(frame)
 
 async def claude_to_tts(user_message: str):
-    claude = anthropic.AsyncAnthropic()
-    shunya = AsyncShunyaClient()
-    config = TTSConfig(model="zero-indic", voice="Rajesh", response_format="pcm")
-
     buffer = ""
     async with claude.messages.stream(
         model="claude-sonnet-4-6",
@@ -124,54 +131,56 @@ async def claude_to_tts(user_message: str):
         async for text in stream.text_stream:
             buffer += text
             if text in (".", "!", "?", ";") and len(buffer) > 15:
-                async for audio in await shunya.tts.stream(buffer, config=config):
-                    speaker.write(audio)
+                await speak(buffer)
                 buffer = ""
 
     # Flush remaining buffer after LLM stream ends
     if buffer.strip():
-        async for audio in await shunya.tts.stream(buffer, config=config):
-            speaker.write(audio)</code></pre>
+        await speak(buffer)</code></pre>
           </div>
         </div>
 
         <h2>Interruption handling</h2>
-        <p>In voice agents, users often talk over the bot. When your ASR emits a <code>partial</code> or <code>final</code> event from the user while the bot is speaking, cancel the in-flight TTS stream so the user gets the floor immediately.</p>
+        <p>In voice agents, users often talk over the bot. When your ASR emits a <code>partial</code> or <code>final</code> event from the user while the bot is speaking, cancel the in-flight TTS playback so the user gets the floor immediately.</p>
 
 <pre><code>import asyncio
-from shunyalabs.tts import TTSConfig
+from openai import AsyncOpenAI
+
+tts = AsyncOpenAI(api_key=TOKEN, base_url="https://ttsv2.shunyalabs.ai/v1")
 
 class VoiceAgent:
     def __init__(self):
-        self.tts_task   = None
+        self.tts_task = None
         self.interrupted = asyncio.Event()
 
     async def on_user_speech_detected(self):
-        """Called by ASR when user starts speaking."""
+        """Called by ASR when the user starts speaking."""
         self.interrupted.set()
         if self.tts_task:
             self.tts_task.cancel()
 
-    async def speak(self, text: str, client):
+    async def speak(self, text: str):
         self.interrupted.clear()
-        config = TTSConfig(model="zero-indic", voice="Varun", response_format="pcm")
 
-        async def _stream():
-            async for audio in await client.tts.stream(text, config=config):
+        async def _speak():
+            resp = await tts.audio.speech.create(
+                model="tts-1", input=text, voice="Meera", response_format="pcm",
+            )
+            for frame in pcm_frames(resp.content):
                 if self.interrupted.is_set():
                     break
-                speaker.write(audio)
+                speaker.write(frame)
 
-        self.tts_task = asyncio.create_task(_stream())
+        self.tts_task = asyncio.create_task(_speak())
         await self.tts_task</code></pre>
 
         <h2>Best practices</h2>
 
         <h3>Minimising time to first audio</h3>
         <ul>
-          <li><strong>Pre-open the WebSocket</strong> before the LLM call, eliminates ~200 ms connection setup.</li>
-          <li><strong>Use PCM</strong> output format, no client-side decoding.</li>
+          <li><strong>Use PCM output</strong> (<code>response_format="pcm"</code>), no client-side decoding.</li>
           <li><strong>Shorter sentences = faster response.</strong> Consider instructing your LLM to be concise in conversational contexts.</li>
+          <li><strong>Synthesize sentence by sentence</strong> as the LLM stream completes each one, rather than waiting for the full response.</li>
         </ul>
 
         <h3>Handling LLM response edge cases</h3>
@@ -185,27 +194,25 @@ class VoiceAgent:
         <h3>Graceful degradation</h3>
         <ul>
           <li>If TTS fails mid-stream, fall back to a pre-recorded "sorry, let me try again" clip.</li>
-          <li>If LLM is slow, send a pre-recorded filler like "Let me check that for you..." so the user hears something within 500 ms.</li>
+          <li>If the LLM is slow, send a pre-recorded filler like "Let me check that for you..." so the user hears something quickly.</li>
         </ul>
 
         <h2>Full voice agent skeleton</h2>
 <pre><code>import asyncio, json, websockets
-from shunyalabs import AsyncShunyaClient
-from shunyalabs.tts import TTSConfig
+from openai import AsyncOpenAI
+
+llm = AsyncOpenAI()  # your LLM provider
+tts = AsyncOpenAI(api_key=TOKEN, base_url="https://ttsv2.shunyalabs.ai/v1")
 
 class VoiceAgent:
-    def __init__(self, llm):
-        self.llm    = llm
-        self.shunya = AsyncShunyaClient()
-        self.tts_cfg = TTSConfig(model="zero-indic", voice="Sunita", response_format="pcm")
+    def __init__(self):
         self.speaking = False
         self.interrupt = asyncio.Event()
 
     async def listen_loop(self):
         async with websockets.connect("wss://asrv2prod.shunyalabs.ai/v1/realtime") as asr:
             await asr.send(json.dumps({
-                "token": ACCESS_TOKEN, "language": "hi",
-                "sample_rate": 16000,
+                "token": ACCESS_TOKEN, "language": "hi", "sample_rate": 16000,
             }))
             # stream raw 16-bit PCM frames here, then send "end"
             async for raw in asr:
@@ -219,29 +226,40 @@ class VoiceAgent:
         self.speaking = True
         self.interrupt.clear()
         buffer = ""
-        async for token in self.llm.stream(user_text):
+        stream = await llm.chat.completions.create(
+            model="gpt-4o",
+            messages=[{"role": "user", "content": user_text}],
+            stream=True,
+        )
+        async for chunk in stream:
             if self.interrupt.is_set():
                 break
+            token = chunk.choices[0].delta.content or ""
             buffer += token
             if token in (".", "!", "?", ";") and len(buffer) > 15:
-                async for chunk in await self.shunya.tts.stream(buffer, config=self.tts_cfg):
-                    if self.interrupt.is_set():
-                        break
-                    speaker.write(chunk)
+                await self.speak(buffer)
                 buffer = ""
         if buffer.strip() and not self.interrupt.is_set():
-            async for chunk in await self.shunya.tts.stream(buffer, config=self.tts_cfg):
-                speaker.write(chunk)
-        self.speaking = False</code></pre>
+            await self.speak(buffer)
+        self.speaking = False
+
+    async def speak(self, text: str):
+        resp = await tts.audio.speech.create(
+            model="tts-1", input=text, voice="Meera", response_format="pcm",
+        )
+        for frame in pcm_frames(resp.content):
+            if self.interrupt.is_set():
+                break
+            speaker.write(frame)</code></pre>
 
         <div class="pager">
-          <a class="pager-link" href="/web_doc/tts/streaming.html">
+          <a class="pager-link" href="/web_doc/tts/api-reference.html">
             <div class="pager-label">← Previous</div>
-            <div class="pager-title">Streaming</div>
+            <div class="pager-title">TTS API reference</div>
           </a>
-          <a class="pager-link pager-right" href="/web_doc/tts/api-reference.html">
+          <a class="pager-link pager-right" href="/web_doc/tts/overview.html">
             <div class="pager-label">Next →</div>
-            <div class="pager-title">API reference</div>
+            <div class="pager-title">TTS overview</div>
           </a>
         </div>
       </div>

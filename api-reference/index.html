@@ -37,16 +37,17 @@
         </div>
 
         <h2 class="product-chapter">Text-to-Speech <span class="accent-italic">(TTS)</span></h2>
-        <p>Every endpoint under <code>tts.shunyalabs.ai</code>, every field, every error code.</p>
+        <p>TTS endpoints under <code>ttsv2.shunyalabs.ai</code> plus the auth endpoint under <code>app.shunyalabs.ai</code>. Authenticate with a short-lived Bearer token minted at <code>POST /api/auth/token</code>. Interactive API documentation is at <code>https://ttsv2.shunyalabs.ai/docs</code>.</p>
 
-        <h3>Base URLs</h3>
+        <h3>Endpoints</h3>
         <div class="table-wrap">
           <table>
-            <thead><tr><th>Interface</th><th>URL</th></tr></thead>
+            <thead><tr><th>Mode</th><th>Endpoint</th><th>Use for</th></tr></thead>
             <tbody>
-              <tr><td>Batch</td><td><code>https://tts.shunyalabs.ai</code></td></tr>
-              <tr><td>Streaming</td><td><code>wss://tts.shunyalabs.ai/ws</code></td></tr>
-              <tr><td>Health</td><td><code>https://tts.shunyalabs.ai/health</code></td></tr>
+              <tr><td>Auth</td><td><code>POST https://app.shunyalabs.ai/api/auth/token</code></td><td>Exchange your API key for a short-lived Bearer token.</td></tr>
+              <tr><td>Standard TTS</td><td><code>POST https://ttsv2.shunyalabs.ai/v1/omni-voice/synthesize</code></td><td>Generate speech from text.</td></tr>
+              <tr><td>Education TTS</td><td><code>POST https://ttsv2.shunyalabs.ai/v1/omni-voice/synthesize</code> with <code>latex: true</code></td><td>Generate speech from LaTeX content.</td></tr>
+              <tr><td>OpenAI-compatible</td><td><code>POST https://ttsv2.shunyalabs.ai/v1/audio/speech</code></td><td>Voice agents and Pipecat; raw PCM output for streaming pipelines.</td></tr>
             </tbody>
           </table>
         </div>
