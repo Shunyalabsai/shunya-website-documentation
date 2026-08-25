@@ -4,77 +4,77 @@
     {
       heading: 'Get Started',
       items: [
-        { href: '/web_doc/index.html', label: 'Overview', icon: 'home' },
-        { href: '/web_doc/get-started/what-is-shunya.html', label: 'What is Shunya?', icon: 'sparkles' },
-        { href: '/web_doc/get-started/quickstart.html', label: 'Quickstart', icon: 'zap' },
-        { href: '/web_doc/get-started/capability-matrix.html', label: 'Capability matrix', icon: 'grid' },
-        { href: '/web_doc/get-started/supported-languages.html', label: 'Supported languages', icon: 'globe' },
-        { href: '/web_doc/get-started/glossary.html', label: 'Glossary', icon: 'book' },
-        { href: '/web_doc/get-started/faqs.html', label: 'FAQs', icon: 'help-circle' },
+        { href: '/shunya-website-documentation/index.html', label: 'Overview', icon: 'home' },
+        { href: '/shunya-website-documentation/get-started/what-is-shunya.html', label: 'What is Shunya?', icon: 'sparkles' },
+        { href: '/shunya-website-documentation/get-started/quickstart.html', label: 'Quickstart', icon: 'zap' },
+        { href: '/shunya-website-documentation/get-started/capability-matrix.html', label: 'Capability matrix', icon: 'grid' },
+        { href: '/shunya-website-documentation/get-started/supported-languages.html', label: 'Supported languages', icon: 'globe' },
+        { href: '/shunya-website-documentation/get-started/glossary.html', label: 'Glossary', icon: 'book' },
+        { href: '/shunya-website-documentation/get-started/faqs.html', label: 'FAQs', icon: 'help-circle' },
       ]
     },
     {
       heading: 'Speech-to-Text',
-      headingLink: '/web_doc/asr/overview.html',
+      headingLink: '/shunya-website-documentation/asr/overview.html',
       headingMatch: [/\/asr\//],
     },
     {
       heading: 'Text-to-Speech',
-      headingLink: '/web_doc/tts/overview.html',
+      headingLink: '/shunya-website-documentation/tts/overview.html',
       headingMatch: [/\/tts\//],
     },
     {
       heading: 'Intelligence',
       items: [
-        { href: '/web_doc/intelligence/overview.html', label: 'Overview & examples', icon: 'sparkles' },
-        { href: '/web_doc/asr/api-reference.html#post-speechintelligence', label: 'Configuration', icon: 'sliders' },
-        { href: '/web_doc/asr/features.html', label: 'Full reference', icon: 'book' },
+        { href: '/shunya-website-documentation/intelligence/overview.html', label: 'Overview & examples', icon: 'sparkles' },
+        { href: '/shunya-website-documentation/asr/api-reference.html#post-speechintelligence', label: 'Configuration', icon: 'sliders' },
+        { href: '/shunya-website-documentation/asr/features.html', label: 'Full reference', icon: 'book' },
       ]
     },
     {
       heading: 'Translation',
       items: [
-        { href: '/web_doc/translation/vak-overview.html', label: 'Vāķ Translate', icon: 'globe' },
+        { href: '/shunya-website-documentation/translation/vak-overview.html', label: 'Vāķ Translate', icon: 'globe' },
       ]
     },
     {
       heading: 'Solutions',
       items: [
-        { href: '/web_doc/solutions/bfsi.html', label: 'BFSI', icon: 'banknote' },
-        { href: '/web_doc/solutions/healthcare.html', label: 'Healthcare', icon: 'heart' },
-        { href: '/web_doc/solutions/contact-centers.html', label: 'Contact centers', icon: 'headphones' },
-        { href: '/web_doc/solutions/media.html', label: 'Media & entertainment', icon: 'film' },
+        { href: '/shunya-website-documentation/solutions/bfsi.html', label: 'BFSI', icon: 'banknote' },
+        { href: '/shunya-website-documentation/solutions/healthcare.html', label: 'Healthcare', icon: 'heart' },
+        { href: '/shunya-website-documentation/solutions/contact-centers.html', label: 'Contact centers', icon: 'headphones' },
+        { href: '/shunya-website-documentation/solutions/media.html', label: 'Media & entertainment', icon: 'film' },
       ]
     },
     {
       heading: 'Integrations',
       items: [
-        { href: '/web_doc/integrations/overview.html', label: 'Overview', icon: 'plug' },
-        { href: '/web_doc/integrations/python-sdk.html', label: 'Python SDK', icon: 'code' },
-        { href: '/web_doc/integrations/openai-sdk.html', label: 'OpenAI SDK', icon: 'compatible' },
-        { href: '/web_doc/integrations/sip-pstn.html', label: 'SIP / PSTN', icon: 'wifi' },
-        { href: '/web_doc/integrations/hugging-face.html', label: 'Hugging Face', icon: 'flask' },
-        { href: '/web_doc/integrations/pipecat.html', label: 'Pipecat', icon: 'building' },
-        { href: '/web_doc/integrations/livekit.html', label: 'LiveKit', icon: 'phone' },
+        { href: '/shunya-website-documentation/integrations/overview.html', label: 'Overview', icon: 'plug' },
+        { href: '/shunya-website-documentation/integrations/python-sdk.html', label: 'Python SDK', icon: 'code' },
+        { href: '/shunya-website-documentation/integrations/openai-sdk.html', label: 'OpenAI SDK', icon: 'compatible' },
+        { href: '/shunya-website-documentation/integrations/sip-pstn.html', label: 'SIP / PSTN', icon: 'wifi' },
+        { href: '/shunya-website-documentation/integrations/hugging-face.html', label: 'Hugging Face', icon: 'flask' },
+        { href: '/shunya-website-documentation/integrations/pipecat.html', label: 'Pipecat', icon: 'building' },
+        { href: '/shunya-website-documentation/integrations/livekit.html', label: 'LiveKit', icon: 'phone' },
       ]
     },
     {
       heading: 'Deployment',
       items: [
-        { href: '/web_doc/deployment/overview.html', label: 'Cloud / on-prem', icon: 'server' },
+        { href: '/shunya-website-documentation/deployment/overview.html', label: 'Cloud / on-prem', icon: 'server' },
       ]
     },
     {
       heading: 'Enterprise',
       items: [
-        { href: '/web_doc/enterprise/sso.html', label: 'Set up SSO', icon: 'lock' },
-        { href: '/web_doc/enterprise/hands-on-evaluation.html', label: 'Hands-on evaluation', icon: 'beaker' },
+        { href: '/shunya-website-documentation/enterprise/sso.html', label: 'Set up SSO', icon: 'lock' },
+        { href: '/shunya-website-documentation/enterprise/hands-on-evaluation.html', label: 'Hands-on evaluation', icon: 'beaker' },
       ]
     },
     {
       heading: 'Security',
       items: [
-        { href: '/web_doc/security/compliance.html', label: 'Compliance & privacy', icon: 'shield' },
+        { href: '/shunya-website-documentation/security/compliance.html', label: 'Compliance & privacy', icon: 'shield' },
       ]
     },
   ];
@@ -138,8 +138,8 @@
     }
     const href = section.headingLink || '';
     return href === normalized ||
-      normalized.endsWith(href.replace('/web_doc', '')) ||
-      (href === '/web_doc/index.html' && normalized === '/');
+      normalized.endsWith(href.replace('/shunya-website-documentation', '')) ||
+      (href === '/shunya-website-documentation/index.html' && normalized === '/');
   }
 
   function renderSidebar() {

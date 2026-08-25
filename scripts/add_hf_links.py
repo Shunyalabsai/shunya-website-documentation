@@ -76,7 +76,7 @@ def process(content: str, is_tts: bool) -> str:
 
 def main():
     seen_inode = set()
-    for base in (ROOT, ROOT / "web_doc"):
+    for base in (ROOT, ROOT / "shunya-website-documentation"):
         if not base.is_dir():
             continue
         for path in sorted(base.rglob("*.html")):

@@ -6,8 +6,8 @@
   <title>FAQs | Shunya Labs Docs</title>
   <meta name="description" content="Frequently asked questions about Shunya Labs: STT, TTS, APIs, deployment, and troubleshooting common issues.">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@1,500;1,600;1,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/web_doc/assets/css/main.css?v=39">
-  <script src="/web_doc/assets/js/theme.js"></script>
+  <link rel="stylesheet" href="/shunya-website-documentation/assets/css/main.css?v=39">
+  <script src="/shunya-website-documentation/assets/js/theme.js"></script>
   <style>
     .faq-cat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 0.75rem; margin: 0 0 1.5rem; }
     .faq-cat-link { display: flex; align-items: center; gap: 0.5rem; padding: 0.625rem 0.875rem; border-radius: var(--radius); border: 1px solid var(--border); background: var(--bg-subtle); color: var(--text-muted); font-size: 0.8125rem; font-weight: 500; text-decoration: none; transition: border-color 180ms ease, background 180ms ease, color 180ms ease, transform 180ms ease; }
@@ -49,7 +49,7 @@
     <main class="main">
       <div class="content">
         <div class="breadcrumb">
-          <a href="/web_doc/index.html">Docs</a><span class="sep">/</span><span>Get Started</span><span class="sep">/</span><span>FAQs</span>
+          <a href="/shunya-website-documentation/index.html">Docs</a><span class="sep">/</span><span>Get Started</span><span class="sep">/</span><span>FAQs</span>
         </div>
         <h1>Frequently asked <span class="accent-italic">questions</span></h1>
         <p class="lead">Quick answers to the most common questions about Shunya Labs - from getting started and API usage to deployment and troubleshooting. Click any question to reveal the answer.</p>
@@ -113,7 +113,7 @@
               </summary>
               <div class="faq-answer">
                 <p>Shunya Labs covers speech-to-text with models tuned for Indic, international, medical, and code-switched audio, TTS with voice and language support confirmed per client plan, and <strong>2,970 translation pairs</strong> through Vāķ Translate.</p>
-                <p>See the <a href="/web_doc/get-started/supported-languages.html">Supported languages</a> page for the full list.</p>
+                <p>See the <a href="/shunya-website-documentation/get-started/supported-languages.html">Supported languages</a> page for the full list.</p>
               </div>
             </details>
 
@@ -125,7 +125,7 @@
               </summary>
               <div class="faq-answer">
                 <p>Visit <a href="https://shunyalabs.ai" target="_blank" rel="noopener">shunyalabs.ai</a> and sign up or log in. Complete the onboarding flow, which adds testing credits to your account, then generate an API key from your ShunyaLabs account.</p>
-                <p>From there, exchange the API key for a Bearer token using the Auth API and call the endpoints. See the <a href="/web_doc/get-started/quickstart.html">Quickstart guide</a> for the full setup.</p>
+                <p>From there, exchange the API key for a Bearer token using the Auth API and call the endpoints. See the <a href="/shunya-website-documentation/get-started/quickstart.html">Quickstart guide</a> for the full setup.</p>
               </div>
             </details>
 
@@ -149,7 +149,7 @@
               </summary>
               <div class="faq-answer">
                 <p>Yes, you can create multiple API keys from your ShunyaLabs account and give each a descriptive name so you can track which application or environment it is used for, for example <code>production-app</code>, <code>staging-server</code>, or <code>local-dev</code>.</p>
-                <p>If a key is compromised, revoke it individually without affecting your other keys. The <a href="/web_doc/security/compliance.html">Compliance page</a> notes that keys are hashed at rest and revocation takes effect in under 60 seconds.</p>
+                <p>If a key is compromised, revoke it individually without affecting your other keys. The <a href="/shunya-website-documentation/security/compliance.html">Compliance page</a> notes that keys are hashed at rest and revocation takes effect in under 60 seconds.</p>
               </div>
             </details>
 
@@ -173,7 +173,7 @@
               </summary>
               <div class="faq-answer">
                 <p>A <code>403</code> means the token is not authorized for this endpoint. The ASR guide returns <code>403</code> when the token is not permitted for the endpoint.</p>
-                <p>Check that you are using the correct endpoint URL and a freshly minted token. See the <a href="/web_doc/api-reference/errors.html">Error codes reference</a> for what each status code means.</p>
+                <p>Check that you are using the correct endpoint URL and a freshly minted token. See the <a href="/shunya-website-documentation/api-reference/errors.html">Error codes reference</a> for what each status code means.</p>
               </div>
             </details>
 
@@ -195,7 +195,7 @@
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>The dashboard provides account management, API key generation, and usage views. For API setup and examples, follow the <a href="/web_doc/get-started/quickstart.html">Quickstart guide</a>.</p>
+                <p>The dashboard provides account management, API key generation, and usage views. For API setup and examples, follow the <a href="/shunya-website-documentation/get-started/quickstart.html">Quickstart guide</a>.</p>
               </div>
             </details>
 
@@ -218,7 +218,7 @@
               </summary>
               <div class="faq-answer">
                 <p>Shunya Labs offers several model categories optimized for different use cases. For STT, use <code>zero-universal</code> for English and international content, <code>zero-indic</code> for Indian languages, <code>zero-med</code> for healthcare-domain transcription with medical terminology support, and <code>zero-codeswitch</code> for Hinglish and Tanglish. Each model works over both the batch and streaming transports.</p>
-                <p>For TTS, the integration guide documents the standard <code>omni-voice/synthesize</code> endpoint, the education (LaTeX) variant, and the OpenAI-compatible <code>audio/speech</code> endpoint. Voice and language support is confirmed per client plan. Review the <a href="/web_doc/get-started/capability-matrix.html">Capability matrix</a> page for the TTS capabilities and endpoints.</p>
+                <p>For TTS, the integration guide documents the standard <code>omni-voice/synthesize</code> endpoint, the education (LaTeX) variant, and the OpenAI-compatible <code>audio/speech</code> endpoint. Voice and language support is confirmed per client plan. Review the <a href="/shunya-website-documentation/get-started/capability-matrix.html">Capability matrix</a> page for the TTS capabilities and endpoints.</p>
               </div>
             </details>
 
@@ -230,7 +230,7 @@
               </summary>
               <div class="faq-answer">
                 <p>Use the REST APIs directly with any HTTP client, such as <code>curl</code>, Python <code>requests</code>, or <code>fetch</code> in JavaScript. For TTS, mint a short-lived Bearer token from your API key at <code>POST https://app.shunyalabs.ai/api/auth/token</code> and send it on every call.</p>
-                <p>For the OpenAI-compatible TTS endpoint, point the OpenAI SDK at <code>https://ttsv2.shunyalabs.ai/v1</code>. See the <a href="/web_doc/get-started/quickstart.html">Quickstart guide</a> for step-by-step setup instructions in Python, Node.js, and cURL.</p>
+                <p>For the OpenAI-compatible TTS endpoint, point the OpenAI SDK at <code>https://ttsv2.shunyalabs.ai/v1</code>. See the <a href="/shunya-website-documentation/get-started/quickstart.html">Quickstart guide</a> for step-by-step setup instructions in Python, Node.js, and cURL.</p>
               </div>
             </details>
 
@@ -241,7 +241,7 @@
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>The integration guides do not document dashboard two-factor authentication. For account security, follow the API key hygiene guidance on the <a href="/web_doc/security/compliance.html">Compliance page</a>: hashed keys at rest, separate keys per environment, quarterly rotation, and immediate revocation on suspected compromise.</p>
+                <p>The integration guides do not document dashboard two-factor authentication. For account security, follow the API key hygiene guidance on the <a href="/shunya-website-documentation/security/compliance.html">Compliance page</a>: hashed keys at rest, separate keys per environment, quarterly rotation, and immediate revocation on suspected compromise.</p>
               </div>
             </details>
 
@@ -263,7 +263,7 @@
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>The integration guides do not document team management. The <a href="/web_doc/security/compliance.html">Compliance page</a> notes role-based access control on the management plane with least-privilege defaults, and SCIM/SSO for Enterprise key lifecycle automation.</p>
+                <p>The integration guides do not document team management. The <a href="/shunya-website-documentation/security/compliance.html">Compliance page</a> notes role-based access control on the management plane with least-privilege defaults, and SCIM/SSO for Enterprise key lifecycle automation.</p>
               </div>
             </details>
 
@@ -286,7 +286,7 @@
               </summary>
               <div class="faq-answer">
                 <p>A <strong>model</strong> is the underlying AI engine that performs the task, for example <code>zero-indic</code> for STT. Each model has specific capabilities and supported languages. An <strong>endpoint</strong> is the API URL through which you access the capability, such as <code>/v1/audio/transcriptions</code> for batch STT, <code>/v1/omni-voice/synthesize</code> for TTS, or <code>/v1/audio/speech</code> for the OpenAI-compatible TTS endpoint.</p>
-                <p>Multiple models can be accessed through the same endpoint by changing the <code>model</code> parameter. Similarly, the same model may be accessible through different endpoints (batch vs. streaming). The <a href="/web_doc/get-started/capability-matrix.html">Capability matrix</a> page provides a comparison of the available models and their characteristics.</p>
+                <p>Multiple models can be accessed through the same endpoint by changing the <code>model</code> parameter. Similarly, the same model may be accessible through different endpoints (batch vs. streaming). The <a href="/shunya-website-documentation/get-started/capability-matrix.html">Capability matrix</a> page provides a comparison of the available models and their characteristics.</p>
               </div>
             </details>
 
@@ -310,7 +310,7 @@
               <div class="faq-answer">
                 <p>Transcription accuracy depends on several factors. Here are the most common fixes:</p>
                 <ul><li><strong>Audio quality:</strong> Ensure the recording is clear, with minimal background noise. For streaming, send 16-bit signed PCM at <strong>16 kHz</strong> (the default sample rate); 8 kHz is also supported.</li><li><strong>Language selection:</strong> Set the correct <code>language_code</code> on batch requests (it defaults to <code>auto</code>). On streaming, <code>language</code> is <strong>required</strong>: there is no auto-detect, and omitting it or sending <code>"auto"</code> produces wrong output.</li><li><strong>Model selection:</strong> Pick a model tuned for your audio: <code>zero-indic</code> for Indian languages, <code>zero-universal</code> for English and international content, <code>zero-med</code> for healthcare, <code>zero-codeswitch</code> for Hinglish/Tanglish.</li></ul>
-                <p>See <a href="/web_doc/asr/overview.html">the ASR overview</a> for the full set of request fields.</p>
+                <p>See <a href="/shunya-website-documentation/asr/overview.html">the ASR overview</a> for the full set of request fields.</p>
               </div>
             </details>
 
@@ -334,7 +334,7 @@
               </summary>
               <div class="faq-answer">
                 <p>Use the <strong>batch</strong> endpoint (<code>POST /v1/audio/transcriptions</code>) for pre-recorded files. The batch endpoint accepts files up to <strong>50 MB</strong> and returns the transcript in a single response.</p>
-                <p>If your file is larger than 50 MB, split the audio into segments and process them in parallel. See the <a href="/web_doc/asr/overview.html">ASR overview</a> for details.</p>
+                <p>If your file is larger than 50 MB, split the audio into segments and process them in parallel. See the <a href="/shunya-website-documentation/asr/overview.html">ASR overview</a> for details.</p>
               </div>
             </details>
 
@@ -347,7 +347,7 @@
               <div class="faq-answer">
                 <p>Streaming STT uses a <strong>WebSocket</strong> connection. Common issues include:</p>
                 <ul><li><strong>Wrong endpoint:</strong> Use <code>wss://asrv2prod.shunyalabs.ai/v1/realtime</code> (<code>wss://asrv2prod.shunyalabs.ai/ws</code> behaves the same), not the HTTP URL</li><li><strong>Auth:</strong> Send the short-lived <strong>access token</strong> (from <code>POST /auth/token</code>) as the <code>token</code> field of your first message, as a <code>?token=</code> query parameter, or as <code>Authorization: Bearer</code> on the upgrade; not the raw API key</li><li><strong>Missing language:</strong> <code>language</code> is required in the init message. There is no auto-detect on streaming; omitting it or sending <code>"auto"</code> gives wrong output</li><li><strong>Audio format mismatch:</strong> Send 16-bit signed PCM, little-endian, mono, at the sample rate you declared (default 16000). Check your microphone and encoder settings</li><li><strong>Connection closed early:</strong> Pace your frames roughly in real time (20-320 ms per frame) and finish by sending the text message <code>end</code></li></ul>
-                <p>Refer to the <a href="/web_doc/asr/streaming.html">Streaming guide</a> for code examples in Python and Node.js.</p>
+                <p>Refer to the <a href="/shunya-website-documentation/asr/streaming.html">Streaming guide</a> for code examples in Python and Node.js.</p>
               </div>
             </details>
 
@@ -359,7 +359,7 @@
               </summary>
               <div class="faq-answer">
                 <p>Choose the model that matches your domain. <code>zero-med</code> automatically corrects medical terminology, and <code>zero-codeswitch</code> restores English tokens in Hinglish and Tanglish audio. The <code>model</code> field is optional and defaults to your account's model.</p>
-                <p>For healthcare vocabulary specifically, <code>zero-med</code> is the model to use. See the <a href="/web_doc/asr/models.html">models page</a> for guidance on picking the right one.</p>
+                <p>For healthcare vocabulary specifically, <code>zero-med</code> is the model to use. See the <a href="/shunya-website-documentation/asr/models.html">models page</a> for guidance on picking the right one.</p>
               </div>
             </details>
 
@@ -372,7 +372,7 @@
               <div class="faq-answer">
                 <p>Shunya Labs offers four STT model families, selected via the <code>model</code> parameter:</p>
                 <ul><li><strong><code>zero-indic</code></strong>: tuned for Indian languages, handling regional accents and code-switching.</li><li><strong><code>zero-universal</code></strong>: English and international content; the strongest on English.</li><li><strong><code>zero-med</code></strong>: English and Indic, with automatic medical-terminology correction.</li><li><strong><code>zero-codeswitch</code></strong>: Hinglish, Tanglish, and similar mixed speech, restoring English tokens to Latin script.</li></ul>
-                <p>The <code>model</code> field is optional; when omitted, the account's default model is used. See the <a href="/web_doc/asr/models.html">models page</a> for details.</p>
+                <p>The <code>model</code> field is optional; when omitted, the account's default model is used. See the <a href="/shunya-website-documentation/asr/models.html">models page</a> for details.</p>
               </div>
             </details>
 
@@ -463,7 +463,7 @@
               </summary>
               <div class="faq-answer">
                 <p>There are no VAD (voice-activity-detection) parameters in the API. The transcription engine handles silence in the audio automatically.</p>
-                <p>For streaming, just send raw PCM frames as audio arrives, paced roughly in real time, and finish with the text message <code>end</code>. See the <a href="/web_doc/asr/streaming.html">Streaming guide</a> for the full protocol.</p>
+                <p>For streaming, just send raw PCM frames as audio arrives, paced roughly in real time, and finish with the text message <code>end</code>. See the <a href="/shunya-website-documentation/asr/streaming.html">Streaming guide</a> for the full protocol.</p>
               </div>
             </details>
 
@@ -475,7 +475,7 @@
               </summary>
               <div class="faq-answer">
                 <p>Transcription itself does not return a translation. To translate the resulting transcript between Indian languages, use <strong>Vāķ Translate</strong>, which covers 2,970 language pairs.</p>
-                <p>For intent, summary, and sentiment on a transcript, use the <a href="/web_doc/intelligence/overview.html">Speech Intelligence</a> endpoint (<code>POST /v1/speechintelligence</code>).</p>
+                <p>For intent, summary, and sentiment on a transcript, use the <a href="/shunya-website-documentation/intelligence/overview.html">Speech Intelligence</a> endpoint (<code>POST /v1/speechintelligence</code>).</p>
               </div>
             </details>
 
@@ -524,7 +524,7 @@ async def stream_microphone():
             await ws.send(data)
 
 asyncio.run(stream_microphone())</code></pre>
-                <p>You'll receive <code>ready</code>, <code>partial</code>, and <code>final</code> events. See the <a href="/web_doc/asr/streaming.html">Streaming guide</a> for complete Python and Node.js examples.</p>
+                <p>You'll receive <code>ready</code>, <code>partial</code>, and <code>final</code> events. See the <a href="/shunya-website-documentation/asr/streaming.html">Streaming guide</a> for complete Python and Node.js examples.</p>
               </div>
             </details>
 
@@ -576,7 +576,7 @@ asyncio.run(stream_microphone())</code></pre>
               </summary>
               <div class="faq-answer">
                 <p>Yes. The batch endpoint can process recorded calls, and the streaming endpoint can transcribe live calls. Enable <strong>diarization</strong> (<code>diarize</code>, plus <code>num_speakers</code> as a hint) to distinguish agent from customer.</p>
-                <p>For telephony audio at 8 kHz, send PCM at <code>sample_rate: 8000</code> on streaming, or upload an 8 kHz WAV/MP3/etc. file to batch. Run the resulting transcript through <a href="/web_doc/intelligence/overview.html">Speech Intelligence</a> (<code>POST /v1/speechintelligence</code>) for intent, summary, and sentiment.</p>
+                <p>For telephony audio at 8 kHz, send PCM at <code>sample_rate: 8000</code> on streaming, or upload an 8 kHz WAV/MP3/etc. file to batch. Run the resulting transcript through <a href="/shunya-website-documentation/intelligence/overview.html">Speech Intelligence</a> (<code>POST /v1/speechintelligence</code>) for intent, summary, and sentiment.</p>
               </div>
             </details>
 
@@ -727,7 +727,7 @@ tts = OpenAITTSService(
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>Use the OpenAI-compatible endpoint (<code>POST /v1/audio/speech</code>) with <code>response_format="pcm"</code>; the raw PCM output is useful for streaming and voice-agent pipelines. For the sentence-by-sentence pattern, see the <a href="/web_doc/tts/llm-to-tts.html">LLM → TTS pipeline</a>.</p>
+                <p>Use the OpenAI-compatible endpoint (<code>POST /v1/audio/speech</code>) with <code>response_format="pcm"</code>; the raw PCM output is useful for streaming and voice-agent pipelines. For the sentence-by-sentence pattern, see the <a href="/shunya-website-documentation/tts/llm-to-tts.html">LLM → TTS pipeline</a>.</p>
               </div>
             </details>
 
@@ -738,7 +738,7 @@ tts = OpenAITTSService(
                 <svg class="faq-chevron" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
               </summary>
               <div class="faq-answer">
-                <p>Sign up or log in at shunyalabs.ai, complete onboarding and confirm testing credits, generate an API key, exchange it for a Bearer token via the Auth API, integrate the standard, education, or OpenAI-compatible TTS endpoint, store credentials securely and refresh tokens before expiry, and use the latest API docs for supported request fields. See <a href="/web_doc/tts/api-reference.html#client-checklist">Client checklist</a> in the TTS API reference.</p>
+                <p>Sign up or log in at shunyalabs.ai, complete onboarding and confirm testing credits, generate an API key, exchange it for a Bearer token via the Auth API, integrate the standard, education, or OpenAI-compatible TTS endpoint, store credentials securely and refresh tokens before expiry, and use the latest API docs for supported request fields. See <a href="/shunya-website-documentation/tts/api-reference.html#client-checklist">Client checklist</a> in the TTS API reference.</p>
               </div>
             </details>
           </div>
@@ -760,7 +760,7 @@ tts = OpenAITTSService(
               </summary>
               <div class="faq-answer">
                 <p>Both guides document a <code>429</code> (rate limit) error. The TTS guide intentionally does not hard-code rate or concurrency limits because they may vary by product version or client plan; confirm your required traffic with ShunyaLabs before production rollout.</p>
-                <p>For batch STT, the documented limit is the 50 MB file size; files larger than that return <code>413</code>. See the <a href="/web_doc/api-reference/rate-limits.html">Rate limits page</a> for what is documented.</p>
+                <p>For batch STT, the documented limit is the 50 MB file size; files larger than that return <code>413</code>. See the <a href="/shunya-website-documentation/api-reference/rate-limits.html">Rate limits page</a> for what is documented.</p>
               </div>
             </details>
 
@@ -802,7 +802,7 @@ r = requests.post(
 r.raise_for_status()
 with open("hello.wav", "wb") as f:
     f.write(r.content)</code></pre>
-                <p>For the OpenAI-compatible endpoint, point the OpenAI SDK at <code>https://ttsv2.shunyalabs.ai/v1</code>. See the <a href="/web_doc/integrations/python-sdk.html">Python integration guide</a> for full examples.</p>
+                <p>For the OpenAI-compatible endpoint, point the OpenAI SDK at <code>https://ttsv2.shunyalabs.ai/v1</code>. See the <a href="/shunya-website-documentation/integrations/python-sdk.html">Python integration guide</a> for full examples.</p>
               </div>
             </details>
 
@@ -827,7 +827,7 @@ resp = client.audio.speech.create(
     response_format="pcm",
 )
 resp.stream_to_file("hello.pcm")</code></pre>
-                <p>Standard parameters like <code>model</code>, <code>input</code>, <code>voice</code>, and <code>response_format</code> work as documented in the guide. See the <a href="/web_doc/personas/openai-compatible.html">OpenAI compatibility guide</a>.</p>
+                <p>Standard parameters like <code>model</code>, <code>input</code>, <code>voice</code>, and <code>response_format</code> work as documented in the guide. See the <a href="/shunya-website-documentation/personas/openai-compatible.html">OpenAI compatibility guide</a>.</p>
               </div>
             </details>
 
@@ -853,7 +853,7 @@ resp.stream_to_file("hello.pcm")</code></pre>
               <div class="faq-answer">
                 <p>The ASR guide documents these error status codes for its endpoints:</p>
                 <ul><li><strong>400</strong> - Bad request (missing/invalid input, or audio exceeds your plan limit)</li><li><strong>401</strong> - Missing, invalid, or expired token; re-mint at <code>/auth/token</code></li><li><strong>402</strong> - Insufficient balance (at <code>/auth/token</code>)</li><li><strong>403</strong> - Token not authorized for this endpoint</li><li><strong>413</strong> - Upload too large (limit 50 MB)</li><li><strong>415</strong> - Unsupported audio format</li><li><strong>429</strong> - Rate limit exceeded</li><li><strong>504</strong> - Request timed out</li></ul>
-                <p>See the <a href="/web_doc/api-reference/errors.html">Error codes reference</a> for complete details.</p>
+                <p>See the <a href="/shunya-website-documentation/api-reference/errors.html">Error codes reference</a> for complete details.</p>
               </div>
             </details>
 
@@ -900,7 +900,7 @@ def retry_with_backoff(fn, max_retries=5, base_delay=1.0):
               <div class="faq-answer">
                 <p>WebSocket handshake failures are usually caused by:</p>
                 <ul><li><strong>Incorrect URL scheme:</strong> Use <code>wss://asrv2prod.shunyalabs.ai/v1/realtime</code> for secure connections</li><li><strong>Missing authentication:</strong> Include the short-lived access token (from <code>POST /auth/token</code>) as the <code>token</code> field of your first message, the <code>?token=</code> query parameter, or <code>Authorization: Bearer</code> on the upgrade</li><li><strong>Firewall blocking:</strong> Ensure WebSocket connections on port 443 are allowed</li></ul>
-                <p>Refer to the <a href="/web_doc/asr/streaming.html">Streaming guide</a> for WebSocket connection examples.</p>
+                <p>Refer to the <a href="/shunya-website-documentation/asr/streaming.html">Streaming guide</a> for WebSocket connection examples.</p>
               </div>
             </details>
 
@@ -951,7 +951,7 @@ def retry_with_backoff(fn, max_retries=5, base_delay=1.0):
                 <pre><code>const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
 const mediaRecorder = new MediaRecorder(stream);
 // Send chunks to wss://asrv2prod.shunyalabs.ai/v1/realtime</code></pre>
-                <p>Use the <a href="/web_doc/asr/streaming.html">Streaming STT guide</a> for browser-compatible WebSocket examples.</p>
+                <p>Use the <a href="/shunya-website-documentation/asr/streaming.html">Streaming STT guide</a> for browser-compatible WebSocket examples.</p>
               </div>
             </details>
 
@@ -1015,7 +1015,7 @@ curl -X POST 'https://ttsv2.shunyalabs.ai/v1/omni-voice/synthesize' \
   -H 'Content-Type: application/json' \
   -d '{"text": "Hello world", "voice": "Meera"}' \
   --output hello.wav</code></pre>
-                <p>All API endpoints are documented in the <a href="/web_doc/api-reference/index.html">API Reference</a>.</p>
+                <p>All API endpoints are documented in the <a href="/shunya-website-documentation/api-reference/index.html">API Reference</a>.</p>
               </div>
             </details>
 
@@ -1027,7 +1027,7 @@ curl -X POST 'https://ttsv2.shunyalabs.ai/v1/omni-voice/synthesize' \
               </summary>
               <div class="faq-answer">
                 <p>Create a <strong>new API key</strong> in the dashboard while keeping your existing key active. Update your application to use the new key, test in staging, then update production.</p>
-                <p>After confirming production is stable with the new key, <strong>revoke the old key</strong>. The <a href="/web_doc/security/compliance.html">Compliance page</a> recommends rotating on a quarterly schedule or immediately on suspected compromise, and notes that revocation takes effect in under 60 seconds.</p>
+                <p>After confirming production is stable with the new key, <strong>revoke the old key</strong>. The <a href="/shunya-website-documentation/security/compliance.html">Compliance page</a> recommends rotating on a quarterly schedule or immediately on suspected compromise, and notes that revocation takes effect in under 60 seconds.</p>
               </div>
             </details>
 
@@ -1050,7 +1050,7 @@ curl -X POST 'https://ttsv2.shunyalabs.ai/v1/omni-voice/synthesize' \
               </summary>
               <div class="faq-answer">
                 <p>Since Shunya is OpenAI-compatible for TTS, you only need to change the <code>base_url</code> and <code>api_key</code> in existing OpenAI integration code. For other providers, update your code to use Shunya's API format.</p>
-                <p>The <a href="/web_doc/personas/openai-compatible.html">OpenAI compatibility guide</a> provides a side-by-side comparison if migrating from OpenAI Speech Services.</p>
+                <p>The <a href="/shunya-website-documentation/personas/openai-compatible.html">OpenAI compatibility guide</a> provides a side-by-side comparison if migrating from OpenAI Speech Services.</p>
               </div>
             </details>
 
@@ -1073,7 +1073,7 @@ curl -X POST 'https://ttsv2.shunyalabs.ai/v1/omni-voice/synthesize' \
               </summary>
               <div class="faq-answer">
                 <p>Yes. Shunya Labs supports <strong>on-prem / VPC deployment</strong> for organizations that need data residency, low latency, or air-gapped operation. You deploy the same Triton containers that power the cloud inside your network, with REST and WebSocket edge services exposing the same API contract.</p>
-                <p>See the <a href="/web_doc/deployment/overview.html">Deployment guide</a> for the two deployment shapes and contact <a href="https://www.shunyalabs.ai/contact" target="_blank" rel="noopener">Shunya Labs</a> for a deployment evaluation.</p>
+                <p>See the <a href="/shunya-website-documentation/deployment/overview.html">Deployment guide</a> for the two deployment shapes and contact <a href="https://www.shunyalabs.ai/contact" target="_blank" rel="noopener">Shunya Labs</a> for a deployment evaluation.</p>
               </div>
             </details>
 
@@ -1103,7 +1103,7 @@ curl -X POST 'https://ttsv2.shunyalabs.ai/v1/omni-voice/synthesize' \
                   <li>Verify checksums and transfer via signed media to the secure zone</li>
                   <li>Load the model from the local path; no further network calls are needed</li>
                 </ol>
-                <p>For production-quality serving in an air-gapped zone (multi-tenant, streaming, horizontally scaled), the on-prem package is easier than rolling your own Triton configuration. See the <a href="/web_doc/deployment/overview.html">Deployment guide</a> or <a href="https://www.shunyalabs.ai/contact" target="_blank" rel="noopener">contact Shunya Labs</a>.</p>
+                <p>For production-quality serving in an air-gapped zone (multi-tenant, streaming, horizontally scaled), the on-prem package is easier than rolling your own Triton configuration. See the <a href="/shunya-website-documentation/deployment/overview.html">Deployment guide</a> or <a href="https://www.shunyalabs.ai/contact" target="_blank" rel="noopener">contact Shunya Labs</a>.</p>
               </div>
             </details>
 
@@ -1116,7 +1116,7 @@ curl -X POST 'https://ttsv2.shunyalabs.ai/v1/omni-voice/synthesize' \
               <div class="faq-answer">
                 <p>Yes. Shunya Labs follows industry-standard security practices:</p>
                 <ul><li><strong>In transit:</strong> TLS 1.3 for all API and WebSocket connections</li><li><strong>At rest:</strong> AES-256-GCM with envelope encryption</li><li><strong>Audio:</strong> encrypted during processing and deleted on transcription completion; transcripts are not retained in the default configuration</li></ul>
-                <p>Shunya is <strong>SOC 2 Type II</strong>, <strong>ISO/IEC 27001:2022</strong>, <strong>HIPAA</strong>, <strong>GDPR</strong>, and <strong>CCPA</strong> aligned. See the <a href="/web_doc/security/compliance.html">Compliance page</a> for details.</p>
+                <p>Shunya is <strong>SOC 2 Type II</strong>, <strong>ISO/IEC 27001:2022</strong>, <strong>HIPAA</strong>, <strong>GDPR</strong>, and <strong>CCPA</strong> aligned. See the <a href="/shunya-website-documentation/security/compliance.html">Compliance page</a> for details.</p>
               </div>
             </details>
 
@@ -1128,7 +1128,7 @@ curl -X POST 'https://ttsv2.shunyalabs.ai/v1/omni-voice/synthesize' \
               </summary>
               <div class="faq-answer">
                 <p>The on-prem package ships as Triton Inference Server containers with a REST and WebSocket edge service and a management plane for API keys, quotas, and monitoring. It includes <strong>Helm charts</strong> (Kubernetes) or <code>docker-compose</code> for smaller setups.</p>
-                <p>Contact <a href="https://www.shunyalabs.ai/contact" target="_blank" rel="noopener">Shunya Labs</a> to obtain the deployment package. See the <a href="/web_doc/deployment/overview.html">Deployment guide</a> for details.</p>
+                <p>Contact <a href="https://www.shunyalabs.ai/contact" target="_blank" rel="noopener">Shunya Labs</a> to obtain the deployment package. See the <a href="/shunya-website-documentation/deployment/overview.html">Deployment guide</a> for details.</p>
               </div>
             </details>
 
@@ -1233,7 +1233,7 @@ curl -X POST 'https://ttsv2.shunyalabs.ai/v1/omni-voice/synthesize' \
               </summary>
               <div class="faq-answer">
                 <p>The cloud API default region is Asia (Mumbai). Enterprise customers can request US or EU endpoints.</p>
-                <p>For on-prem / VPC deployments, data residency is entirely under your control since the inference servers run within your infrastructure. See the <a href="/web_doc/deployment/overview.html">Deployment guide</a>.</p>
+                <p>For on-prem / VPC deployments, data residency is entirely under your control since the inference servers run within your infrastructure. See the <a href="/shunya-website-documentation/deployment/overview.html">Deployment guide</a>.</p>
               </div>
             </details>
 
@@ -1245,7 +1245,7 @@ curl -X POST 'https://ttsv2.shunyalabs.ai/v1/omni-voice/synthesize' \
               </summary>
               <div class="faq-answer">
                 <p>Audit logging is a documented control on the management plane: audit logging on every privileged action with logs shipped to an immutable store, and role-based access control with least-privilege defaults.</p>
-                <p>See the <a href="/web_doc/security/compliance.html">Compliance page</a> for the documented security and access controls.</p>
+                <p>See the <a href="/shunya-website-documentation/security/compliance.html">Compliance page</a> for the documented security and access controls.</p>
               </div>
             </details>
 
@@ -1262,7 +1262,7 @@ curl -X POST 'https://ttsv2.shunyalabs.ai/v1/omni-voice/synthesize' \
   -F "file=@lecture.wav" \
   -F "model=zero-med" \
   -F "language_code=en"</code></pre>
-                <p>See the <a href="/web_doc/asr/models.html">models page</a> for guidance on picking the model that matches your domain.</p>
+                <p>See the <a href="/shunya-website-documentation/asr/models.html">models page</a> for guidance on picking the model that matches your domain.</p>
               </div>
             </details>
 
@@ -1295,11 +1295,11 @@ curl -X POST 'https://ttsv2.shunyalabs.ai/v1/omni-voice/synthesize' \
         </section>
 
         <div class="pager">
-          <a class="pager-link" href="/web_doc/get-started/glossary.html">
+          <a class="pager-link" href="/shunya-website-documentation/get-started/glossary.html">
             <div class="pager-label">&larr; Previous</div>
             <div class="pager-title">Glossary</div>
           </a>
-          <a class="pager-link pager-right" href="/web_doc/personas/api.html">
+          <a class="pager-link pager-right" href="/shunya-website-documentation/personas/api.html">
             <div class="pager-label">Next &rarr;</div>
             <div class="pager-title">High code: API</div>
           </a>
@@ -1308,7 +1308,7 @@ curl -X POST 'https://ttsv2.shunyalabs.ai/v1/omni-voice/synthesize' \
       <aside class="toc" aria-label="On this page"></aside>
     </main>
   </div>
-  <script src="/web_doc/assets/js/shell.js?v=3"></script>
-  <script src="/web_doc/assets/js/nav.js?v=2"></script>
+  <script src="/shunya-website-documentation/assets/js/shell.js?v=3"></script>
+  <script src="/shunya-website-documentation/assets/js/nav.js?v=2"></script>
 </body>
 </html>

@@ -6,18 +6,18 @@
   <title>ASR streaming | Shunya Labs Docs</title>
   <meta name="description" content="Real-time speech-to-text over WebSocket: open a session, stream raw PCM frames, and receive partial + final results.">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@1,500;1,600;1,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/web_doc/assets/css/main.css?v=37">
-  <script src="/web_doc/assets/js/theme.js"></script>
+  <link rel="stylesheet" href="/shunya-website-documentation/assets/css/main.css?v=37">
+  <script src="/shunya-website-documentation/assets/js/theme.js"></script>
 </head>
 <body>
   <div class="app">
     <main class="main">
       <div class="content">
         <div class="breadcrumb">
-          <a href="/web_doc/index.html">Docs</a><span class="sep">/</span><span>Speech-to-Text</span><span class="sep">/</span><span>Streaming</span>
+          <a href="/shunya-website-documentation/index.html">Docs</a><span class="sep">/</span><span>Speech-to-Text</span><span class="sep">/</span><span>Streaming</span>
         </div>
         <h1>Realtime streaming over <span class="accent-italic">WebSocket</span></h1>
-        <p class="lead">For live audio where partial results matter: voice agents, IVR, live captioning. Open a WebSocket, stream raw PCM frames, and receive partial and final transcripts as the speaker talks. For pre-recorded files use <a href="/web_doc/asr/api-reference.html#post-transcriptions">batch transcription</a> instead; it's faster and returns the whole transcript at once.</p>
+        <p class="lead">For live audio where partial results matter: voice agents, IVR, live captioning. Open a WebSocket, stream raw PCM frames, and receive partial and final transcripts as the speaker talks. For pre-recorded files use <a href="/shunya-website-documentation/asr/api-reference.html#post-transcriptions">batch transcription</a> instead; it's faster and returns the whole transcript at once.</p>
 
         <h2>Endpoint</h2>
         <p>Live speech-to-text over WebSocket (English + 22 Indic languages). Also reachable at <code>WS /ws</code> (same behaviour).</p>
@@ -173,11 +173,11 @@ audioSource.on("end",  () => ws.send("end"));</code></pre>
         </div>
 
         <div class="pager">
-          <a class="pager-link" href="/web_doc/asr/features.html">
+          <a class="pager-link" href="/shunya-website-documentation/asr/features.html">
             <div class="pager-label">← Previous</div>
             <div class="pager-title">Features</div>
           </a>
-          <a class="pager-link pager-right" href="/web_doc/asr/models.html">
+          <a class="pager-link pager-right" href="/shunya-website-documentation/asr/models.html">
             <div class="pager-label">Next →</div>
             <div class="pager-title">ASR Models</div>
           </a>
@@ -187,10 +187,10 @@ audioSource.on("end",  () => ws.send("end"));</code></pre>
     </main>
   </div>
 
-  <script src="/web_doc/assets/js/shell.js?v=3"></script>
-  <script src="/web_doc/assets/js/stt-nav.js?v=4"></script>
-  <script src="/web_doc/assets/js/nav.js?v=4"></script>
+  <script src="/shunya-website-documentation/assets/js/shell.js?v=3"></script>
+  <script src="/shunya-website-documentation/assets/js/stt-nav.js?v=4"></script>
+  <script src="/shunya-website-documentation/assets/js/nav.js?v=4"></script>
   <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
-  <script src="/web_doc/assets/js/mermaid-init.js?v=2"></script>
+  <script src="/shunya-website-documentation/assets/js/mermaid-init.js?v=2"></script>
 </body>
 </html>

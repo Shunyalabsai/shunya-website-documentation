@@ -6,15 +6,15 @@
   <title>TTS overview | Shunya Labs Docs</title>
   <meta name="description" content="ShunyaLabs Text-to-Speech: standard omni-voice synthesis, education LaTeX TTS, and the OpenAI-compatible voice-agent endpoint.">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@1,500;1,600;1,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/web_doc/assets/css/main.css?v=37">
-  <script src="/web_doc/assets/js/theme.js"></script>
+  <link rel="stylesheet" href="/shunya-website-documentation/assets/css/main.css?v=37">
+  <script src="/shunya-website-documentation/assets/js/theme.js"></script>
 </head>
 <body>
   <div class="app">
     <main class="main">
       <div class="content">
         <div class="breadcrumb">
-          <a href="/web_doc/index.html">Docs</a><span class="sep">/</span><span>Text-to-Speech</span><span class="sep">/</span><span>Overview</span>
+          <a href="/shunya-website-documentation/index.html">Docs</a><span class="sep">/</span><span>Text-to-Speech</span><span class="sep">/</span><span>Overview</span>
         </div>
         <h1>Text-to-Speech <span class="accent-italic">(TTS)</span></h1>
         <p class="lead">ShunyaLabs TTS turns text into spoken audio. The recommended integration path covers standard omni-voice synthesis, education LaTeX TTS for math content, and an OpenAI-compatible voice-agent endpoint for Pipecat and similar frameworks. Every call authenticates with a short-lived Bearer token minted from your API key.</p>
@@ -41,7 +41,7 @@
         <h2>How authentication works</h2>
         <p>Generate an API key from your ShunyaLabs account, then exchange it for a short-lived Bearer token at <code>POST /api/auth/token</code>. Use the token as <code>Authorization: Bearer YOUR_TOKEN</code> on every TTS call. Request the token lifetime in seconds with <code>expires_in</code> (for example, <code>86400</code> for 24 hours), reuse it until it approaches expiry, then mint a fresh one. Keep the API key on the server side; never send it to end-user clients.</p>
 
-        <p>See <a href="/web_doc/tts/api-reference.html#authentication">Authentication</a> for the full flow.</p>
+        <p>See <a href="/shunya-website-documentation/tts/api-reference.html#authentication">Authentication</a> for the full flow.</p>
 
         <h2>Standard TTS</h2>
         <p>Use the Omni Voice synthesis endpoint for standard text-to-speech generation. The body takes <code>text</code> (the content to synthesize) and <code>voice</code> (the requested ShunyaLabs voice).</p>
@@ -104,26 +104,26 @@ tts = OpenAITTSService(
 
         <h2>Next steps</h2>
         <div class="grid grid-3">
-          <a href="/web_doc/tts/quickstart.html" class="card-link"><div class="card">
+          <a href="/shunya-website-documentation/tts/quickstart.html" class="card-link"><div class="card">
             <div class="card-title">Quickstart</div>
             <p class="card-desc">Mint a token and run your first standard, LaTeX, and OpenAI-compatible synthesis calls.</p>
           </div></a>
-          <a href="/web_doc/tts/api-reference.html" class="card-link"><div class="card">
+          <a href="/shunya-website-documentation/tts/api-reference.html" class="card-link"><div class="card">
             <div class="card-title">API reference</div>
             <p class="card-desc">Every endpoint with request fields, examples, the client checklist, and the API docs link.</p>
           </div></a>
-          <a href="/web_doc/tts/llm-to-tts.html" class="card-link"><div class="card">
+          <a href="/shunya-website-documentation/tts/llm-to-tts.html" class="card-link"><div class="card">
             <div class="card-title">LLM → TTS pipeline</div>
             <p class="card-desc">Pipe LLM output into the OpenAI-compatible endpoint at sentence boundaries for voice agents.</p>
           </div></a>
         </div>
 
         <div class="pager">
-          <a class="pager-link" href="/web_doc/asr/api-reference.html">
+          <a class="pager-link" href="/shunya-website-documentation/asr/api-reference.html">
             <div class="pager-label">← Previous</div>
             <div class="pager-title">ASR API reference</div>
           </a>
-          <a class="pager-link pager-right" href="/web_doc/tts/quickstart.html">
+          <a class="pager-link pager-right" href="/shunya-website-documentation/tts/quickstart.html">
             <div class="pager-label">Next →</div>
             <div class="pager-title">TTS quickstart</div>
           </a>
@@ -133,8 +133,8 @@ tts = OpenAITTSService(
     </main>
   </div>
 
-  <script src="/web_doc/assets/js/shell.js?v=3"></script>
-  <script src="/web_doc/assets/js/tts-nav.js?v=1"></script>
-  <script src="/web_doc/assets/js/nav.js?v=4"></script>
+  <script src="/shunya-website-documentation/assets/js/shell.js?v=3"></script>
+  <script src="/shunya-website-documentation/assets/js/tts-nav.js?v=1"></script>
+  <script src="/shunya-website-documentation/assets/js/nav.js?v=4"></script>
 </body>
 </html>

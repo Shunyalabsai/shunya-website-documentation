@@ -6,15 +6,15 @@
   <title>Intelligence | Shunya Labs Docs</title>
   <meta name="description" content="Speech Intelligence: intent detection, summarization, and sentiment analysis over text via POST /v1/speechintelligence.">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@1,500;1,600;1,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/web_doc/assets/css/main.css?v=43">
-  <script src="/web_doc/assets/js/theme.js"></script>
+  <link rel="stylesheet" href="/shunya-website-documentation/assets/css/main.css?v=43">
+  <script src="/shunya-website-documentation/assets/js/theme.js"></script>
 </head>
 <body>
   <div class="app">
     <main class="main">
       <div class="content">
         <div class="breadcrumb">
-          <a href="/web_doc/index.html">Docs</a><span class="sep">/</span><span>Intelligence</span>
+          <a href="/shunya-website-documentation/index.html">Docs</a><span class="sep">/</span><span>Intelligence</span>
         </div>
         <h1>Speech <span class="accent-italic">Intelligence</span></h1>
         <p class="lead">NLP analysis over text: intent, summary, sentiment, key terms, and more, via the <code>POST /v1/speechintelligence</code> endpoint. Feed it a transcript (or any text) and get the analysis back in one JSON response.</p>
@@ -27,7 +27,7 @@
         <h2 id="how-to-call">How to call it</h2>
         <p>Send the <code>text</code> to analyse plus the <code>enable_*</code> flags for the capabilities you want. All flags are optional and combine freely. The result lives in the <code>analysis</code> object of the response.</p>
         <ol>
-          <li>Get a transcript from <a href="/web_doc/asr/api-reference.html#post-transcriptions">batch transcription</a> or <a href="/web_doc/asr/api-reference.html#websocket">realtime streaming</a>.</li>
+          <li>Get a transcript from <a href="/shunya-website-documentation/asr/api-reference.html#post-transcriptions">batch transcription</a> or <a href="/shunya-website-documentation/asr/api-reference.html#websocket">realtime streaming</a>.</li>
           <li>POST the <code>text</code> to <code>/v1/speechintelligence</code> with the flags you need.</li>
           <li>Read <code>analysis.intent</code>, <code>analysis.summary</code>, and <code>analysis.sentiment</code> on the response.</li>
         </ol>
@@ -182,15 +182,15 @@
 
         <div class="callout callout-info">
           <div class="callout-title">Also on the ASR side</div>
-          Diarization (<code>diarize</code>, <code>num_speakers</code>), word timestamps, and speaker enrolment live on the transcription endpoints, not on Speech Intelligence. <a href="/web_doc/asr/features.html">ASR features →</a>
+          Diarization (<code>diarize</code>, <code>num_speakers</code>), word timestamps, and speaker enrolment live on the transcription endpoints, not on Speech Intelligence. <a href="/shunya-website-documentation/asr/features.html">ASR features →</a>
         </div>
 
         <div class="pager">
-          <a class="pager-link" href="/web_doc/asr/models.html">
+          <a class="pager-link" href="/shunya-website-documentation/asr/models.html">
             <div class="pager-label">← Previous</div>
             <div class="pager-title">ASR Models</div>
           </a>
-          <a class="pager-link pager-right" href="/web_doc/asr/features.html">
+          <a class="pager-link pager-right" href="/shunya-website-documentation/asr/features.html">
             <div class="pager-label">Next →</div>
             <div class="pager-title">Full feature reference</div>
           </a>
@@ -200,8 +200,8 @@
     </main>
   </div>
 
-  <script src="/web_doc/assets/js/shell.js?v=4"></script>
-  <script src="/web_doc/assets/js/intelligence-nav.js?v=1"></script>
-  <script src="/web_doc/assets/js/nav.js?v=5"></script>
+  <script src="/shunya-website-documentation/assets/js/shell.js?v=4"></script>
+  <script src="/shunya-website-documentation/assets/js/intelligence-nav.js?v=1"></script>
+  <script src="/shunya-website-documentation/assets/js/nav.js?v=5"></script>
 </body>
 </html>

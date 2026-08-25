@@ -6,15 +6,15 @@
   <title>OpenAI compatible | Shunya Labs Docs</title>
   <meta name="description" content="Drop ShunyaLabs into existing OpenAI SDK code. Same call shape, point base_url to ShunyaLabs, pass your Bearer token, get the OpenAI-compatible voice-agent endpoint.">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@1,500;1,600;1,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/web_doc/assets/css/main.css?v=32">
-  <script src="/web_doc/assets/js/theme.js"></script>
+  <link rel="stylesheet" href="/shunya-website-documentation/assets/css/main.css?v=32">
+  <script src="/shunya-website-documentation/assets/js/theme.js"></script>
 </head>
 <body>
   <div class="app">
     <main class="main">
       <div class="content">
         <div class="breadcrumb">
-          <a href="/web_doc/index.html">Docs</a><span class="sep">/</span><span>Pick your journey</span><span class="sep">/</span><span>OpenAI compatible</span>
+          <a href="/shunya-website-documentation/index.html">Docs</a><span class="sep">/</span><span>Pick your journey</span><span class="sep">/</span><span>OpenAI compatible</span>
         </div>
         <div class="persona-label" style="margin-bottom: 0.5rem;">For teams already on the OpenAI SDK</div>
         <h1>Drop in to <span class="accent-italic">existing OpenAI code</span></h1>
@@ -36,7 +36,7 @@
   -H 'Content-Type: application/json' \
   -d '{"expires_in": 86400}'</code></pre>
 
-        <p>See <a href="/web_doc/tts/api-reference.html#authentication">Authentication</a> for the full flow.</p>
+        <p>See <a href="/shunya-website-documentation/tts/api-reference.html#authentication">Authentication</a> for the full flow.</p>
 
         <h2>Step 2: The two-line swap</h2>
         <p>Take any working OpenAI TTS call. Change <code>base_url</code> and pass your ShunyaLabs token as <code>api_key</code>; use an OpenAI-compatible model and voice name.</p>
@@ -152,21 +152,21 @@ async for chunk in stream:
           </div>
           <div class="card">
             <div class="card-title">Pipecat support</div>
-            <p class="card-desc">Configure <code>OpenAITTSService</code> with <code>base_url="https://ttsv2.shunyalabs.ai/v1"</code> and your Bearer token; see the <a href="/web_doc/tts/api-reference.html#pipecat">Pipecat example</a>.</p>
+            <p class="card-desc">Configure <code>OpenAITTSService</code> with <code>base_url="https://ttsv2.shunyalabs.ai/v1"</code> and your Bearer token; see the <a href="/shunya-website-documentation/tts/api-reference.html#pipecat">Pipecat example</a>.</p>
           </div>
         </div>
 
         <div class="callout callout-success">
           <div class="callout-title">Full reference</div>
-          See <a href="/web_doc/tts/api-reference.html">TTS API reference</a> for the endpoint fields, examples, the client integration checklist, and the interactive API documentation.
+          See <a href="/shunya-website-documentation/tts/api-reference.html">TTS API reference</a> for the endpoint fields, examples, the client integration checklist, and the interactive API documentation.
         </div>
 
         <div class="pager">
-          <a class="pager-link" href="/web_doc/personas/playground.html">
+          <a class="pager-link" href="/shunya-website-documentation/personas/playground.html">
             <div class="pager-label">← Previous</div>
             <div class="pager-title">No code: Playground</div>
           </a>
-          <a class="pager-link pager-right" href="/web_doc/integrations/overview.html">
+          <a class="pager-link pager-right" href="/shunya-website-documentation/integrations/overview.html">
             <div class="pager-label">Next →</div>
             <div class="pager-title">Integrations</div>
           </a>
@@ -176,9 +176,9 @@ async for chunk in stream:
     </main>
   </div>
 
-  <script src="/web_doc/assets/js/shell.js?v=3"></script>
-  <script src="/web_doc/assets/js/nav.js?v=2"></script>
+  <script src="/shunya-website-documentation/assets/js/shell.js?v=3"></script>
+  <script src="/shunya-website-documentation/assets/js/nav.js?v=2"></script>
   <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
-  <script src="/web_doc/assets/js/mermaid-init.js?v=2"></script>
+  <script src="/shunya-website-documentation/assets/js/mermaid-init.js?v=2"></script>
 </body>
 </html>

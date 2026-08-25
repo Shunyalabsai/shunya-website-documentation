@@ -16,7 +16,7 @@
       const i = href.indexOf('/assets/css/');
       if (i !== -1) return href.slice(0, i);
     }
-    return window.location.pathname.indexOf('/web_doc') !== -1 ? '/web_doc' : '';
+    return window.location.pathname.indexOf('/shunya-website-documentation') !== -1 ? '/shunya-website-documentation' : '';
   }
 
   function docUrl(path) {

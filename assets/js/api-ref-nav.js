@@ -13,7 +13,7 @@
       const i = src.indexOf('/assets/js/');
       if (i !== -1) return src.slice(0, i);
     }
-    return '/web_doc';
+    return '/shunya-website-documentation';
   }
 
   function docUrl(path) {

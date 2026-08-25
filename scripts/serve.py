@@ -1,12 +1,12 @@
 #!/usr/bin/env python3
-"""Serve the docs locally at http://localhost:8765/web_doc/ (matches GitHub Pages paths)."""
+"""Serve the docs locally at http://localhost:8765/shunya-website-documentation/ (matches GitHub Pages paths)."""
 
 import http.server
 import os
 import socketserver
 
 PORT = 8765
-BASE = "/web_doc"
+BASE = "/shunya-website-documentation"
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
 

@@ -233,8 +233,8 @@
         return docBase;
       }
     }
-    if (window.location.pathname.indexOf('/web_doc') !== -1) {
-      docBase = '/web_doc';
+    if (window.location.pathname.indexOf('/shunya-website-documentation') !== -1) {
+      docBase = '/shunya-website-documentation';
     } else {
       docBase = '';
     }
@@ -441,7 +441,7 @@
       label: 'Home',
       path: '/index.html',
       icon: 'home',
-      match: [/index\.html$/, /\/web_doc\/?$/, /what-is-shunya/, /glossary/, /capability-matrix/, /\/faqs/],
+      match: [/index\.html$/, /\/shunya-website-documentation\/?$/, /what-is-shunya/, /glossary/, /capability-matrix/, /\/faqs/],
     },
     {
       id: 'quickstart',

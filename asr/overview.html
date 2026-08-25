@@ -6,15 +6,15 @@
   <title>ASR overview | Shunya Labs Docs</title>
   <meta name="description" content="Speech-to-text overview: models, endpoints, and when to use each.">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@1,500;1,600;1,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/web_doc/assets/css/main.css?v=37">
-  <script src="/web_doc/assets/js/theme.js"></script>
+  <link rel="stylesheet" href="/shunya-website-documentation/assets/css/main.css?v=37">
+  <script src="/shunya-website-documentation/assets/js/theme.js"></script>
 </head>
 <body>
   <div class="app">
     <main class="main">
       <div class="content">
         <div class="breadcrumb">
-          <a href="/web_doc/index.html">Docs</a><span class="sep">/</span><span>Speech-to-Text</span><span class="sep">/</span><span>Overview</span>
+          <a href="/shunya-website-documentation/index.html">Docs</a><span class="sep">/</span><span>Speech-to-Text</span><span class="sep">/</span><span>Overview</span>
         </div>
         <h1>Speech-to-Text <span class="accent-italic">(ASR)</span></h1>
         <p class="lead">Zero STT is Shunya's speech recognition family. One API surface for batch and streaming, a choice of four models tuned for different domains, diarization and word timestamps on the transcript, and a Speech Intelligence endpoint that adds intent, summary, and sentiment analysis over the text.</p>
@@ -168,22 +168,22 @@
           <div class="card model-pick-card">
             <div class="card-title"><a class="hf-model-link" href="https://huggingface.co/spaces/shunyalabs/Zero-STT-Shunya-Labs" target="_blank" rel="noopener" title="View on Hugging Face"><code>zero-indic</code></a></div>
             <p class="card-desc">Native handling of Hindi, Tamil, Telugu, Kannada, Marathi, Bengali, and more. The default for Indian-language content.</p>
-            <a href="/web_doc/asr/models.html#zero-indic" class="card-cta">View model <span class="card-cta-arrow">→</span></a>
+            <a href="/shunya-website-documentation/asr/models.html#zero-indic" class="card-cta">View model <span class="card-cta-arrow">→</span></a>
           </div>
           <div class="card model-pick-card">
             <div class="card-title"><a class="hf-model-link" href="https://huggingface.co/shunyalabs/pingala-v1-universal" target="_blank" rel="noopener" title="View on Hugging Face"><code>zero-universal</code></a></div>
             <p class="card-desc">Strongest on English and international content. Use when the input could be anything; set <code>language_code=auto</code>.</p>
-            <a href="/web_doc/asr/models.html#zero-universal" class="card-cta">View model <span class="card-cta-arrow">→</span></a>
+            <a href="/shunya-website-documentation/asr/models.html#zero-universal" class="card-cta">View model <span class="card-cta-arrow">→</span></a>
           </div>
           <div class="card model-pick-card">
             <div class="card-title"><a class="hf-model-link" href="https://huggingface.co/spaces/shunyalabs/Zero_STT_Med_Shunya_Labs" target="_blank" rel="noopener" title="View on Hugging Face"><code>zero-med</code></a></div>
             <p class="card-desc">Clinical / medical speech with drug, procedure, and diagnosis vocabulary. Auto-applies medical terminology correction.</p>
-            <a href="/web_doc/asr/models.html#zero-med" class="card-cta">View model <span class="card-cta-arrow">→</span></a>
+            <a href="/shunya-website-documentation/asr/models.html#zero-med" class="card-cta">View model <span class="card-cta-arrow">→</span></a>
           </div>
           <div class="card model-pick-card">
             <div class="card-title"><a class="hf-model-link" href="https://huggingface.co/shunyalabs/zero-stt-hinglish" target="_blank" rel="noopener" title="View on Hugging Face"><code>zero-codeswitch</code></a></div>
             <p class="card-desc">Native handling of mixed Hindi-English (Hinglish), Tamil-English (Tanglish) and similar blends. Restores English words to Latin script.</p>
-            <a href="/web_doc/asr/models.html#zero-codeswitch" class="card-cta">View model <span class="card-cta-arrow">→</span></a>
+            <a href="/shunya-website-documentation/asr/models.html#zero-codeswitch" class="card-cta">View model <span class="card-cta-arrow">→</span></a>
           </div>
         </div>
 
@@ -210,15 +210,15 @@ curl --location 'https://asrv2prod.shunyalabs.ai/v1/audio/transcriptions' \
 
         <div class="callout callout-info">
           <div class="callout-title">Token lifetime</div>
-          The access token lasts ~15 minutes. Cache and reuse it for both batch and streaming; re-mint at <code>/auth/token</code> on expiry or a <code>401</code>. <a href="/web_doc/asr/api-reference.html#post-auth-token">Authentication →</a>
+          The access token lasts ~15 minutes. Cache and reuse it for both batch and streaming; re-mint at <code>/auth/token</code> on expiry or a <code>401</code>. <a href="/shunya-website-documentation/asr/api-reference.html#post-auth-token">Authentication →</a>
         </div>
 
         <div class="pager">
-          <a class="pager-link" href="/web_doc/get-started/faqs.html">
+          <a class="pager-link" href="/shunya-website-documentation/get-started/faqs.html">
             <div class="pager-label">← Previous</div>
             <div class="pager-title">FAQs</div>
           </a>
-          <a class="pager-link pager-right" href="/web_doc/asr/configuration.html">
+          <a class="pager-link pager-right" href="/shunya-website-documentation/asr/configuration.html">
             <div class="pager-label">Next →</div>
             <div class="pager-title">ASR Configuration</div>
           </a>
@@ -228,10 +228,10 @@ curl --location 'https://asrv2prod.shunyalabs.ai/v1/audio/transcriptions' \
     </main>
   </div>
 
-  <script src="/web_doc/assets/js/shell.js?v=3"></script>
-  <script src="/web_doc/assets/js/stt-nav.js?v=4"></script>
-  <script src="/web_doc/assets/js/nav.js?v=4"></script>
+  <script src="/shunya-website-documentation/assets/js/shell.js?v=3"></script>
+  <script src="/shunya-website-documentation/assets/js/stt-nav.js?v=4"></script>
+  <script src="/shunya-website-documentation/assets/js/nav.js?v=4"></script>
   <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
-  <script src="/web_doc/assets/js/mermaid-init.js?v=2"></script>
+  <script src="/shunya-website-documentation/assets/js/mermaid-init.js?v=2"></script>
 </body>
 </html>

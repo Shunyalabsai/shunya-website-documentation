@@ -6,15 +6,15 @@
   <title>LLM → TTS pipeline | Shunya Labs Docs</title>
   <meta name="description" content="Pipe LLM token output to ShunyaLabs TTS as it arrives, the core latency pattern for voice agents, using the OpenAI-compatible endpoint.">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@1,500;1,600;1,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/web_doc/assets/css/main.css?v=37">
-  <script src="/web_doc/assets/js/theme.js"></script>
+  <link rel="stylesheet" href="/shunya-website-documentation/assets/css/main.css?v=37">
+  <script src="/shunya-website-documentation/assets/js/theme.js"></script>
 </head>
 <body>
   <div class="app">
     <main class="main">
       <div class="content">
         <div class="breadcrumb">
-          <a href="/web_doc/index.html">Docs</a><span class="sep">/</span><span>Text-to-Speech</span><span class="sep">/</span><span>LLM → TTS pipeline</span>
+          <a href="/shunya-website-documentation/index.html">Docs</a><span class="sep">/</span><span>Text-to-Speech</span><span class="sep">/</span><span>LLM → TTS pipeline</span>
         </div>
         <h1>LLM → TTS streaming <span class="accent-italic">pipeline</span></h1>
         <p class="lead">The core latency pattern for voice agents. Pipe LLM output into ShunyaLabs TTS as sentences complete, instead of waiting for the full response, so audio starts sooner and memory stays constant.</p>
@@ -55,7 +55,7 @@
         </ul>
 
         <h2>LLM → ShunyLabs pipeline</h2>
-        <p>Pick your LLM provider; the pattern is the same on both sides: stream tokens out of the LLM, buffer them until a sentence boundary, then flush each complete sentence into Shunya TTS through the <a href="/web_doc/tts/api-reference.html#post-speech">OpenAI-compatible endpoint</a> (<code>POST /v1/audio/speech</code>, raw PCM for playback).</p>
+        <p>Pick your LLM provider; the pattern is the same on both sides: stream tokens out of the LLM, buffer them until a sentence boundary, then flush each complete sentence into Shunya TTS through the <a href="/shunya-website-documentation/tts/api-reference.html#post-speech">OpenAI-compatible endpoint</a> (<code>POST /v1/audio/speech</code>, raw PCM for playback).</p>
 
         <div class="code-group">
           <div class="code-tabs" role="tablist">
@@ -253,11 +253,11 @@ class VoiceAgent:
             speaker.write(frame)</code></pre>
 
         <div class="pager">
-          <a class="pager-link" href="/web_doc/tts/api-reference.html">
+          <a class="pager-link" href="/shunya-website-documentation/tts/api-reference.html">
             <div class="pager-label">← Previous</div>
             <div class="pager-title">TTS API reference</div>
           </a>
-          <a class="pager-link pager-right" href="/web_doc/tts/overview.html">
+          <a class="pager-link pager-right" href="/shunya-website-documentation/tts/overview.html">
             <div class="pager-label">Next →</div>
             <div class="pager-title">TTS overview</div>
           </a>
@@ -267,10 +267,10 @@ class VoiceAgent:
     </main>
   </div>
 
-  <script src="/web_doc/assets/js/shell.js?v=3"></script>
-  <script src="/web_doc/assets/js/tts-nav.js?v=1"></script>
-  <script src="/web_doc/assets/js/nav.js?v=4"></script>
+  <script src="/shunya-website-documentation/assets/js/shell.js?v=3"></script>
+  <script src="/shunya-website-documentation/assets/js/tts-nav.js?v=1"></script>
+  <script src="/shunya-website-documentation/assets/js/nav.js?v=4"></script>
   <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
-  <script src="/web_doc/assets/js/mermaid-init.js?v=2"></script>
+  <script src="/shunya-website-documentation/assets/js/mermaid-init.js?v=2"></script>
 </body>
 </html>

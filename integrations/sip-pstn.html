@@ -6,15 +6,15 @@
   <title>SIP / PSTN | Shunya Labs Docs</title>
   <meta name="description" content="Use Shunya Labs ASR and TTS over SIP and PSTN. ASR streams raw PCM, TTS returns raw PCM on the OpenAI-compatible endpoint.">
   <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,wght@1,500;1,600;1,700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/web_doc/assets/css/main.css?v=32">
-  <script src="/web_doc/assets/js/theme.js"></script>
+  <link rel="stylesheet" href="/shunya-website-documentation/assets/css/main.css?v=32">
+  <script src="/shunya-website-documentation/assets/js/theme.js"></script>
 </head>
 <body>
   <div class="app">
     <main class="main">
       <div class="content">
         <div class="breadcrumb">
-          <a href="/web_doc/index.html">Docs</a><span class="sep">/</span><span>Integrations</span><span class="sep">/</span><span>SIP / PSTN</span>
+          <a href="/shunya-website-documentation/index.html">Docs</a><span class="sep">/</span><span>Integrations</span><span class="sep">/</span><span>SIP / PSTN</span>
         </div>
         <h1>SIP <span class="accent-italic">/ PSTN</span></h1>
         <p class="lead">For <strong>ASR streaming</strong>, send raw 16-bit signed PCM at 8 kHz or 16 kHz (<code>sample_rate</code> in the init message). On the <strong>TTS side</strong>, request raw PCM (<code>response_format="pcm"</code>) on the OpenAI-compatible endpoint and let your telephony stack handle the final encoding.</p>
@@ -56,17 +56,17 @@ resp.stream_to_file("telephony.pcm")</code></pre>
         <ul>
           <li><strong>Send 20–320 ms frames</strong> of raw 16-bit signed PCM, paced roughly in real time, so the server can emit <code>partial</code> transcripts while the caller is still speaking.</li>
           <li><strong>Finish with a text message <code>end</code></strong>: the server finalises the session and returns the last <code>final</code> event.</li>
-          <li><strong>For barge-in / interruption</strong>, treat an incoming <code>partial</code>/<code>final</code> event as the caller taking the floor and cancel any in-flight TTS playback. See <a href="/web_doc/tts/llm-to-tts.html">LLM → TTS pipeline</a>.</li>
+          <li><strong>For barge-in / interruption</strong>, treat an incoming <code>partial</code>/<code>final</code> event as the caller taking the floor and cancel any in-flight TTS playback. See <a href="/shunya-website-documentation/tts/llm-to-tts.html">LLM → TTS pipeline</a>.</li>
         </ul>
 
         <p class="text-subtle">Source: Shunyalabs ASR Gateway API Reference (31 March), WebSocket Streaming API → "Audio Formats"; ShunyaLabs TTS API Integration Guide, §4 Voice Agent / OpenAI-Compatible TTS.</p>
 
         <div class="pager">
-          <a class="pager-link" href="/web_doc/integrations/openai-sdk.html">
+          <a class="pager-link" href="/shunya-website-documentation/integrations/openai-sdk.html">
             <div class="pager-label">← Previous</div>
             <div class="pager-title">OpenAI SDK</div>
           </a>
-          <a class="pager-link pager-right" href="/web_doc/integrations/hugging-face.html">
+          <a class="pager-link pager-right" href="/shunya-website-documentation/integrations/hugging-face.html">
             <div class="pager-label">Next →</div>
             <div class="pager-title">Hugging Face</div>
           </a>
@@ -76,7 +76,7 @@ resp.stream_to_file("telephony.pcm")</code></pre>
     </main>
   </div>
 
-  <script src="/web_doc/assets/js/shell.js?v=3"></script>
-  <script src="/web_doc/assets/js/nav.js?v=2"></script>
+  <script src="/shunya-website-documentation/assets/js/shell.js?v=3"></script>
+  <script src="/shunya-website-documentation/assets/js/nav.js?v=2"></script>
 </body>
 </html>
