@@ -3,6 +3,7 @@
   const CATEGORIES = [
     { id: 'stt', label: 'Speech-to-Text', color: 'stt' },
     { id: 'tts', label: 'Text-to-Speech', color: 'tts' },
+    { id: 'agent', label: 'Voice Agent', color: 'features' },
     { id: 'api', label: 'API Reference', color: 'api' },
     { id: 'models', label: 'Models', color: 'models' },
     { id: 'features', label: 'Features', color: 'features' },
@@ -59,6 +60,9 @@
     { category: 'features', query: 'Speaker registration and deletion APIs', keywords: ['speaker', 'register', 'delete', 'enrol'], href: '/asr/api-reference.html#speakers' },
 
     { category: 'intel', query: 'Speech Intelligence overview with examples', keywords: ['intelligence', 'nlp', 'speechintelligence', 'analysis'], href: '/intelligence/overview.html' },
+    { category: 'agent', query: 'Voice Agent - Meera overview', keywords: ['meera', 'voice agent', 'outbound call', 'telephony'], href: '/voice-agent/meera.html' },
+    { category: 'agent', query: 'Create and configure a voice agent', keywords: ['create agent', 'prompt', 'behavior', 'voice', 'messages'], href: '/voice-agent/meera.html#create-agent' },
+    { category: 'agent', query: 'Trigger outbound calls with callbacks', keywords: ['calls', 'callback_url', 'external_id', 'from_number'], href: '/voice-agent/meera.html#trigger-calls' },
     { category: 'features', query: 'Diarization, who spoke when?', keywords: ['diarization', 'diarize', 'speaker', 'segments'], href: '/asr/features.html#diarization' },
     { category: 'intel', query: 'Intent detection on transcripts', keywords: ['intent', 'classification', 'complaint'], href: '/intelligence/overview.html#intent-detection' },
     { category: 'intel', query: 'Sentiment analysis and summarization', keywords: ['sentiment', 'summary', 'speechintelligence'], href: '/intelligence/overview.html#sentiment-analysis' },

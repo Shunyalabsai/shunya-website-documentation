@@ -32,6 +32,18 @@
       ]
     },
     {
+      heading: 'Voice Agent - Meera',
+      items: [
+        { href: '/shunya-website-documentation/voice-agent/meera.html', label: 'What is Meera?', icon: 'sparkles' },
+        { href: '/shunya-website-documentation/voice-agent/meera.html#minimal-happy-path', label: 'Start in 3 API calls', icon: 'zap' },
+        { href: '/shunya-website-documentation/voice-agent/meera.html#create-agent', label: 'Build your first agent', icon: 'user' },
+        { href: '/shunya-website-documentation/voice-agent/meera.html#telephony', label: 'Connect caller ID', icon: 'phone' },
+        { href: '/shunya-website-documentation/voice-agent/meera.html#trigger-calls', label: 'Launch outbound calls', icon: 'play' },
+        { href: '/shunya-website-documentation/voice-agent/meera.html#sample-webhook-payload', label: 'Handle callback payloads', icon: 'file-audio' },
+        { href: '/shunya-website-documentation/voice-agent/meera.html#status-codes', label: 'Fix common API errors', icon: 'help-circle' },
+      ]
+    },
+    {
       heading: 'Translation',
       items: [
         { href: '/shunya-website-documentation/translation/vak-overview.html', label: 'Vāķ Translate', icon: 'globe' },
@@ -84,6 +96,7 @@
     home: '<path d="M3 9.5L12 3l9 6.5V21a2 2 0 0 1-2 2h-4v-7h-6v7H5a2 2 0 0 1-2-2V9.5z"/>',
     sparkles: '<path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/>',
     zap: '<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>',
+    play: '<polygon points="5 3 19 12 5 21 5 3"/>',
     grid: '<rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/>',
     book: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20V2H6.5A2.5 2.5 0 0 0 4 4.5v15z"/>',
     code: '<polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>',
@@ -113,6 +126,7 @@
     plug: '<path d="M12 22v-5"/><path d="M9 8V2"/><path d="M15 8V2"/><path d="M18 8v5a4 4 0 0 1-4 4h-4a4 4 0 0 1-4-4V8z"/>',
     compatible: '<polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/>',
     phone: '<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>',
+    headset: '<path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/>',
     lock: '<rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>',
     beaker: '<path d="M9 2v6L4 18a2 2 0 0 0 1.79 3h12.42A2 2 0 0 0 20 18l-5-10V2"/><line x1="9" y1="2" x2="15" y2="2"/><line x1="6" y1="14" x2="18" y2="14"/>',
     'help-circle': '<circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>',

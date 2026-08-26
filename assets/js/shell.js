@@ -10,6 +10,8 @@
     tts: '<path d="M11 6L6 10H3v4h3l5 4V6z"/><path d="M15.5 8.5a5 5 0 0 1 0 7"/><path d="M18 6a8 8 0 0 1 0 12"/>',
     intel:
       '<path d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9z"/><circle cx="12" cy="12" r="2.5" opacity="0.35"/>',
+    agent:
+      '<path d="M3 18v-6a9 9 0 0 1 18 0v6"/><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"/>',
     translate:
       '<circle cx="12" cy="12" r="9"/><path d="M2 12h20"/><path d="M12 3a14 14 0 0 1 4 9 14 14 0 0 1-4 9 14 14 0 0 1-4-9 14 14 0 0 1 4-9z"/><path d="M8 9l4 3-4 3M16 9l-4 3 4 3"/>',
     api: '<polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/><line x1="12" y1="2" x2="12" y2="22" opacity="0.35"/>',
@@ -470,6 +472,13 @@
       path: '/intelligence/overview.html',
       icon: 'intel',
       match: [/\/intelligence\//],
+    },
+    {
+      id: 'voice-agent',
+      label: 'Voice Agent - Meera',
+      path: '/voice-agent/meera.html',
+      icon: 'agent',
+      match: [/\/voice-agent\//],
     },
     {
       id: 'api',

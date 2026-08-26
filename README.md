@@ -1,65 +1,62 @@
-# Shunya Labs: Documentation Site
+# Shunya Labs Documentation Site
 
-Static documentation site for the Shunya Labs voice AI stack (ASR, TTS, Vāķ Translation, voice agents). Built to be clean, persona-driven, and deployable anywhere.
+Static documentation site for the Shunya Labs voice AI stack (ASR, TTS, Vāķ Translation, and speech intelligence). This repo is plain HTML/CSS/JS and is deployed as a GitHub Pages project site under `/shunya-website-documentation/`.
 
 ## Run locally
 
+Use the project server script so links behave exactly like production:
+
 ```bash
-python3 -m http.server 8765
-open http://localhost:8765
+python3 scripts/serve.py
+open http://localhost:8765/shunya-website-documentation/
 ```
 
-The site uses root-relative paths (`/asset/...`, `/asr/...`), so it must be served from the repo root: opening `index.html` directly with `file://` will not resolve links or assets correctly.
+Avoid opening pages with `file://` or serving at `/` only. Many links and assets are rooted at `/shunya-website-documentation/...`.
 
-## Structure
+## Project structure
 
 ```
-/                           Landing / Quick Start Hub
+/index.html                  Landing page
 /assets/
-  /css/main.css             Design system & theme tokens
-  /js/
-    theme.js                Light / dark / auto + persistence
-    shell.js                Shared header + sidebar injection
-    nav.js                  Sidebar build, TOC, code tabs, search
-/get-started/               What is Shunya, Quickstart, Capability matrix, Glossary
-/personas/                  Developer, Researcher, Enterprise, Operator
-/asr/                       Overview, Models, Configuration, Features, Streaming, Dashboard, API reference
-/tts/                       Overview, Quickstart, Voices, Audio formats, Expression styles, Voice cloning, Streaming, LLM→TTS, API reference
-/translation/               Vāķ Translate overview
-/solutions/                 BFSI, Healthcare, Contact centres, Media
-/deployment/                Cloud, on-prem, air-gapped
-/security/                  Compliance & privacy
+  /css/main.css              Design tokens and layout/styles
+  /js/                       Shared shell, nav, search, theme, Mermaid init
+/get-started/                Onboarding and core concepts
+/personas/                   API, SDK, Playground, OpenAI-compatible tracks
+/asr/                        Zero STT product docs
+/tts/                        Zero TTS product docs
+/translation/                Vāķ Translation docs
+/intelligence/               Speech intelligence docs
+/api-reference/              Auth, errors, limits, request IDs
+/integrations/               Python/OpenAI SDK, LiveKit, Pipecat, SIP, HF
+/solutions/                  BFSI, Healthcare, Contact center, Media
+/deployment/                 Cloud/on-prem deployment docs
+/enterprise/                 SSO and evaluation docs
+/security/                   Compliance and privacy docs
+/scripts/                    Local serving and maintenance scripts
 ```
 
-## What's built
+## Current footprint
 
-- 32 content pages across 8 sections
-- Dark / light / auto-detect theme toggle with persistence
-- Multi-language code sample tabs
-- Mermaid flow diagrams
-- Per-page table of contents (scroll-spy)
-- Keyboard-friendly search (`/` to focus, Enter to jump to first match)
-- Responsive layout: mobile drawer menu under 900 px
+- 48 HTML files in total
+- 44 content pages
+- 4 redirect pages in `personas/`
+- Shared JS-driven shell for header/sidebar, page TOC, code tabs, and search
 
-## Deploying
+## Editing guide
 
-Drop the whole tree on any static host: Netlify, Vercel, GitHub Pages, S3+CloudFront, or an Nginx behind your VPN for internal-only docs.
+- **Navigation source of truth**: `assets/js/nav.js`
+- **Product sidebars**: `assets/js/stt-nav.js`, `assets/js/tts-nav.js`, `assets/js/api-ref-nav.js`, `assets/js/intelligence-nav.js`
+- **Theme and design tokens**: `assets/css/main.css`
+- **Search index**: `assets/js/doc-search.js`
+- **Page authoring**: copy an existing page in the same section, update `<main>` content, then register nav/search entries if needed
 
-Example `netlify.toml`:
+## Deployment
 
-```toml
-[build]
-  publish = "."
-```
+Push to `main` and GitHub Actions publishes to GitHub Pages via:
 
-## Editing
-
-- **Navigation** is in `/assets/js/nav.js`: single source of truth; every page inherits it.
-- **Theme tokens** are in `/assets/css/main.css` at the top (`:root` and `html.dark`).
-- **Page template**: copy any file under `/asr/` or `/tts/` as a starting point. The shell auto-injects the header and sidebar; you only write the `<main>` content.
+- `.github/workflows/jekyll-gh-pages.yml`
 
 ## Known limitations
 
-- Search is currently sidebar-scoped, not full-text. A proper Lunr/FlexSearch index is a future enhancement.
-- Screenshots of the Shunya dashboard are represented as CSS-styled mocks in `/asr/dashboard.html` pending real captures.
-- Integration guides (Salesforce, Genesys, WhatsApp) are referenced but not yet written out: hooks exist in `/personas/enterprise.html`.
+- No automated HTML linting or link checking is configured.
+- Search is curated-index based, not full-text crawling.

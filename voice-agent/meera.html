@@ -1,0 +1,343 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Voice Agent - Meera | Shunya Labs Docs</title>
+  <meta name="description" content="Build and run Meera voice agents with the Shunya Voice Agents API: create agents, register telephony, trigger calls, and receive outcomes via webhooks.">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Inter+Tight:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="/shunya-website-documentation/assets/css/main.css?v=44">
+  <style>
+    /* Make the primary Meera architecture diagram prominent and readable without horizontal scrolling. */
+    .meera-hero-diagram {
+      padding: 1.9rem 1.25rem 1.6rem;
+    }
+    .meera-hero-diagram svg {
+      width: 100%;
+      max-width: 100%;
+      height: auto;
+      margin-inline: auto;
+    }
+    .meera-hero-diagram .nodeLabel,
+    .meera-hero-diagram .edgeLabel {
+      font-size: 14px !important;
+      font-weight: 600 !important;
+      line-height: 1.6 !important;
+    }
+    .meera-hero-diagram .label,
+    .meera-hero-diagram .label foreignObject {
+      overflow: visible !important;
+    }
+    .meera-hero-diagram .nodeLabel p,
+    .meera-hero-diagram .edgeLabel p {
+      margin: 0 !important;
+      line-height: 1.6 !important;
+    }
+    @media (max-width: 900px) {
+      .meera-hero-diagram .nodeLabel,
+      .meera-hero-diagram .edgeLabel {
+        font-size: 13px !important;
+      }
+    }
+  </style>
+  <script src="/shunya-website-documentation/assets/js/theme.js"></script>
+</head>
+<body>
+  <div class="app">
+    <main class="main">
+      <div class="content">
+        <div class="breadcrumb">
+          <a href="/shunya-website-documentation/index.html">Home</a><span class="sep">/</span><span>Voice Agent</span><span class="sep">/</span><span>Meera</span>
+        </div>
+
+        <h1>Voice Agent - <span class="accent-italic">Meera</span></h1>
+        <p class="lead">Meera is a ready-to-configure outbound calling agent framework from Shunya. Think of it as a programmable call executive: you define what Meera should say, how she should speak, when she should retry, and where call outcomes should be delivered.</p>
+
+        <div class="callout callout-info">
+          <div class="callout-title">In one line: what Meera does</div>
+          Meera helps you automate outbound conversations like lead qualification, payment reminders, appointment reminders, post-service feedback, and campaign follow-ups without manually calling each customer.
+        </div>
+
+        <h2 id="what-is-meera">What Meera actually is</h2>
+        <p>Meera is not just text-to-speech. It is a complete call workflow layer that combines:</p>
+        <ul>
+          <li>agent behavior configuration (prompt, tone, guardrails)</li>
+          <li>telephony routing (caller ID and account readiness)</li>
+          <li>call orchestration (queueing, retries, timing windows)</li>
+          <li>event delivery (webhooks for outcomes, summary, and transcript events)</li>
+        </ul>
+
+        <h2 id="when-to-use">When teams use Meera</h2>
+        <div class="grid grid-3">
+          <div class="card">
+            <div class="card-title">Sales follow-up</div>
+            <p class="card-desc">Call fresh leads in minutes, pre-qualify intent, and send structured outcomes to your CRM.</p>
+          </div>
+          <div class="card">
+            <div class="card-title">Operations reminders</div>
+            <p class="card-desc">Automate appointment, billing, and renewal reminders with retry logic and language control.</p>
+          </div>
+          <div class="card">
+            <div class="card-title">Support outreach</div>
+            <p class="card-desc">Run post-resolution feedback calls and capture outcomes such as interested, callback_requested, or no_answer.</p>
+          </div>
+        </div>
+
+        <h2 id="content-type">Request format (Content-Type) made simple</h2>
+        <p>All write requests in Meera are JSON payloads. That is why headers include <code>Content-Type: application/json</code>. In practice:</p>
+        <ul>
+          <li><strong>Who you are:</strong> <code>Authorization: Bearer YOUR_API_KEY</code></li>
+          <li><strong>What you are sending:</strong> <code>Content-Type: application/json</code></li>
+          <li><strong>What Meera reads:</strong> your JSON fields like <code>prompt</code>, <code>voice</code>, <code>messages</code>, <code>phone</code>, and <code>callback_url</code></li>
+        </ul>
+
+        <div class="callout callout-info">
+          <div class="callout-title">Base URL</div>
+          <code>https://agents.shunyalabs.ai</code> for production API calls.
+        </div>
+
+        <h2 id="architecture">How Meera works end to end</h2>
+        <p>From configuration to outcome callback, the flow looks like this:</p>
+        <div class="mermaid meera-hero-diagram">%%{init: {'flowchart': {'curve': 'basis', 'nodeSpacing': 38, 'rankSpacing': 46}}}%%
+flowchart TB
+  A[Step 1:<br/><br/>Create agent<br/>POST /api/v1/agents] --> B{Step 2:<br/><br/>Caller ID setup}
+  B -->|BYO| C[Connect Plivo or Twilio<br/><br/>POST /api/telephony/numbers]
+  B -->|Managed| D[Use Shunya caller ID]
+  C --> E[Step 3:<br/><br/>Launch call<br/>POST /api/v1/calls]
+  D --> E
+  E --> F[Step 4:<br/><br/>Meera talks to customer]
+  F --> G[Step 5:<br/><br/>Webhook to your server<br/>outcome, summary, transcript]</div>
+
+        <div class="callout callout-info">
+          <div class="callout-title">Simple reading order</div>
+          Top to bottom: create agent → choose caller ID setup → launch call → Meera talks → callback reaches your webhook.
+        </div>
+
+        <h2 id="quickstart">Start here in 5 minutes</h2>
+        <ol>
+          <li>Validate connectivity with <code>GET /api/health</code>.</li>
+          <li>Create an agent with a system prompt and opening message.</li>
+          <li>If you bring your own telephony account, register a caller ID first.</li>
+          <li>Trigger a call with <code>POST /api/v1/calls</code>.</li>
+          <li>Capture outcome data via configured webhook endpoint.</li>
+        </ol>
+
+<pre><code class="language-bash">curl -s "https://agents.shunyalabs.ai/api/health"
+# {"status":"ok"}</code></pre>
+
+        <h2 id="minimal-happy-path">Minimal happy path (copy-paste)</h2>
+        <p>If you want the fastest possible start, run these 3 calls in order. This skips optional fields and keeps only essentials.</p>
+
+<pre><code class="language-bash"># 1) Health check
+curl -s "https://agents.shunyalabs.ai/api/health"</code></pre>
+
+<pre><code class="language-bash"># 2) Create a minimal agent
+curl -s -X POST "https://agents.shunyalabs.ai/api/v1/agents" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "My Meera Agent",
+    "prompt": { "system_prompt": "You are a helpful assistant." },
+    "messages": { "opening": "Hello, how can I help you today?" }
+  }'</code></pre>
+
+<pre><code class="language-bash"># 3) Trigger a call
+curl -s -X POST "https://agents.shunyalabs.ai/api/v1/calls" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "agent_id": "YOUR_AGENT_ID",
+    "phone": "+919876543210",
+    "from_number": "+918031137171",
+    "external_id": "call-001"
+  }'</code></pre>
+
+        <div class="callout callout-info">
+          <div class="callout-title">Tip</div>
+          Save the <code>id</code> from create-agent response as <code>YOUR_AGENT_ID</code> and use a new <code>external_id</code> for each new call.
+        </div>
+
+        <h2 id="create-agent">Step 1: Create your Meera agent</h2>
+        <p>Minimum required fields are <code>name</code>, <code>prompt.system_prompt</code>, and <code>messages.opening</code>. Start simple, then add behavior and outcomes as your use case matures.</p>
+<pre><code class="language-bash">curl -s -X POST "https://agents.shunyalabs.ai/api/v1/agents" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "name": "Meera Sales Assistant",
+    "pipeline_type": "shunya",
+    "prompt": {
+      "system_prompt": "You are a concise, polite outbound sales assistant."
+    },
+    "voice": {
+      "language": "hi",
+      "tone": "professional",
+      "accent": "indian",
+      "gender": "female",
+      "tts_speed": 1.0
+    },
+    "messages": {
+      "opening": "Namaste! Main Meera bol rahi hoon. Kya aapke paas 2 minute hain?"
+    }
+  }'</code></pre>
+
+        <div class="callout callout-info">
+          <div class="callout-title">Important</div>
+          For <code>pipeline_type: "shunya"</code>, do not pass internal provider IDs or <code>tts_voice_id</code>. Keep configuration at behavior-level inputs only.
+        </div>
+
+        <h2 id="telephony">Step 2: Telephony readiness</h2>
+        <p>If you use your own telephony account, register your account and caller ID first. If Shunya provisions telephony for your org, you can skip to the next step.</p>
+<pre><code class="language-bash">curl -s -X POST "https://agents.shunyalabs.ai/api/telephony/numbers" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "tag": "new",
+    "provider": "plivo",
+    "auth_id": "YOUR_PLIVO_AUTH_ID",
+    "auth_token": "YOUR_PLIVO_AUTH_TOKEN",
+    "phone_number": "+918031137171",
+    "label": "Outbound caller ID"
+  }'</code></pre>
+
+        <h2 id="trigger-calls">Step 3: Trigger outbound calls</h2>
+        <p>Calls are queued immediately and processed asynchronously. Use a unique <code>external_id</code> per call to avoid accidental duplicates.</p>
+<pre><code class="language-bash">curl -s -X POST "https://agents.shunyalabs.ai/api/v1/calls" \
+  -H "Authorization: Bearer YOUR_API_KEY" \
+  -H "Content-Type: application/json" \
+  -d '{
+    "agent_id": "YOUR_AGENT_ID",
+    "phone": "+919876543210",
+    "from_number": "+918031137171",
+    "callback_url": "https://your-server.example.com/webhooks/call-callback",
+    "external_id": "lead-2026-08-26-001",
+    "context": {
+      "customer_name": "Rahul Sharma",
+      "city": "Delhi"
+    },
+    "echo": {
+      "campaign": "festive-offer",
+      "source": "partner-api"
+    },
+    "start": 900,
+    "end": 2100,
+    "timezone": "Asia/Kolkata",
+    "retries": 1
+  }'</code></pre>
+
+        <h3>Call payload cheatsheet</h3>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th>Field</th><th>Required</th><th>Notes</th></tr>
+            </thead>
+            <tbody>
+              <tr><td><code>agent_id</code></td><td>Yes</td><td>UUID of the voice agent</td></tr>
+              <tr><td><code>phone</code></td><td>Yes</td><td>Customer number in E.164 format</td></tr>
+              <tr><td><code>from_number</code></td><td>Conditional</td><td>Required when multiple active outbound numbers exist</td></tr>
+              <tr><td><code>callback_url</code></td><td>No</td><td>One-shot completion callback endpoint</td></tr>
+              <tr><td><code>external_id</code></td><td>No</td><td>Idempotency key; duplicates return existing call</td></tr>
+              <tr><td><code>start</code>, <code>end</code></td><td>No</td><td>Set both or omit both; HHMM format</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2 id="call-outcome">Step 4: Receive outcomes (no polling needed)</h2>
+        <p>There is no call-status polling endpoint. Meera is webhook-first: once a call completes, your endpoint receives the event payload.</p>
+        <div class="mermaid">sequenceDiagram
+  participant App as Your App
+  participant API as Shunya Agents API
+  participant Dialer as Dialing Engine
+  participant Hook as Your Webhook
+
+  App->>API: POST /api/v1/calls
+  API-->>App: 201 {status: "queued", call_id}
+  API->>Dialer: enqueue and dial
+  Dialer-->>API: call completed event
+  API->>Hook: webhook payload (outcome, transcript/summary if enabled)</div>
+
+        <h3 id="sample-webhook-payload">Sample webhook payload</h3>
+        <p>This is an example of a call completion callback body your backend can expect.</p>
+<pre><code class="language-json">{
+  "event_type": "call.completed",
+  "call_id": "3c2fc901-0c47-4735-b35f-efe2e0720328",
+  "agent_id": "d3f95c73-0a1b-4d7e-a20c-3fd2f5b2c901",
+  "status": "completed",
+  "phone": "+919876543210",
+  "from_number": "+918031137171",
+  "external_id": "lead-2026-08-26-001",
+  "duration_seconds": 83,
+  "outcome": {
+    "value": "interested",
+    "description": "Customer expressed interest and asked for pricing details."
+  },
+  "summary": "Customer asked for a follow-up demo and pricing details.",
+  "transcript": "Agent: Namaste... Customer: I am interested...",
+  "context": {
+    "customer_name": "Rahul Sharma",
+    "city": "Delhi"
+  },
+  "echo": {
+    "campaign": "festive-offer",
+    "source": "partner-api"
+  },
+  "timestamp": "2026-08-26T09:31:45.000Z"
+}</code></pre>
+
+        <p class="text-subtle">Payload fields can vary by configuration. Store unknown fields safely and treat this sample as a reference shape.</p>
+
+        <h2 id="integration-patterns">Common integration patterns</h2>
+        <div class="grid grid-2">
+          <div class="card">
+            <div class="card-title">BYO telephony</div>
+            <p class="card-desc">Register Plivo/Twilio first, then pass <code>from_number</code> in call requests. Best for teams with existing telephony control.</p>
+          </div>
+          <div class="card">
+            <div class="card-title">Shunya-managed telephony</div>
+            <p class="card-desc">Skip telephony registration and start from agent creation. Fastest path for pilot rollouts.</p>
+          </div>
+        </div>
+
+        <h2 id="status-codes">Common status codes</h2>
+        <ul>
+          <li><code>200</code> success on read/update operations</li>
+          <li><code>201</code> agent/call/telephony resource created</li>
+          <li><code>204</code> delete/archive accepted</li>
+          <li><code>401</code> missing or invalid API key</li>
+          <li><code>409</code> duplicate <code>external_id</code> or telephony conflict</li>
+          <li><code>422</code> invalid payload fields or structure</li>
+        </ul>
+
+        <div class="callout callout-info">
+          <div class="callout-title">Callback signature note</div>
+          <code>callback_secret</code> is accepted by the API, but callback signing may not be active in all environments. Validate payload shape and enforce source controls at your edge.
+        </div>
+
+        <h2 id="next-steps">Next steps</h2>
+        <ul>
+          <li>Start with one narrow use case (for example: payment reminder calls).</li>
+          <li>Keep the first prompt short and explicit.</li>
+          <li>Enable transcript and summary after basic flow is stable.</li>
+          <li>Use outcome tags your CRM team can directly consume.</li>
+        </ul>
+
+        <div class="pager">
+          <a class="pager-link" href="/shunya-website-documentation/intelligence/overview.html">
+            <div class="pager-label">← Previous</div>
+            <div class="pager-title">Intelligence overview</div>
+          </a>
+          <a class="pager-link pager-right" href="/shunya-website-documentation/api-reference/index.html">
+            <div class="pager-label">Next →</div>
+            <div class="pager-title">API reference</div>
+          </a>
+        </div>
+      </div>
+      <aside class="toc" aria-label="On this page"></aside>
+    </main>
+  </div>
+
+  <script src="/shunya-website-documentation/assets/js/shell.js?v=4"></script>
+  <script src="/shunya-website-documentation/assets/js/nav.js?v=5"></script>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <script src="/shunya-website-documentation/assets/js/mermaid-init.js?v=2"></script>
+</body>
+</html>
