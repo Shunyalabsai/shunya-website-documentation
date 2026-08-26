@@ -86,7 +86,7 @@
         <h2 id="content-type">Request format (Content-Type) made simple</h2>
         <p>All write requests in Meera are JSON payloads. That is why headers include <code>Content-Type: application/json</code>. In practice:</p>
         <ul>
-          <li><strong>Who you are:</strong> <code>Authorization: Bearer YOUR_API_KEY</code></li>
+          <li><strong>Who you are:</strong> <code>Authorization: Bearer YOUR_API_KEY</code> (your console API key, sent directly; see <a href="#authentication">Authentication</a>)</li>
           <li><strong>What you are sending:</strong> <code>Content-Type: application/json</code></li>
           <li><strong>What Meera reads:</strong> your JSON fields like <code>prompt</code>, <code>voice</code>, <code>messages</code>, <code>phone</code>, and <code>callback_url</code></li>
         </ul>
@@ -95,6 +95,29 @@
           <div class="callout-title">Base URL</div>
           <code>https://agents.shunyalabs.ai</code> for production API calls.
         </div>
+
+        <h2 id="authentication">Authentication</h2>
+        <p>Meera uses your <strong>Shunya console API key</strong> directly. Send it on every request as <code>Authorization: Bearer YOUR_API_KEY</code>. Once authenticated, the same key is used for all agent, telephony, and call endpoints.</p>
+        <ol>
+          <li>Sign in at <a href="https://accounts.shunyalabs.ai" target="_blank" rel="noopener">accounts.shunyalabs.ai</a>.</li>
+          <li>Go to <strong>API Keys</strong> and click <strong>Create New Key</strong>.</li>
+          <li>Copy the key immediately. It is shown only once.</li>
+          <li>Store it in a <code>.env</code> file or secrets manager; never commit it to source control.</li>
+        </ol>
+
+        <h3>Set the environment variable</h3>
+        <div class="code-group">
+          <div class="code-tabs" role="tablist">
+            <button class="code-tab active">macOS / Linux</button>
+            <button class="code-tab">Windows (PowerShell)</button>
+          </div>
+          <div class="code-panel active"><pre><code class="language-bash">export SHUNYALABS_API_KEY="sk-your-key-here"</code></pre></div>
+          <div class="code-panel"><pre><code class="language-bash">$env:SHUNYALABS_API_KEY = "sk-your-key-here"</code></pre></div>
+        </div>
+
+        <p>Then reference it in curl examples:</p>
+<pre><code class="language-bash">curl -s -H "Authorization: Bearer $SHUNYALABS_API_KEY" \
+  "https://agents.shunyalabs.ai/api/health"</code></pre>
 
         <h2 id="architecture">How Meera works end to end</h2>
         <p>From configuration to outcome callback, the flow looks like this:</p>
@@ -115,6 +138,7 @@ flowchart TB
 
         <h2 id="quickstart">Start here in 5 minutes</h2>
         <ol>
+          <li>Get your API key from the console and set <code>SHUNYALABS_API_KEY</code> (see <a href="#authentication">Authentication</a>).</li>
           <li>Validate connectivity with <code>GET /api/health</code>.</li>
           <li>Create an agent with a system prompt and opening message.</li>
           <li>If you bring your own telephony account, register a caller ID first.</li>
@@ -187,6 +211,21 @@ curl -s -X POST "https://agents.shunyalabs.ai/api/v1/calls" \
 
         <h2 id="telephony">Step 2: Telephony readiness</h2>
         <p>If you use your own telephony account, register your account and caller ID first. If Shunya provisions telephony for your org, you can skip to the next step.</p>
+
+        <h3 id="plivo-credentials">Get Plivo Auth ID and Auth Token (BYO telephony)</h3>
+        <p>When you bring your own Plivo account, Meera needs your Plivo credentials to place outbound calls from your number. These are separate from your Shunya API key.</p>
+        <ol>
+          <li>Sign in to the <a href="https://console.plivo.com" target="_blank" rel="noopener">Plivo Console</a>.</li>
+          <li>On the dashboard, copy your <strong>Auth ID</strong>. This is <code>auth_id</code> in the registration payload.</li>
+          <li>Reveal and copy your <strong>Auth Token</strong>. This is <code>auth_token</code>. You can regenerate it from the console if needed.</li>
+          <li>Confirm the phone number you pass as <code>phone_number</code> is already provisioned in that Plivo account.</li>
+        </ol>
+
+        <div class="callout callout-warn">
+          <div class="callout-title">Keep Plivo credentials server-side</div>
+          Store <code>auth_id</code> and <code>auth_token</code> in your backend or secrets manager only. Never expose them in frontend code or commit them to git.
+        </div>
+
 <pre><code class="language-bash">curl -s -X POST "https://agents.shunyalabs.ai/api/telephony/numbers" \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \

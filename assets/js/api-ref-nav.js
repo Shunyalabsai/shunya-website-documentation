@@ -1,4 +1,4 @@
-/* API Reference hub — Deepgram-style sidebar (only on API reference pages) */
+/* API Reference hub - Deepgram-style sidebar (only on API reference pages) */
 (function () {
   function getDocBase() {
     const link = document.querySelector('link[href*="main.css"]');
@@ -24,7 +24,7 @@
 
   function isApiRefContext() {
     const p = window.location.pathname;
-    /* Hub pages only — product ASR/TTS api-reference pages keep their product sidebar */
+    /* Hub pages only - product ASR/TTS api-reference pages keep their product sidebar */
     return /\/api-reference\//.test(p);
   }
 

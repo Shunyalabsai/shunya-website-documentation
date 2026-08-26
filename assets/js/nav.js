@@ -1,4 +1,4 @@
-/* Shared sidebar navigation — single source of truth */
+/* Shared sidebar navigation - single source of truth */
 (function () {
   const NAV = [
     {
@@ -35,6 +35,7 @@
       heading: 'Voice Agent - Meera',
       items: [
         { href: '/shunya-website-documentation/voice-agent/meera.html', label: 'What is Meera?', icon: 'sparkles' },
+        { href: '/shunya-website-documentation/voice-agent/meera.html#authentication', label: 'Get your API key', icon: 'lock' },
         { href: '/shunya-website-documentation/voice-agent/meera.html#minimal-happy-path', label: 'Start in 3 API calls', icon: 'zap' },
         { href: '/shunya-website-documentation/voice-agent/meera.html#create-agent', label: 'Build your first agent', icon: 'user' },
         { href: '/shunya-website-documentation/voice-agent/meera.html#telephony', label: 'Connect caller ID', icon: 'phone' },
@@ -188,7 +189,7 @@
 
     // After the sidebar renders, scroll the active link into view inside
     // the sidebar so the user can always see where they are in the doc tree.
-    // We only scroll the sidebar (its own overflow container) — not the page.
+    // We only scroll the sidebar (its own overflow container) - not the page.
     const active = sidebar.querySelector('.sidebar-link.active, .sidebar-heading-link.is-active');
     if (active) {
       const sb = sidebar.getBoundingClientRect();

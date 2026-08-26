@@ -74,32 +74,32 @@
     { value: 'ru',    label: 'Russian',            flag: '🇷🇺' },
     { value: 'ko',    label: 'Korean',             flag: '🇰🇷' },
     { group: '🇮🇳 Hindi Belt' },
-    { value: 'hi',    label: 'हिन्दी — Hindi',      flag: '🇮🇳' },
-    { value: 'bho',   label: 'भोजपुरी — Bhojpuri', flag: '🇮🇳' },
-    { value: 'mai',   label: 'मैथिली — Maithili',  flag: '🇮🇳' },
-    { value: 'raj',   label: 'राजस्थानी — Rajasthani', flag: '🇮🇳' },
+    { value: 'hi',    label: 'हिन्दी - Hindi',      flag: '🇮🇳' },
+    { value: 'bho',   label: 'भोजपुरी - Bhojpuri', flag: '🇮🇳' },
+    { value: 'mai',   label: 'मैथिली - Maithili',  flag: '🇮🇳' },
+    { value: 'raj',   label: 'राजस्थानी - Rajasthani', flag: '🇮🇳' },
     { group: '🇮🇳 South India' },
-    { value: 'ta',    label: 'தமிழ் — Tamil',      flag: '🇮🇳' },
-    { value: 'te',    label: 'తెలుగు — Telugu',    flag: '🇮🇳' },
-    { value: 'kn',    label: 'ಕನ್ನಡ — Kannada',    flag: '🇮🇳' },
-    { value: 'ml',    label: 'മലയാളം — Malayalam', flag: '🇮🇳' },
+    { value: 'ta',    label: 'தமிழ் - Tamil',      flag: '🇮🇳' },
+    { value: 'te',    label: 'తెలుగు - Telugu',    flag: '🇮🇳' },
+    { value: 'kn',    label: 'ಕನ್ನಡ - Kannada',    flag: '🇮🇳' },
+    { value: 'ml',    label: 'മലയാളം - Malayalam', flag: '🇮🇳' },
     { group: '🇮🇳 West India' },
-    { value: 'mr',    label: 'मराठी — Marathi',    flag: '🇮🇳' },
-    { value: 'gu',    label: 'ગુજરાતી — Gujarati', flag: '🇮🇳' },
-    { value: 'kok',   label: 'कोंकणी — Konkani',   flag: '🇮🇳' },
+    { value: 'mr',    label: 'मराठी - Marathi',    flag: '🇮🇳' },
+    { value: 'gu',    label: 'ગુજરાતી - Gujarati', flag: '🇮🇳' },
+    { value: 'kok',   label: 'कोंकणी - Konkani',   flag: '🇮🇳' },
     { group: '🇮🇳 East India' },
-    { value: 'bn',    label: 'বাংলা — Bengali',    flag: '🇮🇳' },
-    { value: 'or',    label: 'ଓଡ଼ିଆ — Odia',       flag: '🇮🇳' },
-    { value: 'as',    label: 'অসমীয়া — Assamese', flag: '🇮🇳' },
+    { value: 'bn',    label: 'বাংলা - Bengali',    flag: '🇮🇳' },
+    { value: 'or',    label: 'ଓଡ଼ିଆ - Odia',       flag: '🇮🇳' },
+    { value: 'as',    label: 'অসমীয়া - Assamese', flag: '🇮🇳' },
     { group: '🇮🇳 North-East' },
-    { value: 'mni',   label: 'মেইতেই — Meitei',   flag: '🇮🇳' },
-    { value: 'ne',    label: 'नेपाली — Nepali',    flag: '🇮🇳' },
+    { value: 'mni',   label: 'মেইতেই - Meitei',   flag: '🇮🇳' },
+    { value: 'ne',    label: 'नेपाली - Nepali',    flag: '🇮🇳' },
     { group: '🇮🇳 North India' },
-    { value: 'pa',    label: 'ਪੰਜਾਬੀ — Punjabi',   flag: '🇮🇳' },
-    { value: 'ur',    label: 'اردو — Urdu',        flag: '🇮🇳' },
-    { value: 'ks',    label: 'کٲشُر — Kashmiri',   flag: '🇮🇳' },
-    { value: 'doi',   label: 'डोगरी — Dogri',      flag: '🇮🇳' },
-    { value: 'sd',    label: 'سنڌي — Sindhi',      flag: '🇮🇳' },
+    { value: 'pa',    label: 'ਪੰਜਾਬੀ - Punjabi',   flag: '🇮🇳' },
+    { value: 'ur',    label: 'اردو - Urdu',        flag: '🇮🇳' },
+    { value: 'ks',    label: 'کٲشُر - Kashmiri',   flag: '🇮🇳' },
+    { value: 'doi',   label: 'डोगरी - Dogri',      flag: '🇮🇳' },
+    { value: 'sd',    label: 'سنڌي - Sindhi',      flag: '🇮🇳' },
   ];
 
   let currentLang = 'en';
@@ -319,32 +319,32 @@
                 <div class="lang-option" data-value="vi" data-label="VI">🇻🇳 Vietnamese</div>
                 <div class="lang-option" data-value="id" data-label="ID">🇮🇩 Indonesian</div>
                 <div class="lang-group-label">🇮🇳 Hindi Belt</div>
-                <div class="lang-option" data-value="hi" data-label="हिंदी">हिन्दी — Hindi</div>
-                <div class="lang-option" data-value="bho" data-label="भोजपुरी">भोजपुरी — Bhojpuri</div>
-                <div class="lang-option" data-value="mai" data-label="मैथिली">मैथिली — Maithili</div>
-                <div class="lang-option" data-value="raj" data-label="राजस्थानी">राजस्थानी — Rajasthani</div>
+                <div class="lang-option" data-value="hi" data-label="हिंदी">हिन्दी - Hindi</div>
+                <div class="lang-option" data-value="bho" data-label="भोजपुरी">भोजपुरी - Bhojpuri</div>
+                <div class="lang-option" data-value="mai" data-label="मैथिली">मैथिली - Maithili</div>
+                <div class="lang-option" data-value="raj" data-label="राजस्थानी">राजस्थानी - Rajasthani</div>
                 <div class="lang-group-label">🇮🇳 South India</div>
-                <div class="lang-option" data-value="ta" data-label="தமிழ்">தமிழ் — Tamil</div>
-                <div class="lang-option" data-value="te" data-label="తెలుగు">తెలుగు — Telugu</div>
-                <div class="lang-option" data-value="kn" data-label="ಕನ್ನಡ">ಕನ್ನಡ — Kannada</div>
-                <div class="lang-option" data-value="ml" data-label="മലയാളം">മലയാളം — Malayalam</div>
+                <div class="lang-option" data-value="ta" data-label="தமிழ்">தமிழ் - Tamil</div>
+                <div class="lang-option" data-value="te" data-label="తెలుగు">తెలుగు - Telugu</div>
+                <div class="lang-option" data-value="kn" data-label="ಕನ್ನಡ">ಕನ್ನಡ - Kannada</div>
+                <div class="lang-option" data-value="ml" data-label="മലയാളം">മലയാളം - Malayalam</div>
                 <div class="lang-group-label">🇮🇳 West India</div>
-                <div class="lang-option" data-value="mr" data-label="मराठी">मराठी — Marathi</div>
-                <div class="lang-option" data-value="gu" data-label="ગુજરાતી">ગુજરાતી — Gujarati</div>
-                <div class="lang-option" data-value="kok" data-label="कोंकणी">कोंकणी — Konkani</div>
+                <div class="lang-option" data-value="mr" data-label="मराठी">मराठी - Marathi</div>
+                <div class="lang-option" data-value="gu" data-label="ગુજરાતી">ગુજરાતી - Gujarati</div>
+                <div class="lang-option" data-value="kok" data-label="कोंकणी">कोंकणी - Konkani</div>
                 <div class="lang-group-label">🇮🇳 East India</div>
-                <div class="lang-option" data-value="bn" data-label="বাংলা">বাংলা — Bengali</div>
-                <div class="lang-option" data-value="or" data-label="ଓଡ଼ିଆ">ଓଡ଼ିଆ — Odia</div>
-                <div class="lang-option" data-value="as" data-label="অসমীয়া">অসমীয়া — Assamese</div>
+                <div class="lang-option" data-value="bn" data-label="বাংলা">বাংলা - Bengali</div>
+                <div class="lang-option" data-value="or" data-label="ଓଡ଼ିଆ">ଓଡ଼ିଆ - Odia</div>
+                <div class="lang-option" data-value="as" data-label="অসমীয়া">অসমীয়া - Assamese</div>
                 <div class="lang-group-label">🇮🇳 North-East India</div>
-                <div class="lang-option" data-value="mni" data-label="মেইতেই">মেইতেই — Meitei</div>
-                <div class="lang-option" data-value="ne" data-label="नेपाली">नेपाली — Nepali</div>
+                <div class="lang-option" data-value="mni" data-label="মেইতেই">মেইতেই - Meitei</div>
+                <div class="lang-option" data-value="ne" data-label="नेपाली">नेपाली - Nepali</div>
                 <div class="lang-group-label">🇮🇳 North India</div>
-                <div class="lang-option" data-value="pa" data-label="ਪੰਜਾਬੀ">ਪੰਜਾਬੀ — Punjabi</div>
-                <div class="lang-option" data-value="ur" data-label="اردو">اردو — Urdu</div>
-                <div class="lang-option" data-value="ks" data-label="کٲشُر">کٲشُر — Kashmiri</div>
-                <div class="lang-option" data-value="doi" data-label="डोगरी">डोगरी — Dogri</div>
-                <div class="lang-option" data-value="sd" data-label="سنڌي">سنڌي — Sindhi</div>
+                <div class="lang-option" data-value="pa" data-label="ਪੰਜਾਬੀ">ਪੰਜਾਬੀ - Punjabi</div>
+                <div class="lang-option" data-value="ur" data-label="اردو">اردو - Urdu</div>
+                <div class="lang-option" data-value="ks" data-label="کٲشُر">کٲشُر - Kashmiri</div>
+                <div class="lang-option" data-value="doi" data-label="डोगरी">डोगरी - Dogri</div>
+                <div class="lang-option" data-value="sd" data-label="سنڌي">سنڌي - Sindhi</div>
               </div>
             </div>
           </div>

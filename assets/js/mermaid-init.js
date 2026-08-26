@@ -5,7 +5,7 @@
  * site theme flips between light and dark.
  *
  * Bug we're guarding against: once Mermaid renders, .textContent of the
- * .mermaid div is the SVG's accumulated text, not the original DSL — if
+ * .mermaid div is the SVG's accumulated text, not the original DSL - if
  * we fed that back as the source on a re-render, we'd get
  * "Syntax error in text" from Mermaid. So we capture sources up front
  * and never read .textContent again. */
@@ -119,7 +119,7 @@
 
   function boot() {
     if (typeof mermaid === 'undefined') {
-      // mermaid library hasn't loaded yet — try again shortly
+      // mermaid library hasn't loaded yet - try again shortly
       setTimeout(boot, 50);
       return;
     }

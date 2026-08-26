@@ -61,6 +61,8 @@
 
     { category: 'intel', query: 'Speech Intelligence overview with examples', keywords: ['intelligence', 'nlp', 'speechintelligence', 'analysis'], href: '/intelligence/overview.html' },
     { category: 'agent', query: 'Voice Agent - Meera overview', keywords: ['meera', 'voice agent', 'outbound call', 'telephony'], href: '/voice-agent/meera.html' },
+    { category: 'agent', query: 'Meera API key authentication', keywords: ['meera', 'api key', 'auth', 'bearer', 'agents'], href: '/voice-agent/meera.html#authentication' },
+    { category: 'agent', query: 'Plivo Auth ID and Auth Token for Meera', keywords: ['plivo', 'auth_id', 'auth_token', 'telephony', 'caller id'], href: '/voice-agent/meera.html#plivo-credentials' },
     { category: 'agent', query: 'Create and configure a voice agent', keywords: ['create agent', 'prompt', 'behavior', 'voice', 'messages'], href: '/voice-agent/meera.html#create-agent' },
     { category: 'agent', query: 'Trigger outbound calls with callbacks', keywords: ['calls', 'callback_url', 'external_id', 'from_number'], href: '/voice-agent/meera.html#trigger-calls' },
     { category: 'features', query: 'Diarization, who spoke when?', keywords: ['diarization', 'diarize', 'speaker', 'segments'], href: '/asr/features.html#diarization' },

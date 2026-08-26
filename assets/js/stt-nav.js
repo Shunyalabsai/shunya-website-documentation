@@ -1,4 +1,4 @@
-/* Speech-to-Text docs — grouped sidebar (Batch, Streaming, Models, Intelligence, etc.) */
+/* Speech-to-Text docs - grouped sidebar (Batch, Streaming, Models, Intelligence, etc.) */
 (function () {
   function getDocBase() {
     const link = document.querySelector('link[href*="main.css"]');

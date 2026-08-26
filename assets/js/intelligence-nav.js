@@ -1,4 +1,4 @@
-/* Intelligence layer docs — feature sidebar */
+/* Intelligence layer docs - feature sidebar */
 (function () {
   function getDocBase() {
     const link = document.querySelector('link[href*="main.css"]');

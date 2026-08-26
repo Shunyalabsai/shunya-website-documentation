@@ -1,4 +1,4 @@
-/* Text-to-Speech docs — grouped sidebar (Batch, Streaming, Voices, etc.) */
+/* Text-to-Speech docs - grouped sidebar (Batch, Streaming, Voices, etc.) */
 (function () {
   function getDocBase() {
     const link = document.querySelector('link[href*="main.css"]');
