@@ -6,7 +6,7 @@
   <title>Voice Agent - Meera | Shunya Labs Docs</title>
   <meta name="description" content="Build and run Meera voice agents with the Shunya Voice Agents API: create agents, register telephony, trigger calls, and receive outcomes via webhooks.">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Inter+Tight:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="/shunya-website-documentation/assets/css/main.css?v=44">
+  <link rel="stylesheet" href="/shunya-website-documentation/assets/css/main.css?v=47">
   <style>
     /* Make the primary Meera architecture diagram prominent and readable without horizontal scrolling. */
     .meera-hero-diagram {
@@ -50,38 +50,210 @@
           <a href="/shunya-website-documentation/index.html">Home</a><span class="sep">/</span><span>Voice Agent</span><span class="sep">/</span><span>Meera</span>
         </div>
 
-        <h1>Voice Agent - <span class="accent-italic">Meera</span></h1>
-        <p class="lead">Meera is a ready-to-configure outbound calling agent framework from Shunya. Think of it as a programmable call executive: you define what Meera should say, how she should speak, when she should retry, and where call outcomes should be delivered.</p>
+        <h1><span class="agent-highlight">Meera</span> - Voice Agent That <span class="accent-italic">Listen, Reason, and Act</span></h1>
+        <p class="lead">Meera is Shunya's outbound voice agent. All it needs is three inputs: a prompt, a phone number, and a webhook URL. Meera does the rest: dials the call, understands the customer in real time, decides what to say next against your actual business data, speaks back in a natural voice, and hands you a structured outcome the moment it hangs up.</p>
+        <p>It is not a TTS wrapper around a dialer. Under the hood, every call runs a five-stage pipeline: audio in, grounded reasoning, audio out. Each stage is independently benchmarked and independently swappable at the config level (voice, language, retry policy, knowledge source).</p>
 
         <div class="callout callout-info">
-          <div class="callout-title">In one line: what Meera does</div>
-          Meera helps you automate outbound conversations like lead qualification, payment reminders, appointment reminders, post-service feedback, and campaign follow-ups without manually calling each customer.
+          <div class="callout-title">In one line</div>
+          Meera replaces manual call queues with an API that dials, holds a context-aware conversation grounded in your SOPs, executes backend actions mid-call, and reports a structured outcome to your systems: no polling required.
         </div>
 
-        <h2 id="what-is-meera">What Meera actually is</h2>
-        <p>Meera is not just text-to-speech. It is a complete call workflow layer that combines:</p>
-        <ul>
-          <li>agent behavior configuration (prompt, tone, guardrails)</li>
-          <li>telephony routing (caller ID and account readiness)</li>
-          <li>call orchestration (queueing, retries, timing windows)</li>
-          <li>event delivery (webhooks for outcomes, summary, and transcript events)</li>
-        </ul>
-
-        <h2 id="when-to-use">When teams use Meera</h2>
-        <div class="grid grid-3">
-          <div class="card">
-            <div class="card-title">Sales follow-up</div>
-            <p class="card-desc">Call fresh leads in minutes, pre-qualify intent, and send structured outcomes to your CRM.</p>
-          </div>
-          <div class="card">
-            <div class="card-title">Operations reminders</div>
-            <p class="card-desc">Automate appointment, billing, and renewal reminders with retry logic and language control.</p>
-          </div>
-          <div class="card">
-            <div class="card-title">Support outreach</div>
-            <p class="card-desc">Run post-resolution feedback calls and capture outcomes such as interested, callback_requested, or no_answer.</p>
-          </div>
+        <h2 id="technical-snapshot">Technical snapshot</h2>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Metric</th>
+                <th>Value</th>
+                <th>Measured as</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong>End-to-end voice turnaround</strong></td>
+                <td><span class="pill pill-cyan">&lt; 1.5s</span></td>
+                <td>ASR first-token &rarr; TTS first-audio-out, full round trip</td>
+              </tr>
+              <tr>
+                <td><strong>Streaming ASR first audio</strong></td>
+                <td><span class="pill pill-cyan">&lt; 500ms</span></td>
+                <td>Time to first partial transcript</td>
+              </tr>
+              <tr>
+                <td><strong>Composite WER</strong></td>
+                <td><span class="pill pill-emerald">3.10%</span></td>
+                <td>Across supported language set, streaming mode</td>
+              </tr>
+              <tr>
+                <td><strong>Language/dialect coverage</strong></td>
+                <td><span class="pill pill-rose">216+</span></td>
+                <td>Including code-switched speech (e.g. Hinglish)</td>
+              </tr>
+              <tr>
+                <td><strong>Grounding source</strong></td>
+                <td><span class="pill pill-amber">Your KG / SOPs</span></td>
+                <td>Not general web knowledge: see Step 1</td>
+              </tr>
+              <tr>
+                <td><strong>Call handling</strong></td>
+                <td><span class="pill pill-blue">Async, queued</span></td>
+                <td>No synchronous call-status endpoint: webhook only</td>
+              </tr>
+            </tbody>
+          </table>
         </div>
+
+        <h2 id="what-is-meera">What Meera is built from</h2>
+        <p>Meera is a workflow layer, not a single model call. It combines four independently configurable subsystems:</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Component</th>
+                <th>What it controls</th>
+                <th>Where it is configured</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="pill pill-violet">Agent behavior</span></td>
+                <td>System prompt, opening line, tone, guardrails</td>
+                <td><code>POST /api/v1/agents</code></td>
+              </tr>
+              <tr>
+                <td><span class="pill pill-blue">Telephony routing</span></td>
+                <td>Caller ID, BYO vs. Shunya-managed numbers</td>
+                <td><code>POST /api/telephony/numbers</code></td>
+              </tr>
+              <tr>
+                <td><span class="pill pill-cyan">Call orchestration</span></td>
+                <td>Queueing, retry count, calling-hour windows</td>
+                <td><code>POST /api/v1/calls</code></td>
+              </tr>
+              <tr>
+                <td><span class="pill pill-emerald">Event delivery</span></td>
+                <td>Outcome, summary, transcript payloads</td>
+                <td><code>callback_url</code> on the call request</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2 id="how-a-call-runs">How a call actually runs</h2>
+        <p>Each call moves through five stages. This is the same pipeline whether you are doing a payment reminder or a lead-qualification outreach: only the prompt, grounding source, and voice config change.</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Stage</th>
+                <th>What happens</th>
+                <th>Typical latency</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="pill pill-cyan">1. Listen</span></td>
+                <td>Streaming ASR transcribes the customer's audio as it arrives (partial hypotheses, not wait-for-silence)</td>
+                <td><code>~300ms</code> to first token</td>
+              </tr>
+              <tr>
+                <td><span class="pill pill-amber">2. Ground</span></td>
+                <td>The transcript is matched against your knowledge graph/SOP index (not general model knowledge)</td>
+                <td>Included in decide step</td>
+              </tr>
+              <tr>
+                <td><span class="pill pill-violet">3. Decide</span></td>
+                <td>The dialogue policy picks a response and, if needed, triggers a backend action (KYC check, CRM update, payment link)</td>
+                <td>SLM inference, low-latency by design</td>
+              </tr>
+              <tr>
+                <td><span class="pill pill-rose">4. Translate/Speak</span></td>
+                <td>Response is synthesized as streaming audio in the configured language/voice; barge-in (interruption) is handled here</td>
+                <td><code>~100ms</code> translation + <code>~400ms</code> synthesis</td>
+              </tr>
+              <tr>
+                <td><span class="pill pill-emerald">5. Report</span></td>
+                <td>On call completion, outcome + optional summary/transcript are POSTed to your <code>callback_url</code></td>
+                <td>Fired once, not polled</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <h2 id="common-configurations">Common configurations</h2>
+        <p>These are different configuration patterns: the different ways teams can typically set up <code>prompt</code>, <code>voice</code>, and <code>retries</code> / <code>start</code> / <code>end</code> depending on what the call is for:</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Pattern</th>
+                <th><code>system_prompt</code> focus</th>
+                <th>Typical <code>outcome.value</code> tags</th>
+                <th>Notes</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="pill pill-violet">Lead qualification</span></td>
+                <td>Budget/timeline discovery</td>
+                <td><code>interested</code>, <code>callback_requested</code>, <code>no_answer</code></td>
+                <td>Low retry count, tight calling window</td>
+              </tr>
+              <tr>
+                <td><span class="pill pill-amber">Payment/EMI reminders</span></td>
+                <td>Compliance-scripted, single ask</td>
+                <td><code>paid</code>, <code>promise_to_pay</code>, <code>dispute</code></td>
+                <td>Requires strict guardrails in prompt</td>
+              </tr>
+              <tr>
+                <td><span class="pill pill-cyan">Appointment/renewal reminders</span></td>
+                <td>Confirm + reschedule flow</td>
+                <td><code>confirmed</code>, <code>rescheduled</code>, <code>cancelled</code></td>
+                <td>Higher retry tolerance</td>
+              </tr>
+              <tr>
+                <td><span class="pill pill-rose">Post-resolution CSAT</span></td>
+                <td>Short, single-question</td>
+                <td><code>satisfied</code>, <code>escalation_needed</code></td>
+                <td>Usually transcript-only, no action calls</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Each pattern is just a different <code>agents</code> payload: there is no separate API surface per use case.</p>
+
+        <h2 id="deployment-topologies">Deployment topologies</h2>
+        <p>Meera's API surface (<code>agents.shunyalabs.ai</code>) does not change across deployment modes: what changes is where inference and telephony physically run:</p>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Topology</th>
+                <th>Base URL / access</th>
+                <th>Data residency implication</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="pill pill-blue">Cloud (multi-tenant)</span></td>
+                <td>Public <code>agents.shunyalabs.ai</code></td>
+                <td>Standard Shunya-managed infra</td>
+              </tr>
+              <tr>
+                <td><span class="pill pill-violet">Private VPC</span></td>
+                <td>Dedicated endpoint inside your cloud account</td>
+                <td>Call audio/transcripts never leave your VPC</td>
+              </tr>
+              <tr>
+                <td><span class="pill pill-amber">On-prem</span></td>
+                <td>Fully internal, no external calls</td>
+                <td>For workloads under strict residency requirements</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p>Confirm which topology your org is provisioned on before hardcoding a base URL: private/on-prem deployments issue a different host.</p>
 
         <h2 id="content-type">Request format (Content-Type) made simple</h2>
         <p>All write requests in Meera are JSON payloads. That is why headers include <code>Content-Type: application/json</code>. In practice:</p>
