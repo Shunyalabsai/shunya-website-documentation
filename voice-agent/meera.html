@@ -332,9 +332,9 @@ curl -s -X POST "https://agents.shunyalabs.ai/api/v1/agents" \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "name": "My Meera Agent",
-    "prompt": { "system_prompt": "You are a helpful assistant." },
-    "messages": { "opening": "Hello, how can I help you today?" }
+    "name": "Meera BFSI Assistant",
+    "prompt": { "system_prompt": "You are a professional banking assistant for customer verification and payment reminders." },
+    "messages": { "opening": "Hello Rahul, this is Meera calling from Apex Financial Services regarding your upcoming auto loan EMI. Do you have a moment?" }
   }'</code></pre>
 
 <pre><code class="language-bash"># 3) Trigger a call
@@ -345,7 +345,7 @@ curl -s -X POST "https://agents.shunyalabs.ai/api/v1/calls" \
     "agent_id": "YOUR_AGENT_ID",
     "phone": "+919876543210",
     "from_number": "+918031137171",
-    "external_id": "call-001"
+    "external_id": "emi-reminder-001"
   }'</code></pre>
 
         <div class="callout callout-info">
@@ -354,25 +354,25 @@ curl -s -X POST "https://agents.shunyalabs.ai/api/v1/calls" \
         </div>
 
         <h2 id="create-agent">Step 1: Create your Meera agent</h2>
-        <p>Minimum required fields are <code>name</code>, <code>prompt.system_prompt</code>, and <code>messages.opening</code>. Start simple, then add behavior and outcomes as your use case matures.</p>
+        <p>Minimum required fields are <code>name</code>, <code>prompt.system_prompt</code>, and <code>messages.opening</code>. Here is an enterprise BFSI (Banking & Financial Services) EMI reminder configuration with compliance grounding and structured verification.</p>
 <pre><code class="language-bash">curl -s -X POST "https://agents.shunyalabs.ai/api/v1/agents" \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
   -d '{
-    "name": "Meera Sales Assistant",
+    "name": "Meera BFSI - EMI & Payment Assistant",
     "pipeline_type": "shunya",
     "prompt": {
-      "system_prompt": "You are a concise, polite outbound sales assistant."
+      "system_prompt": "You are Meera, an AI banking representative for Apex Financial Services. Verify customer identity using birth year. Inform the customer of their upcoming EMI of ₹14,500 due on September 5th. Inquire whether they will pay via auto-debit or require an instant UPI payment link dispatched via SMS. Be concise, polite, and strictly adhere to financial compliance standards."
     },
     "voice": {
-      "language": "hi",
+      "language": "en-IN",
       "tone": "professional",
       "accent": "indian",
       "gender": "female",
       "tts_speed": 1.0
     },
     "messages": {
-      "opening": "Namaste! Main Meera bol rahi hoon. Kya aapke paas 2 minute hain?"
+      "opening": "Hello Rahul, this is Meera calling from Apex Financial Services regarding your upcoming auto loan EMI. Do you have a moment?"
     }
   }'</code></pre>
 
@@ -411,7 +411,7 @@ curl -s -X POST "https://agents.shunyalabs.ai/api/v1/calls" \
   }'</code></pre>
 
         <h2 id="trigger-calls">Step 3: Trigger outbound calls</h2>
-        <p>Calls are queued immediately and processed asynchronously. Use a unique <code>external_id</code> per call to avoid accidental duplicates.</p>
+        <p>Calls are queued immediately and processed asynchronously. Pass structured enterprise customer context (such as account details, due dates, and CRM identifiers) so Meera can personalize the conversation and route the final disposition seamlessly.</p>
 <pre><code class="language-bash">curl -s -X POST "https://agents.shunyalabs.ai/api/v1/calls" \
   -H "Authorization: Bearer YOUR_API_KEY" \
   -H "Content-Type: application/json" \
@@ -419,15 +419,19 @@ curl -s -X POST "https://agents.shunyalabs.ai/api/v1/calls" \
     "agent_id": "YOUR_AGENT_ID",
     "phone": "+919876543210",
     "from_number": "+918031137171",
-    "callback_url": "https://your-server.example.com/webhooks/call-callback",
-    "external_id": "lead-2026-08-26-001",
+    "callback_url": "https://api.apexbank.example.com/webhooks/meera-outcomes",
+    "external_id": "bfsi-loan-4821-rem-01",
     "context": {
       "customer_name": "Rahul Sharma",
-      "city": "Delhi"
+      "account_last4": "4821",
+      "due_amount": "₹14,500",
+      "due_date": "2026-09-05",
+      "loan_type": "Auto Loan"
     },
     "echo": {
-      "campaign": "festive-offer",
-      "source": "partner-api"
+      "department": "retail_collections",
+      "portfolio": "auto_loans",
+      "crm_lead_id": "CRM-889142"
     },
     "start": 900,
     "end": 2100,
@@ -453,7 +457,7 @@ curl -s -X POST "https://agents.shunyalabs.ai/api/v1/calls" \
         </div>
 
         <h2 id="call-outcome">Step 4: Receive outcomes (no polling needed)</h2>
-        <p>There is no call-status polling endpoint. Meera is webhook-first: once a call completes, your endpoint receives the event payload.</p>
+        <p>There is no call-status polling endpoint. Meera is webhook-first: once a call completes, your endpoint receives the event payload containing full call analytics, verified dispositions, and the dialog transcript.</p>
         <div class="mermaid">sequenceDiagram
   participant App as Your App
   participant API as Shunya Agents API
@@ -467,34 +471,158 @@ curl -s -X POST "https://agents.shunyalabs.ai/api/v1/calls" \
   API->>Hook: webhook payload (outcome, transcript/summary if enabled)</div>
 
         <h3 id="sample-webhook-payload">Sample webhook payload</h3>
-        <p>This is an example of a call completion callback body your backend can expect.</p>
+        <p>This is an example of an enterprise BFSI call completion callback body dispatched to your backend webhook.</p>
 <pre><code class="language-json">{
   "event_type": "call.completed",
   "call_id": "3c2fc901-0c47-4735-b35f-efe2e0720328",
-  "agent_id": "d3f95c73-0a1b-4d7e-a20c-3fd2f5b2c901",
+  "agent_id": "bfsi-meera-prod-001",
   "status": "completed",
   "phone": "+919876543210",
   "from_number": "+918031137171",
-  "external_id": "lead-2026-08-26-001",
-  "duration_seconds": 83,
+  "external_id": "bfsi-loan-4821-rem-01",
+  "duration_seconds": 64,
   "outcome": {
-    "value": "interested",
-    "description": "Customer expressed interest and asked for pricing details."
+    "value": "payment_link_dispatched",
+    "description": "Customer verified identity, acknowledged ₹14,500 EMI due Sept 5th, and requested an instant payment link via SMS.",
+    "disposition_code": "PTP_CONFIRMED",
+    "action_triggered": "send_upi_sms_link"
   },
-  "summary": "Customer asked for a follow-up demo and pricing details.",
-  "transcript": "Agent: Namaste... Customer: I am interested...",
+  "summary": "Rahul Sharma confirmed identity (DOB year 1991). Acknowledged upcoming EMI of ₹14,500 due on September 5th for auto loan #4821. Requested an SMS payment link to complete transaction immediately.",
+  "transcript": "Agent: Hello Rahul, this is Meera calling from Apex Financial Services regarding your upcoming auto loan EMI. Do you have a moment?\nCustomer: Yes, I do. Tell me.\nAgent: Thank you. For your security, could you please confirm your year of birth?\nCustomer: 1991.\nAgent: Verified, thank you. This is a gentle reminder that your EMI of 14,500 rupees is due on September 5th. Would you like to pay via auto-debit or should I dispatch an instant payment link to your SMS?\nCustomer: Please send the payment link via SMS, I will pay right away.\nAgent: Perfect. I have dispatched the secure payment link to your mobile number ending in 3210. Is there anything else I can help you with?\nCustomer: No, thank you.\nAgent: Thank you for choosing Apex Financial Services. Have a great day!",
   "context": {
     "customer_name": "Rahul Sharma",
-    "city": "Delhi"
+    "account_last4": "4821",
+    "due_amount": "₹14,500",
+    "due_date": "2026-09-05",
+    "loan_type": "Auto Loan"
   },
   "echo": {
-    "campaign": "festive-offer",
-    "source": "partner-api"
+    "department": "retail_collections",
+    "portfolio": "auto_loans",
+    "crm_lead_id": "CRM-889142"
   },
-  "timestamp": "2026-08-26T09:31:45.000Z"
+  "timestamp": "2026-08-27T10:14:22.000Z"
 }</code></pre>
 
         <p class="text-subtle">Payload fields can vary by configuration. Store unknown fields safely and treat this sample as a reference shape.</p>
+
+        <h2 id="enterprise-templates">Enterprise conversation templates</h2>
+        <p>Explore production-ready agent configurations tailored for the enterprise domains featured in the Shunya voice architecture.</p>
+
+        <div class="code-group">
+          <div class="code-tabs" role="tablist">
+            <button class="code-tab active">Banking (BFSI)</button>
+            <button class="code-tab">Healthcare</button>
+            <button class="code-tab">Contact Centers</button>
+            <button class="code-tab">Telecom</button>
+            <button class="code-tab">Retail & E-commerce</button>
+          </div>
+
+          <!-- BFSI Panel -->
+          <div class="code-panel active">
+<pre><code class="language-json">{
+  "name": "Meera BFSI - EMI & Payment Assistant",
+  "pipeline_type": "shunya",
+  "prompt": {
+    "system_prompt": "You are Meera, an automated representative for Apex Bank. Verify the customer using their birth year. Inform them of their upcoming EMI of ₹14,500 due on September 5th. Inquire whether they will pay via auto-debit or require an instant UPI payment link dispatched via SMS. Maintain strict banking compliance, never ask for CVV or passwords, and keep responses under 25 words per turn."
+  },
+  "voice": {
+    "language": "en-IN",
+    "tone": "professional",
+    "accent": "indian",
+    "gender": "female",
+    "tts_speed": 1.0
+  },
+  "messages": {
+    "opening": "Hello Rahul, this is Meera calling from Apex Bank regarding your auto loan EMI. Do you have a moment?"
+  }
+}</code></pre>
+          </div>
+
+          <!-- Healthcare Panel -->
+          <div class="code-panel">
+<pre><code class="language-json">{
+  "name": "Meera Healthcare - Patient Intake & Appointment",
+  "pipeline_type": "shunya",
+  "prompt": {
+    "system_prompt": "You are Meera, an empathetic clinical coordinator for City Health Hospital. Call patient Sarah Jenkins to confirm her cardiology consultation scheduled for tomorrow at 10:30 AM with Dr. Mehta. Verify whether she has completed fasting requirements, remind her to bring past lab reports, and offer directions or reschedule options if needed. Strictly adhere to HIPAA privacy guidelines."
+  },
+  "voice": {
+    "language": "en-US",
+    "tone": "warm",
+    "accent": "neutral",
+    "gender": "female",
+    "tts_speed": 0.95
+  },
+  "messages": {
+    "opening": "Hello Sarah, this is Meera calling from City Health Hospital to confirm your cardiology appointment scheduled for tomorrow at 10:30 AM. Is now a good time to speak?"
+  }
+}</code></pre>
+          </div>
+
+          <!-- Contact Center Panel -->
+          <div class="code-panel">
+<pre><code class="language-json">{
+  "name": "Meera Support - Ticket Resolution Follow-up",
+  "pipeline_type": "shunya",
+  "prompt": {
+    "system_prompt": "You are Meera, a customer experience specialist for CloudScale Telecom. Follow up on support ticket #9941 regarding broadband latency. Confirm if the issue is completely resolved after the router firmware update, capture a 1 to 5 satisfaction rating, and escalate to a senior technician if the customer reports lingering drops."
+  },
+  "voice": {
+    "language": "en-IN",
+    "tone": "helpful",
+    "accent": "indian",
+    "gender": "female",
+    "tts_speed": 1.0
+  },
+  "messages": {
+    "opening": "Hi Alex, this is Meera from CloudScale Support following up on your broadband ticket #9941. I wanted to verify if your connection has been working smoothly since our update?"
+  }
+}</code></pre>
+          </div>
+
+          <!-- Telecom Panel -->
+          <div class="code-panel">
+<pre><code class="language-json">{
+  "name": "Meera Telecom - Plan Renewal & 5G Upgrade",
+  "pipeline_type": "shunya",
+  "prompt": {
+    "system_prompt": "You are Meera, an automated account manager for Horizon Mobile. Notify customer Vikram that his quarterly plan expires in 3 days. Inform him of the special 5G Unlimited renewal offer at ₹799 with complimentary OTT benefits. If he agrees, dispatch an instant renewal payment link via SMS and confirm plan activation timing."
+  },
+  "voice": {
+    "language": "hi",
+    "tone": "enthusiastic",
+    "accent": "indian",
+    "gender": "female",
+    "tts_speed": 1.05
+  },
+  "messages": {
+    "opening": "Namaste Vikram ji! Main Horizon Mobile se Meera bol rahi hoon. Aapka quarterly pack 3 din mein expire hone wala hai, kya main aapko exclusive 5G upgrade offer ke baare mein bata sakti hoon?"
+  }
+}</code></pre>
+          </div>
+
+          <!-- Retail Panel -->
+          <div class="code-panel">
+<pre><code class="language-json">{
+  "name": "Meera Retail - Outbound Delivery Slot Confirmation",
+  "pipeline_type": "shunya",
+  "prompt": {
+    "system_prompt": "You are Meera, a logistics concierge for UrbanCart. Call customer Priya regarding order #ORD-77215. Confirm if someone will be available between 2:00 PM and 5:00 PM today to receive the package, or offer alternative delivery windows (evening 6-9 PM or tomorrow morning). Update delivery instructions in real time."
+  },
+  "voice": {
+    "language": "en-IN",
+    "tone": "cheerful",
+    "accent": "indian",
+    "gender": "female",
+    "tts_speed": 1.0
+  },
+  "messages": {
+    "opening": "Hello Priya, this is Meera calling from UrbanCart regarding your delivery scheduled for this afternoon. Are you available for a quick confirmation?"
+  }
+}</code></pre>
+          </div>
+        </div>
 
         <h2 id="integration-patterns">Common integration patterns</h2>
         <div class="grid grid-2">
